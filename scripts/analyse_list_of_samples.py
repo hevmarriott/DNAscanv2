@@ -16,15 +16,13 @@
 #   5.3 Run DNAscan for one sample
 ################################################################
 
-import argparse , os  ,  paths , os.path 
+import argparse , os  ,  paths_configs , os.path 
 
 from argparse import RawTextHelpFormatter
 
 # 2. Define paths viriables
 
-python_path = paths.python_path
-
-dnascan_dir = paths.dnascan_dir
+dnascan_dir = paths_configs.dnascan_dir
 
 
 # 3. Define options from command line
@@ -72,7 +70,7 @@ for sample in list_file_lines :
     
     if paired == "1" and format == "fastq" :
         
-        input_file_string = "-in %s -in2 %s" %(sample.split('\t')[0] , sample.split('\t')[1].strip())
+        input_file_string = "-in %s -in2 %s" %( sample.split('\t')[0] , sample.split('\t')[1].strip() )
                 
         sample_name = sample.split('\t')[0].split("/")[-1].split("1.f")[-2]
         
@@ -88,6 +86,6 @@ for sample in list_file_lines :
     
     # 5.3 Run DNAscan for one sample
     
-    os.system( "%s %sDNAscan.py %s -sample_name %s %s -out %s/%s/ " %( python_path , dnascan_dir , option_string , sample_name , input_file_string , out_dir , sample_name) )
+    os.system( "python3 %sDNAscan.py %s -sample_name %s %s -out %s/%s/ " %( dnascan_dir , option_string , sample_name , input_file_string , out_dir , sample_name) )
         
         
