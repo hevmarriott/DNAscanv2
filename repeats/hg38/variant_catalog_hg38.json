@@ -1,5 +1,4 @@
-bplist00—_WebMainResource’	
-_WebResourceData_WebResourceMIMEType_WebResourceTextEncodingName_WebResourceFrameName^WebResourceURLOCÂ<html><head></head><body><pre style="word-wrap: break-word; white-space: pre-wrap;">[
+[
     {
         "LocusId": "AFF2",
         "LocusStructure": "(GCC)*",
@@ -520,8 +519,8 @@ bplist00—_WebMainResource’
     },
     {
         "LocusId": "GLS",
-        "LocusStructure": "(GGA)*",
-        "ReferenceRegion": "chr2:190880873-190880920",
+        "LocusStructure": "(GCA)*",
+        "ReferenceRegion": "chr2:190880872-190880920",
         "VariantType": "Repeat"
     },
     {
@@ -529,6 +528,11 @@ bplist00—_WebMainResource’
         "LocusStructure": "(AARRG)*",
         "ReferenceRegion": "chr4:39348424-39348479",
         "VariantType": "Repeat"
+    },
+    {
+        "VariantType": "Repeat",
+        "LocusId": "PABPN1",
+        "LocusStructure": "(GCG)*",
+        "ReferenceRegion": "chr14:23321472-23321490"
     }
 ]
-</pre></body></html>Ztext/plainUUTF-8P_khttps://raw.githubusercontent.com/Illumina/ExpansionHunter/master/variant_catalog/hg38/variant_catalog.json    ( : P n Ö îD}DàDéDè                           D˝
