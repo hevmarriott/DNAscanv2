@@ -2,7 +2,7 @@
 # This is a docker image of the DNAscan pipeline           #
 #							   #
 # GATK and Annovar were not installed when this image was  #
-# built due to licencing issues. In practical terms this   #
+# built due to licensing issues. In practical terms this   #
 # means that the annotation step and intensive mode        #
 # are not available. If you wish to be able to perform     #
 # those please follow the instructions in                  #
