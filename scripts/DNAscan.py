@@ -74,6 +74,8 @@ port_num = paths_configs.port_num
 
 path_vcftools = paths_configs.path_vcftools
 
+GATK_HC_custom_options = paths_configs.GATK_HC_custom_options
+
 path_gatk = paths_configs.path_gatk
 
 path_multiqc = paths_configs.path_multiqc
@@ -1107,9 +1109,9 @@ if variantcalling:
 
                 while counter < int(num_cpu) + 1:
 
-                    command = "%sjava -jar %sgatk-package-4.1.9.0-local.jar HaplotypeCaller -R %s -I %s -L %smpileup_positions%s.bed -O %sgatk_indels%s.vcf" % (
+                    command = "%sjava -jar %sgatk-package-4.1.9.0-local.jar HaplotypeCaller -R %s -I %s -L %smpileup_positions%s.bed -O %sgatk_indels%s.vcf %s" % (
                         path_java, path_gatk, path_reference, bam_file, out,
-                        str(counter), out, str(counter))
+                        str(counter), out, str(counter), GATK_HC_custom_options)
 
                     proc_gatk = subprocess.Popen(command, shell=True)
 
