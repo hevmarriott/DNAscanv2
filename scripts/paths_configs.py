@@ -56,7 +56,7 @@ path_annovar_db = ""
 #how to download the annovar databases and to modify annovar_protocols and annovar_operations please visit 
 #http://annovar.openbioinformatics.org/en/latest/ . 
 
-annovar_protocols = "refGene,dbnsfp30a,clinvar_20170130,avsnp147"
+annovar_protocols = "refGene,dbnsfp30a,clinvar_20210123,avsnp147"
 
 annovar_operations = "g,f,f,f"
 
@@ -117,5 +117,3 @@ hisat_custom_options = ""
 bwa_custom_options = ""
 
 freebayes_custom_options = ""
-
-gatk_HC_custom_options = ""
