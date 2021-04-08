@@ -76,8 +76,6 @@ path_vcftools = paths_configs.path_vcftools
 
 path_gatk = paths_configs.path_gatk
 
-gatk_HC_custom_options = paths_configs.gatk_HC_custom_options
-
 path_multiqc = paths_configs.path_multiqc
 
 path_java = paths_configs.path_java
@@ -589,7 +587,7 @@ if alsgenescanner:
 
     annovar_operations = "g,f,f"
 
-    annovar_protocols = "refGene,dbnsfp30a,clinvar_20200316"
+    annovar_protocols = "refGene,dbnsfp30a,clinvar_20210123"
     
 # Y. adapt DB to reference
 
@@ -1109,8 +1107,8 @@ if variantcalling:
 
                 while counter < int(num_cpu) + 1:
 
-                    command = "%sjava -jar %sgatk-package-4.1.9.0-local.jar %s HaplotypeCaller -R %s -I %s -L %smpileup_positions%s.bed -O %sgatk_indels%s.vcf" % (
-                        path_java, path_gatk, gatk_HC_custom_options, path_reference, bam_file, out,
+                    command = "%sjava -jar %sgatk-package-4.1.9.0-local.jar HaplotypeCaller -R %s -I %s -L %smpileup_positions%s.bed -O %sgatk_indels%s.vcf" % (
+                        path_java, path_gatk, path_reference, bam_file, out,
                         str(counter), out, str(counter))
 
                     proc_gatk = subprocess.Popen(command, shell=True)
@@ -1352,12 +1350,12 @@ if annotation:
                reference, annovar_protocols, annovar_operations, out))
         if not debug and not alsgenescanner:
             os.system(
-                "rm %sannovar.vcf.hg38_multianno.txt %sannovar.vcf.avinput" %
-                (out, out))
+                "rm %sannovar.vcf.%s_multianno.txt %sannovar.vcf.avinput" %
+                (out, reference, out))
 
         os.system(
-            "mv %s/annovar.vcf.hg38_multianno.vcf %sresults/%s_annotated.vcf ; bgzip -f %sresults/%s_annotated.vcf ; %stabix -fp vcf %sresults/%s_annotated.vcf.gz"
-            % (out, out, sample_name, out, sample_name, path_tabix, out,
+            "mv %s/annovar.vcf.%s_multianno.vcf %sresults/%s_annotated.vcf ; bgzip -f %sresults/%s_annotated.vcf ; %stabix -fp vcf %sresults/%s_annotated.vcf.gz"
+            % (out, reference, out, sample_name, out, sample_name, path_tabix, out,
                sample_name))
 
         os.system("mv %s %sresults/" % (variant_results_file, out))
@@ -1785,8 +1783,8 @@ if iobio:
 if alsgenescanner:
 
     os.system(
-        "python3 %s/alsgenescanner.py %s/annovar.vcf.hg38_multianno.txt %s/results/%s_alsgenescanner_all.txt"
-        % (path_scripts, out, out, sample_name))
+        "python3 %s/alsgenescanner.py %s/annovar.vcf.%s_multianno.txt %s/results/%s_alsgenescanner_all.txt"
+        % (path_scripts, out, reference, out, sample_name))
     os.system(
         "cat %s/results/%s_alsgenescanner_all.txt | head -1 > %s/results/%s_alsgenescanner_alsod.txt; cat %s/results/%s_alsgenescanner_all.txt | grep -iwf %s/list_genes_alsod.txt >> %s/results/%s_alsgenescanner_alsod.txt"
         % (out, sample_name, out, sample_name, out, sample_name, path_to_db,
