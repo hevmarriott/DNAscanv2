@@ -117,3 +117,5 @@ hisat_custom_options = ""
 bwa_custom_options = ""
 
 freebayes_custom_options = ""
+
+GATK_HC_custom_options = ""
