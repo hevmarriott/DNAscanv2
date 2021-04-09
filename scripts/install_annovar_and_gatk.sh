@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Usage: bash install_annovar_and_gatk.sh $path_to_setup_dir $path_to_DNASCAN_dir $path_to_ANNOVAR $path_to_gatk_download
-#Example: bash install_annovar_and_gatk.sh /home/local/ /home/DNA-NGS_scan /home/annovar /home/gatk_download_dirINSTALL_DIR=$1
+#Example: bash install_annovar_and_gatk.sh /home/local/ /home/DNAscan /home/annovar /home/gatk_download_dir
 
 INSTALL_DIR=$1
 
@@ -31,7 +31,7 @@ $ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar avsnp
 
 sed "s|path_annovar = \"\"|path_annovar = \"$ANNOVAR_DIR\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
-sed "s|path_gatk = \"\"|path_gatk = \"$INSTALL_DIR\/Miniconda3\/opt\/gatk-4.1.9.0\/\"|" scripts/paths_configs.py_temp >  scripts/paths_configs.py
+sed "s|path_gatk = \"\"|path_gatk = \"$GATK_DOWNLOAD_DIR\/\"|" scripts/paths_configs.py_temp >  scripts/paths_configs.py
 
 
 
