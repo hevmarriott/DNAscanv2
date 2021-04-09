@@ -25,20 +25,20 @@ $ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar exac0
 
 $ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar dbnsfp30a $INSTALL_DIR/humandb/
 
-$ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar clinvar_20170130 $INSTALL_DIR/humandb/
+$ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar clinvar_20210123 $INSTALL_DIR/humandb/
 
 $ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar avsnp147 $INSTALL_DIR/humandb/
 
 gatk-register $GATK_DOWNLOAD_DIR/GenomeAnalysisTK-3.8.tar.bz2 
 
-sed "s|path_annovar = \"\"|path_annovar = \"$ANNOVAR_DIR\/\"|" scripts/paths.py_temp > scripts/paths.py
+sed "s|path_annovar = \"\"|path_annovar = \"$ANNOVAR_DIR\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
-sed "s|path_gatk = \"\"|path_gatk = \"$INSTALL_DIR\/Miniconda2\/opt\/gatk-3.8\/\"|" scripts/paths.py_temp >  scripts/paths.py
+sed "s|path_gatk = \"\"|path_gatk = \"$INSTALL_DIR\/Miniconda3\/opt\/gatk-4.1.9.0\/\"|" scripts/paths_configs.py_temp >  scripts/paths_configs.py
 
 
 
 
 echo "###########################################IMPORTANT######################################################"
-echo "Annovar is still downloading the CADD database (wget). Please wait untill it completes its tasks."
+echo "Annovar is still downloading the CADD database (wget). Please wait until it completes its tasks."
 echo "You can check whether or not they are still running using the 'top' command"
 echo "##########################################################################################################"
