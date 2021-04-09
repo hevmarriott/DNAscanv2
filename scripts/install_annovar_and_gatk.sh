@@ -29,8 +29,6 @@ $ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar clinv
 
 $ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar avsnp147 $INSTALL_DIR/humandb/
 
-gatk-register $GATK_DOWNLOAD_DIR/GenomeAnalysisTK-3.8.tar.bz2 
-
 sed "s|path_annovar = \"\"|path_annovar = \"$ANNOVAR_DIR\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
 sed "s|path_gatk = \"\"|path_gatk = \"$INSTALL_DIR\/Miniconda3\/opt\/gatk-4.1.9.0\/\"|" scripts/paths_configs.py_temp >  scripts/paths_configs.py
