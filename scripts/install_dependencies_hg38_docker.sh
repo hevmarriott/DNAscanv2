@@ -25,15 +25,15 @@ cd $DNASCAN_DIR
 
 cd $INSTALL_DIR
 
-wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh
+wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
 
-chmod +x Miniconda2-latest-Linux-x86_64.sh
+chmod +x Miniconda3-latest-Linux-x86_64.sh
 
-./Miniconda2-latest-Linux-x86_64.sh -b -p $INSTALL_DIR/Miniconda2/
+./Miniconda3-latest-Linux-x86_64.sh -b -p $INSTALL_DIR/Miniconda3/
 
-export PATH=$INSTALL_DIR/Miniconda2/bin:$PATH
+export PATH=$INSTALL_DIR/Miniconda3/bin:$PATH
 
-echo export PATH=$INSTALL_DIR/Miniconda2/bin:$PATH >> ~/.bashrc
+echo export PATH=$INSTALL_DIR/Miniconda3/bin:$PATH >> ~/.bashrc
 
 conda config --add channels conda-forge
 
@@ -97,13 +97,13 @@ mkdir manta
 
 cd manta
 
-wget https://github.com/Illumina/manta/releases/download/v1.2.1/manta-1.2.1.release_src.tar.bz2
+wget https://github.com/Illumina/manta/releases/download/v1.6.0/manta-1.6.0.release_src.tar.bz2
 
-tar -xjf manta-1.2.1.release_src.tar.bz2
+tar -xjf manta-1.6.0.release_src.tar.bz2
 
 mkdir build && cd build
 
-../manta-1.2.1.release_src/configure --jobs=4 --prefix=$INSTALL_DIR/manta/
+../manta-1.6.0.release_src/configure --jobs=4 --prefix=$INSTALL_DIR/manta/
 
 make -j4 install
 
