@@ -39,21 +39,21 @@ $ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar exac0
 
 $ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar dbnsfp30a $INSTALL_DIR/humandb/
 
-$ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar clinvar_20170130 $INSTALL_DIR/humandb/
+$ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar clinvar_20210123 $INSTALL_DIR/humandb/
 
 $ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar avsnp147 $INSTALL_DIR/humandb/
 
 cd $INSTALL_DIR
 
-wget https://repo.anaconda.com/miniconda/Miniconda2-latest-Linux-x86_64.sh
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 
-chmod +x Miniconda2-latest-Linux-x86_64.sh
+chmod +x Miniconda3-latest-Linux-x86_64.sh
 
-bash Miniconda2-latest-Linux-x86_64.sh -b -p $INSTALL_DIR/Miniconda2/
+bash Miniconda3-latest-Linux-x86_64.sh -b -p $INSTALL_DIR/Miniconda3/
 
-export PATH=$INSTALL_DIR/Miniconda2/bin:$PATH
+export PATH=$INSTALL_DIR/Miniconda3/bin:$PATH
 
-echo export PATH=$INSTALL_DIR/Miniconda2/bin:$PATH >> ~/.bashrc
+echo export PATH=$INSTALL_DIR/Miniconda3/bin:$PATH >> ~/.bashrc
 
 conda config --add channels conda-forge
 
@@ -123,13 +123,13 @@ mkdir manta
 
 cd manta
 
-wget https://github.com/Illumina/manta/releases/download/v1.2.1/manta-1.2.1.release_src.tar.bz2
+wget https://github.com/Illumina/manta/releases/download/v1.6.0/manta-1.6.0.release_src.tar.bz2
 
-tar -xjf manta-1.2.1.release_src.tar.bz2
+tar -xjf manta-1.6.0.release_src.tar.bz2
 
 mkdir build && cd build
 
-../manta-1.2.1.release_src/configure --jobs=4 --prefix=$INSTALL_DIR/manta/
+../manta-1.6.0.release_src/configure --jobs=4 --prefix=$INSTALL_DIR/manta/
 
 make -j4 install
 
@@ -163,7 +163,7 @@ sed "s|path_annovar = \"\"|path_annovar = \"$ANNOVAR_DIR\/\"|" scripts/paths_con
 
 sed "s|path_annovar_db = \"\"|path_annovar_db = \"$INSTALL_DIR\/humandb\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
 
-sed "s|path_gatk = \"\"|path_gatk = \"$INSTALL_DIR\/Miniconda2\/opt\/gatk-3.8\/\"|" scripts/paths_configs.py_temp >  scripts/paths_configs.py
+sed "s|path_gatk = \"\"|path_gatk = \"$INSTALL_DIR\/Miniconda3\/opt\/gatk-4.1.9.0\/\"|" scripts/paths_configs.py_temp >  scripts/paths_configs.py
 
 sed "s|dnascan_dir = \"\"|dnascan_dir = \"$DNASCAN_DIR\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
 
