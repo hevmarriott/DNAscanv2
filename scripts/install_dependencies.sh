@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Usage: bash install_dependencies.sh $path_to_setup_dir $path_to_DNASCAN_dir $path_to_ANNOVAR $path_to_gatk_download
-#Example: bash install_dependencies.sh /home/local/ /home/DNA-NGS_scan /home/annovar /home/gatk_download_dir
+#Example: bash install_dependencies.sh /home/local/ /home/DNAscan /home/annovar /home/gatk_download_dir
 
 INSTALL_DIR=$1
 
@@ -73,8 +73,6 @@ conda install -y vcftools
 
 conda install -y bcftools
 
-conda install -y gatk
-
 conda install -y hisat2
 
 conda install -y bwa
@@ -90,8 +88,6 @@ conda install -y expansionhunter
 conda install -y sambamba
 
 conda install -y samblaster
-
-gatk-register $GATK_DOWNLOAD_DIR 
 
 cd $DNASCAN_DIR
 
@@ -163,7 +159,7 @@ sed "s|path_annovar = \"\"|path_annovar = \"$ANNOVAR_DIR\/\"|" scripts/paths_con
 
 sed "s|path_annovar_db = \"\"|path_annovar_db = \"$INSTALL_DIR\/humandb\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
 
-sed "s|path_gatk = \"\"|path_gatk = \"$INSTALL_DIR\/Miniconda3\/opt\/gatk-4.1.9.0\/\"|" scripts/paths_configs.py_temp >  scripts/paths_configs.py
+sed "s|path_gatk = \"\"|path_gatk = \"$GATK_DOWNLOAD_DIR\/\"|" scripts/paths_configs.py_temp >  scripts/paths_configs.py
 
 sed "s|dnascan_dir = \"\"|dnascan_dir = \"$DNASCAN_DIR\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
 
