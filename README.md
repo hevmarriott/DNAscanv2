@@ -67,7 +67,8 @@ Once you have downloaded DNAscan, you can set up all needed dependencies running
 
 ```bash
 
-bash scripts/install_dependencies.sh /path/to/set_up/directory/ /path/to/DNAscan/directory/ /path/to/annovar/directory/ /path/to/GATK4.1.9.0/download.tar.bz2 $num_threads
+bash scripts/install_dependencies.sh /path/to/set_up/directory/ /path/to/DNAscan/directory/ /path/to/annovar/directory/ /path/to/gatk-
+4.1.9.0/ $num_threads
 
 source ~/.bashrc
 
@@ -133,7 +134,7 @@ cd DNAscan
 
 #By dafault install_dependencies.sh downloads the following Annovar databases: Exac, Refgene, Dbnsfp, Clinvar and Avsnp. If you wish to download the CADD database (about 350G) please uncomment the appropiete line. If you are not interested in performing annotation, please # the annovar lines in the install_dependencies.sh script. 
 
-bash scripts/install_dependencies.sh /path/to/set_up/directory/ /path/to/DNAscan/directory/ /path/to/annovar/directory/ /path/to/GATK4.1.9.0/download.tar.bz2 $num_threads
+bash scripts/install_dependencies.sh /path/to/set_up/directory/ /path/to/DNAscan/directory/ /path/to/annovar/directory/ /path/to/gatk-4.1.9.0/ $num_threads
 
 source ~/.bashrc
 
@@ -247,7 +248,7 @@ IMPORTANT: All paths in DNAscan end with "/"
 
 #### Applying filters to the called variants
 
-DNAscan uses bcftools to filter the variants. It only selects variants for which the expression provided is true. A few examples follow. Complete details about how to write an expression can be found in the bcftool manual [LINK](https://samtools.github.io/bcftools/bcftools.html#expressions).  
+DNAscan uses bcftools to filter the variants. It only selects variants for which the expression provided is true. A few examples follow. Complete details about how to write an expression can be found in the bcftools manual [LINK](https://samtools.github.io/bcftools/bcftools.html#expressions).  
 
 Filtering calls for which genotype quality is > then 30:
 
