@@ -1347,7 +1347,7 @@ if annotation:
     else:
 
         os.system(
-            "%stable_annovar.pl  --thread %s --vcfinput %s %s -buildver %s -remove -protocol %s -operation %s -nastring . --outfile %s/annovar.vcf"
+            "perl %stable_annovar.pl  --thread %s --vcfinput %s %s -buildver %s -remove -protocol %s -operation %s -nastring . --outfile %s/annovar.vcf"
             % (path_annovar, num_cpu, variant_results_file, path_annovar_db,
                reference, annovar_protocols, annovar_operations, out))
         if not debug and not alsgenescanner:
