@@ -1195,7 +1195,7 @@ if variantcalling:
                         % (path_tabix, out, path_tabix, out))
 
                     os.system(
-                        "%sjava -jar %sgatkpackage-4.1.9.0-local.jar MergeVcfs -R %s -I %sSNPs_only.recode.vcf.gz -I %sindels_only.recode.vcf.gz -O  %s%s.vcf "
+                        "%sjava -jar %sgatk-package-4.1.9.0-local.jar MergeVcfs -R %s -I %sSNPs_only.recode.vcf.gz -I %sindels_only.recode.vcf.gz -O  %s%s.vcf "
                         % (path_java, path_gatk, path_reference, out, out, out,
                            sample_name))
 
