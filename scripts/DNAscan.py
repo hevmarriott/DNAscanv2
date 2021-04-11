@@ -114,6 +114,8 @@ path_expansionHunter = paths_configs.path_expansionHunter
 
 path_reference = paths_configs.path_reference
 
+path_reference_dict = paths_configs.path_reference_dict
+
 path_expansionHunter_jsons = paths_configs.path_expansionHunter_jsons
 
 path_manta = paths_configs.path_manta
@@ -1195,8 +1197,8 @@ if variantcalling:
                         % (path_tabix, out, path_tabix, out))
 
                     os.system(
-                        "%sjava -jar %sgatk-package-4.1.9.0-local.jar MergeVcfs -R %s -I %sSNPs_only.recode.vcf.gz -I %sindels_only.recode.vcf.gz -O  %s%s.vcf "
-                        % (path_java, path_gatk, path_reference, out, out, out,
+                        "%sjava -jar %sgatk-package-4.1.9.0-local.jar MergeVcfs -R %s -D %s -I %sSNPs_only.recode.vcf.gz -I %sindels_only.recode.vcf.gz -O  %s%s.vcf "
+                        % (path_java, path_gatk, path_reference, path_reference_dict, out, out, out,
                            sample_name))
 
                     os.system(
