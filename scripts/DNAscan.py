@@ -66,8 +66,6 @@ from argparse import RawTextHelpFormatter
 
 #filter_string = paths_configs.filter_string
 
-path_iobio = paths_configs.path_iobio
-
 path_gene_list = paths_configs.path_gene_list
 
 port_num = paths_configs.port_num
@@ -233,7 +231,7 @@ parser.add_argument(
     action="store_true",
     dest="iobio",
     help=
-    'if this flag is set the iobio services will be started at the end of the analysis (Default = "False")',
+    'if this flag is set the iobio service links will be provided at the end of the analysis (Default = "False")',
     default=False)
 
 parser.add_argument(
@@ -1738,22 +1736,18 @@ if iobio:
 
     else:
 
-        os.system("cd %s ; nohup python3 -m http.server %s  >/dev/null 2>&1 &"
-                  % (path_iobio, port_num))
-
         os.system("touch  %slogs/iobio.log" % (out))
 
         print(
-            "\n\nIobio services have been started at http://localhost:%s\n\nCopy and paste http://localhost:%s to select the service (vcf, bam, gene) and upload your data into the selected service\n\nIf you want to explore your variant calling results please copy and paste the following URL into your browser and upload the vcf file (../%s%s_sorted.vcf.gz):\n\n"
-            % (port_num, port_num, out, sample_name),
+            "\n\nIobio services can now be started. Select the service by copying and pasting the relevant iobio URLs into your browser (https://vcf.iobio.io, https://bam.iobio.io and/or https://gene.iobio.io) and upload your data into the selected service\n\nIf you want to explore your variant calling results please copy and paste the following URL into your browser and upload the vcf file (../%s%s_sorted.vcf.gz):\n\n"
+            % (out, sample_name),
             end='',
             flush=True)
 
         if "annovar.log" in os.listdir(out + "logs"):
 
             print(
-                "http://localhost:%s/gene.iobio/?species=Human&rel0=proband&rel1=mother&rel2=father&genes="
-                % (port_num),
+                "https://gene.iobio.io/?species=Human&rel0=proband&rel1=mother&rel2=father&genes=",
                 end='',
                 flush=True)
 
@@ -1780,7 +1774,7 @@ if iobio:
 
         else:
 
-            print("http://localhost:%s/gene.iobio/" % (port_num))
+            print("https://gene.iobio.io")
 
 if alsgenescanner:
 
