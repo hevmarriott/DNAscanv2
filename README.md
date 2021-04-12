@@ -580,6 +580,11 @@ And then, if you want to install samtools for example:
 ```bash
 conda install samtools
 ```
+And add samtools to paths_configs.py:
+```bash
+path_samtools = "path/to/miniconda3/envs/DNAscan-env-name/bin/
+```
+NOTE: if using Miniconda3, paths to all binary dependencies end in bin/
 
 ##### Download Annovar
 
