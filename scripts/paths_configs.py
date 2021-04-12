@@ -81,8 +81,6 @@ path_bed = "data/test_data.bed"
 #hg19 can be downloaded from http://hgdownload.cse.ucsc.edu/goldenPath/hg19/
 path_reference = ""
 
-path_reference_dict = ""
-
 #hg19 index can be downloaded from ftp://ftp.ccb.jhu.edu/pub/data/hisat_indexes/hg19_hisat.tar.gz
 #the index can be created running "./$path_hisat/hisat-build $path_reference index_base"
 path_hisat_index = ""
