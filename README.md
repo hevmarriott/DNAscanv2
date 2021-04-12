@@ -2,7 +2,7 @@
 
 # DNAscan
 ```diff
-+TO BE NOTED: We are always working to improve DNAscan so any bug reports, suggestions, feedbacks would be highly welcome. 
++TO BE NOTED: We are always working to improve DNAscan so any bug reports, suggestions and general feedback would be highly welcome. 
 ```
 ## Table of Contents
 1. [Introduction](#introduction)
@@ -35,7 +35,7 @@ Figure 1. Central panel: Pipeline overview. DNAscan accepts sequencing data, and
 
 ## Citation
 
-[Alfredo Iacoangeli et al. DNAscan: a fast, computationally and memory efficient bioinformatics pipeline for analysis of DNA next-generation-sequencing data. bioRxiv, 2018](https://www.biorxiv.org/content/biorxiv/early/2018/02/18/267195.full.pdf)
+[Alfredo Iacoangeli et al. DNAscan: personal computer compatible NGS analysis, annotation and visualisation. BMC Bioinformatics, 2019](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2791-8)
 
 ## Documentation
 
@@ -53,7 +53,7 @@ Figure 1. Central panel: Pipeline overview. DNAscan accepts sequencing data, and
 
 **Version:** 0.1
 
-Please make sure all dependencies are installed before running DNAscan. Instructions on how to install all dependencies are available in the following chapter. However a bash script to set up all dependencies (Annovar and GATK need a manual registration and download step) is available in scripts.
+Please make sure all dependencies are installed before running DNAscan. Instructions on how to install all dependencies are available in the following chapter. However, a bash script to set up all dependencies (Annovar and GATK need a manual download and registration step) is available in scripts.
 
 #### Local Deployment
 
@@ -63,12 +63,12 @@ To obtain DNAscan please use git to download the most recent development tree:
 git clone https://github.com/KHP-Informatics/DNAscan.git
 ```
 
-Once you have downloaded DNAscan, you can set up all needed dependencies running the install_dependencies.sh script available in DNAscan/scripts. Before running install_dependencies.sh please download and uncompress Annovar by registering at the following [link](http://download.openbioinformatics.org/annovar_download_form.php) and download GATK 4.1.9.0 at the following [link](https://github.com/broadgsa/gatk/releases). Install_dependencies.sh will install all software dependencies as well as hg19 reference genome and its hisat2 and bwa indexes (these jobs run in the background and will finish after the script ends) as well as update paths_configs.py. 
+Once you have downloaded DNAscan, you can set up all needed dependencies running the install_dependencies.sh script available in DNAscan/scripts. Before running install_dependencies.sh please download and uncompress Annovar by registering at the following [link](http://download.openbioinformatics.org/annovar_download_form.php) and unzip GATK 4.1.9.0 after downloading at the following [link](https://github.com/broadinstitute/gatk/releases/download/4.1.9.0/gatk-4.1.9.0.zip). Install_dependencies.sh will install all software dependencies, the hg19 reference genome and its hisat2 and bwa indexes (these jobs run in the background and will finish after the script ends) and update paths_configs.py accordingly. 
 
 ```bash
 
 bash scripts/install_dependencies.sh /path/to/set_up/directory/ /path/to/DNAscan/directory/ /path/to/annovar/directory/ /path/to/gatk-
-4.1.9.0/ $num_threads
+4.1.9.0/directory/ $num_threads
 
 source ~/.bashrc
 
@@ -80,11 +80,11 @@ IMPORTANT: if you want to use the intensive mode or the annotation step of DNAsc
 The easiest way to get started with DNAscan is to use its Docker image:
 
 ```bash
-sudo docker run  -v /path/to/your/data_folder:/container/path/where/you/want/your/data [-p 8080:8080] --storage-opt size=50G  -it compbio/dnascan /bin/bash
+sudo docker run  -v /path/to/your/data_folder:/container/path/where/you/want/your/data --storage-opt size=50G  -it compbio/dnascan /bin/bash
 ```
 Please set the needed container size taking into account the "Minimum requirements".
 
-The -v option adds your data folder (assuming you have some data to run DNAscan on), -p mirrors the container port 8080 to your host port 8080. This will be necessary if you want to use the iobio services.
+The -v option adds your data folder (assuming you have some data to run DNAscan on).
 The --storage-opt size=Ngigas option defines the maximum size of the container, setting it to N gigabytes. This number would depend on you plans. If you want to perform annotation, the databases used by DNAscan (clinvar,CADD,etc) are about 350G. We recommend N = 500 if you want to install the whole pipeline (including annotation). To this number you should add what you need for your analysis, e.g. if you are planning to download data, the size of your data to analyse etc. A way to workaround this is to use the mirrored host folder as outdir for your analysis and as annovar folder. This folder does not have a size limit. 
 
 IMPORTANT: To detach from the container without stopping it, use Ctrl+p, Ctrl+q.
@@ -116,7 +116,7 @@ After installing docker run an Ubuntu image:
 
 ```bash
 
-docker run -v /path/to/your/data_folder:/container/path/where/you/want/your/data [-p 8080:8080] -it [--storage-opt size=500G] ubuntu /bin/bash 
+docker run -v /path/to/your/data_folder:/container/path/where/you/want/your/data  -it [--storage-opt size=500G] ubuntu /bin/bash 
 
 ```
 
@@ -132,9 +132,9 @@ git clone https://github.com/KHP-Informatics/DNAscan.git
 
 cd DNAscan
 
-#By dafault install_dependencies.sh downloads the following Annovar databases: Exac, Refgene, Dbnsfp, Clinvar and Avsnp. If you wish to download the CADD database (about 350G) please uncomment the appropiete line. If you are not interested in performing annotation, please # the annovar lines in the install_dependencies.sh script. 
+#By dafault install_dependencies.sh downloads the following Annovar databases: Exac, Refgene, Dbnsfp, Clinvar and Avsnp. If you wish to download the CADD database (about 350G) please uncomment the appropiate line. If you are not interested in performing annotation, please # the annovar lines in the install_dependencies.sh script. 
 
-bash scripts/install_dependencies.sh /path/to/set_up/directory/ /path/to/DNAscan/directory/ /path/to/annovar/directory/ /path/to/gatk-4.1.9.0/ $num_threads
+bash scripts/install_dependencies.sh /path/to/set_up/directory/ /path/to/DNAscan/directory/ /path/to/annovar/directory/ /path/to/gatk-4.1.9.0/directory/ $num_threads
 
 source ~/.bashrc
 
@@ -142,7 +142,7 @@ source ~/.bashrc
 
 ### Usage
 
-IMPORTANT: DNAscan.py is the main script performing the analyses. It must be in the same folder as paths_configs.py. Before running DNAscan please modify paths_configs.py to match your dependencies deplyment.
+IMPORTANT: DNAscan.py is the main script performing the analyses. It must be in the same folder as paths_configs.py. Before running DNAscan please modify paths_configs.py to match your dependencies deployment.
 IMPORTANT2: All paths in DNAscan end with "/"
 
 Its basic use requires the following options:
@@ -159,8 +159,8 @@ Its basic use requires the following options:
  The desired pipeline stages are performed according to the optional arguments selected:
  
  ```bash
-  -filter_string FILTER_STRING  bcftools filter string, eg GQ>20 & DP>10 (Default = "")
-  -iobio                if this flag is set iobio services will be started at the end of the analysis (Default = "False")
+  -filter_string FILTER_STRING  bcftools filter string, eg GQ>20 & DP>10 (Default = ""QUAL > 1 & QUAL / INFO/AO > 10 & SAF > 0 & SAR > 0 & RPR > 1 & RPL > 1"")
+  -iobio                if this flag is set the iobio service links will be provided at the end of the analysis (Default = "False")
   -alignment            if this flag is set the alignment stage will be performed (Default = "False")
   -expansion            if this flag is set DNAscan will look for the expansions described in the json folder described in paths_configs.py  (Default = "False"). It requires a path to a folder containing the json repeat-specification files to be specified in paths_configs.py
   -SV                   if this flag is set the structural variant calling stage will be performed (Default = "False") 
@@ -183,7 +183,7 @@ Also, one of the three analysis modes can be chosen with the -mode option:
 -mode  MODE            options are fast, normal, intensive [string] (default = "fast")
 
 ```
-Fast mode uses Hisat2 and Freebayes to quickly align and call variants. It is ideal if you are focusing your analysis on single nucleotide variants. Normal mode performs an alignment refinement using BWA on selected reads. This step improves the alignment of soft-clipped reads and reads containing small indels. It is recommended if your focus is on structural variants. Intensive mode adds a further indel calling step to the pipeline using GATK Haplotype Caller which improves the performance on small indels. If your analysis focuses on the discovery of non human material (e.g. viruses or bacteria) in your sequencing data, please note that that the selceted mode does not affect this step. A detailed description of the 3 modes can be found in the [DNAscan paper](https://www.biorxiv.org/content/biorxiv/early/2018/02/18/267195.full.pdf).  
+Fast mode uses Hisat2 and Freebayes to quickly align and call variants. It is ideal if you are focusing your analysis on single nucleotide variants. Normal mode performs an alignment refinement using BWA on selected reads. This step improves the alignment of soft-clipped reads and reads containing small indels. It is recommended if your focus is on structural variants. Intensive mode adds a further indel calling step to the pipeline using GATK Haplotype Caller which improves the performance on small indels. If your analysis focuses on the discovery of non human material (e.g. viruses or bacteria) in your sequencing data, please note that that the selceted mode does not affect this step. A detailed description of the 3 modes can be found in the [DNAscan paper](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2791-8).  
 
 Finally, a set of optional arguments can be used to customise the analysis:
 
@@ -232,7 +232,7 @@ For a complete list of options that can be used with these tools please see the 
 
 #### Usage example
 
-Let's assume we have human paired end whole exome sequening data in two fastq files and want to perform snvs/indels calling vs hg19, annotation and explore the results using the iobio services. The DNAscan command line would be:
+Let's assume we have human paired end whole exome sequencing data in two fastq files and want to perform snv/indels calling vs hg19, annotation and explore the results using the iobio services. The DNAscan command line would be:
 
  ```bash
 python3 /path/to/DNAscan/scripts/DNAscan.py -format fastq -in data1.fq.gz -in2 data2.fq.gz -reference hg19 -alignment -variantcalling -annotation -iobio -out /path/to/outdir/ -mode fast
@@ -290,7 +290,7 @@ python3 /path/to/DNAscan/scripts/DNAscan.py -format fastq -in data1.fq.gz -in2 d
 ```
 ##### List of genes
 
-You can restrict the analysis to a list of genes. In this case you only need to generate a list of genes (see example in DNAscan/data) and specify the path to it in paths_configs.py. No flags need to be used in this case and DNAscan will read (non-case-sensitive) the list and restrict the analsyis to the appropriate genome regions. 
+You can restrict the analysis to a list of genes. In this case you only need to generate a list of genes (see example in DNAscan/data) and specify the path to it in paths_configs.py. No flags need to be used in this case and DNAscan will read (non-case-sensitive) the list and restrict the analysis to the appropriate genome regions. 
 
  ```bash
 cat list_of_genes.txt
@@ -518,21 +518,22 @@ npm start
 #### List of dependencies
 
 Fast mode pipeline (ideal if focusing on SNVs):
-* Samtools >= 1.5
+* Samtools >= 1.10
 * HISAT2 >= 2.1.0
 * Freebayes >= 1.0.2
-* Python >= 3
+* Python >= 3 (if using Expansion Hunter, only versions 3.5.x, 3.6.x, >=3.7.0, >= 3.8.0 are supported - tested with 3.8.0)
+* Perl (tested with 5.16.3 x86_64-Linux)
 * Vcftools >= 0.1.13 
 * Bedtools2 >= 2.25
 * Samblaster >= 0.1.24
 * Sambamba >= 0.6.6
 * Manta 1.6.0 (optional, needed only if interested in structural variants)
 * ExpansionHunter >= 2.0.9 (optional, needed only if interested in known motif expansions)
-* Bcftools >= 1.3 (optional, needed only if interested in performing custome variant filtering and calls report)
+* Bcftools >= 1.10 (optional, needed only if interested in performing custome variant filtering and calls report)
 * Annovar "Version >= $Date: 2016-02-01 00:11:18 -0800 (Mon, 1 Feb 2016)" (optional, needed only if interested in performing variant annotation)
 
 Normal mode pipeline (better performance on indels and SVs):
-* BWA 0.7.15 
+* BWA 0.7.17
 
 Intensive mode pipeline (top performance on indels):
 * Genome Analysis Toolkit 4.1.9.0
@@ -541,12 +542,8 @@ Tools needed for generating graphical reports
 * RTG Tools >= 3.6.2 
 * Multiqc >= 1.2 
 
-Tools needed to allow an on-the-fly result interpretation 
-* Gene.IoBio platform >= 2.1 
-* Vcf.IoBio platform 
-* Bam.IoBio platform
 
-Tools needed for a container based deplyment 
+Tools needed for a container based deployment 
 * Docker >= 1.7.1
 * Singularity >= 2.2 
 
@@ -584,38 +581,6 @@ And then, if you want to install samtools for example:
 conda install samtools
 ```
 
-##### Download iobio services
-
-###### Gene.iobio
-
-Gene.iobio can be found at the Tony Di Sera github repo (https://github.com/tonydisera). Please use git:
-
-```bash
-mkdir /path/to/your/iobio/
-cd /path/to/your/iobio/
-git clone https://github.com/tonydisera/gene.iobio.git
-```
-
-###### Vcf.iobio
-
-Bam.iobio can be found at the Tony Di Sera (https://github.com/tonydisera) github repo. Please use git:
-
-```bash
-mkdir /path/to/your/iobio/
-cd /path/to/your/iobio/
-git clone https://github.com/tonydisera/vcf.iobio.io.git
-```
-
-###### Bam.iobio
-
-Bam.iobio can be found at the Chase Miller (https://github.com/chmille4) github repo. Please use git:
-
-```bash
-mkdir /path/to/your/iobio/
-cd /path/to/your/iobio/
-https://github.com/chmille4/bam.iobio.io.git
-```
-
 ##### Download Annovar
 
 A more complete documentation about how to set up and use Annovar can be found [here](http://annovar.openbioinformatics.org/en/latest/). However, in the following, there are some brief instructions on how to get Annovar and the necessary databases to use DNAscan annotation.
@@ -625,7 +590,7 @@ The latest version of Annovar can be downloaded [here](http://www.openbioinforma
 After you have downloaded Annovar:
 
 ```bash
-tar xvfz annovar.latest.tar.gz
+tar xzvf annovar.latest.tar.gz
 ```
 Now let's download some data bases for the DNAscan annotation step (assuming you want to work with hg19):
 
