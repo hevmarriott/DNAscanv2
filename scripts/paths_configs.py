@@ -30,10 +30,6 @@ path_to_db = ""
 
 dnascan_dir = ""
 
-path_gene_list = ""
-
-path_iobio = "iobio/"
-
 path_hisat = ""
 
 path_samtools = ""
