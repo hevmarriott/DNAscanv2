@@ -109,7 +109,7 @@ docker ps
 
 #### Building a Docker container from scratch
 
-You can easily set up your running deployment of DNAscan using docker. For instructutions about how to install docker see following.
+You can easily set up your running deployment of DNAscan using docker. For instructions about how to install docker see following.
 
 After installing docker run an Ubuntu image:
 
@@ -132,7 +132,7 @@ git clone https://github.com/KHP-Informatics/DNAscan.git
 
 cd DNAscan
 
-#By dafault install_dependencies.sh downloads the following Annovar databases: Exac, Refgene, Dbnsfp, Clinvar and Avsnp. If you wish to download the CADD database (about 350G) please uncomment the appropiate line. If you are not interested in performing annotation, please # the annovar lines in the install_dependencies.sh script. 
+#By default install_dependencies.sh downloads the following Annovar databases: Exac, Refgene, Dbnsfp, Clinvar and Avsnp. If you wish to download the CADD database (about 350G) please uncomment the appropiate line. If you are not interested in performing annotation, please # the annovar lines in the install_dependencies.sh script. 
 
 bash scripts/install_dependencies.sh /path/to/set_up/directory/ /path/to/DNAscan/directory/ /path/to/annovar/directory/ /path/to/gatk-4.1.9.0/directory/ $num_threads
 
@@ -200,7 +200,7 @@ Finally, a set of optional arguments can be used to customise the analysis:
 
 #### How to make the read mappers and variant callers use custom options
 
-The file paths_configs.py in DNAscan_installation_folder/scripts can be used for this purpose. In paths_configs.py there is a section where a string of options can be passed to the read mappers (Hisat2 and BWA) and the variant callers (Freebayes and GATK HC):
+The file paths_configs.py in DNAscan/scripts can be used for this purpose. In paths_configs.py there is a section where a string of options can be passed to the read mappers (Hisat2 and BWA) and the variant callers (Freebayes and GATK HC):
 
  ```bash
  #custom tool options
@@ -311,7 +311,7 @@ Let's assume we have human paired end whole exome sequencing data in two fastq f
  
 python3 scripts/analyse_list_of_samples.py -option_string "-format fastq -reference hg19 -alignment -variantcalling -mode fast" -out_dir /path/to/where/you/want/the/analysis/to/take/place/ -sample_list extras/fastq_sample_list.txt -format fastq -paired 1 
 ```
-The analyse_list_of_samples.py takes as input a file containing the input file of one sample per line (tab separated in case of 2 paired end fastq files per sample), the option you want to pass to DNAscan between quotation marks, the input file format and whether or not (1 or 0) the data are paired-end reads. Two sample lists of input files are in DNAscan/extras
+The analyse_list_of_samples.py takes  file containing the input file of one sample per line as input (tab separated in case of 2 paired end fastq files per sample), the option you want to pass to DNAscan between quotation marks, the input file format and whether or not (1 or 0) the data are paired-end reads. Two sample lists of input files are in DNAscan/extras.
 
 ### ALSgeneScanner
 
@@ -584,7 +584,7 @@ And add samtools to paths_configs.py:
 ```bash
 path_samtools = "path/to/miniconda3/envs/DNAscan-env-name/bin/
 ```
-NOTE: if using Miniconda3, paths to all binary dependencies end in bin/
+NOTE: if using Miniconda3 to install dependencies, paths to all binary dependencies end in bin/ as shown above.
 
 ##### Download Annovar
 
