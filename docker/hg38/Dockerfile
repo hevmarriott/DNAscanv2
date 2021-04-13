@@ -5,15 +5,16 @@
 
 FROM ubuntu:latest
 MAINTAINER Alfredo Iacoangeli "alfredo.iacoangeli@kcl.ac.uk"
-
+SHELL ["/bin/bash", "-c"]
 RUN apt-get update
 RUN apt-get install -y git
-RUN cd /home/
-RUN git clone https://github.com/KHP-Informatics/DNAscan.git
+RUN apt-get install -y bash
+RUN cd $PWD
+RUN git clone https://github.com/hevmarriott/DNAscan.git
 RUN cd DNAscan
-RUN bash scripts/install_dependencies_hg38_docker.sh /home/DNAscan/local/ /home/DNAscan/ 
+RUN bash DNAscan/scripts/install_dependencies_hg38_docker.sh $PWD $PWD/DNAscan/ 
 RUN source ~/.bashrc
 
-WORKDIR /home/DNAscan/
+WORKDIR $PWD/DNAscan/
 
-ENTRYPOINT cat /home/DNAscan/docker/welcome_message.txt
+ENTRYPOINT cat $PWD/DNAscan/docker/welcome_message.txt
