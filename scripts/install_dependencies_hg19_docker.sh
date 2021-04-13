@@ -67,7 +67,7 @@ conda install -y bwa=0.7.17
 
 conda install -y rtg-tools=3.12
 
-conda install -y multiqc=1.10.1
+conda install -y multiqc>=1.2
 
 conda install -y fastqc=0.11.9
 
@@ -119,10 +119,23 @@ echo export PATH=$INSTALL_DIR/manta/bin:$PATH >> ~/.bashrc
 
 cd $DNASCAN_DIR
 
-sed "s|path_reference = \"\"|path_reference = \"$DNASCAN_DIR\/hg19\/hg19.fa\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
+sed "s|path_reference = \"\"|path_reference = \"$DNASCAN_DIR\/hg19\/hg19.fa\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
 
 sed "s|path_hisat_index = \"\"|path_hisat_index = \"$DNASCAN_DIR\/hg19\/hg19\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
-sed "s|path_bwa_index = \"\"|path_bwa_index = \"$DNASCAN_DIR\/hg19\/hg19.fa\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
+sed "s|path_bwa_index = \"\"|path_bwa_index = \"$DNASCAN_DIR\/hg19\/hg19.fa\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
 
+
+mv scripts/paths_configs.py_temp scripts/paths_configs.py
+
+chmod +x scripts/*
+
+export PATH=$DNASCAN_DIR/scripts/:$PATH
+
+echo export PATH=$DNASCAN_DIR/scripts/:$PATH >> ~/.bashrc
+
+echo "###########################################IMPORTANT######################################################"
+echo "Hisat2-build and bwa-index are still creating their indexes. Please wait untill they complete their task."
+echo "You can check whether or not they are still running using the 'top' command"
+echo "##########################################################################################################"
 
