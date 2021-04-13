@@ -99,23 +99,13 @@ apt-get install -y -qq bzip2 gcc g++ make python zlib1g-dev
 
 cd $INSTALL_DIR
 
-mkdir manta
+wget https://github.com/Illumina/manta/releases/download/v1.6.0/manta-1.6.0.centos6_x86_64.tar.bz2
 
-cd manta
+tar -xjf manta-1.6.0.centos6_x86_64.tar.bz2
 
-wget https://github.com/Illumina/manta/releases/download/v1.6.0/manta-1.6.0.release_src.tar.bz2
+export PATH=$INSTALL_DIR/manta-1.6.0.centos6_x86_64/bin:$PATH
 
-tar -xjf manta-1.6.0.release_src.tar.bz2
-
-mkdir build && cd build
-
-../manta-1.6.0.release_src/configure --jobs=4 --prefix=$INSTALL_DIR/manta/
-
-make -j4 install
-
-export PATH=$INSTALL_DIR/manta/bin:$PATH
-
-echo export PATH=$INSTALL_DIR/manta/bin:$PATH >> ~/.bashrc
+echo export PATH=$INSTALL_DIR/manta-1.6.0.centos6_x86_64/bin:$PATH >> ~/.bashrc
 
 cd $DNASCAN_DIR
 
