@@ -13,6 +13,8 @@ apt-get install -y vim
 
 apt-get install -y python3
 
+apt-get install -y perl
+
 apt-get install -y wget bzip2
 
 apt-get install -y ttf-dejavu
@@ -20,8 +22,6 @@ apt-get install -y ttf-dejavu
 mkdir $INSTALL_DIR
 
 mkdir $INSTALL_DIR/humandb
-
-cd $DNASCAN_DIR
 
 cd $INSTALL_DIR
 
@@ -43,33 +43,33 @@ conda config --add channels r
 
 conda config --add channels bioconda
 
-conda install -y samtools
+conda install -y python=3.8.0
 
-conda install -y freebayes
+conda install -y samtools>=1.10
 
-conda install -y bedtools
+conda install -y freebayes=1.0.2
 
-conda install -y vcftools
+conda install -y bedtools2>=2.25
 
-conda install -y bcftools
+conda install -y vcftools>=0.1.13
 
-conda install -y gatk
+conda install -y bcftools>=1.10
 
-conda install -y hisat2
+conda install -y hisat2=2.2.1
 
-conda install -y bwa
+conda install -y bwa=0.7.17
 
-conda install -y rtg-tools
+conda install -y rtg-tools=3.12
 
-conda install -y multiqc
+conda install -y multiqc>=1.2
 
-conda install -y fastqc
+conda install -y fastqc=0.11.9
 
-conda install -y expansionhunter
+conda install -y expansionhunter=4.0.2
 
-conda install -y sambamba
+conda install -y sambamba>=0.6.6
 
-conda install -y samblaster
+conda install -y samblaster>=0.1.24
 
 cd $DNASCAN_DIR
 
@@ -113,24 +113,21 @@ echo export PATH=$INSTALL_DIR/manta/bin:$PATH >> ~/.bashrc
 
 cd $DNASCAN_DIR
 
-mkdir iobio
+sed "s|path_reference = \"\"|path_reference = \"$DNASCAN_DIR\/hg38\/hg38.fa\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
 
-cd iobio
+sed "s|path_hisat_index = \"\"|path_hisat_index = \"$DNASCAN_DIR\/hg38\/hg38\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
-git clone https://github.com/tonydisera/gene.iobio.git
+sed "s|path_bwa_index = \"\"|path_bwa_index = \"$DNASCAN_DIR\/hg38\/hg38.fa\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
 
-git clone https://github.com/tonydisera/vcf.iobio.io.git
+mv scripts/paths_configs.py_temp scripts/paths_configs.py
 
-git clone https://github.com/chmille4/bam.iobio.io.git
+chmod +x scripts/*
 
-cd ..
+export PATH=$DNASCAN_DIR/scripts/:$PATH
 
-cd $DNASCAN_DIR
+echo export PATH=$DNASCAN_DIR/scripts/:$PATH >> ~/.bashrc
 
-sed "s|path_reference = \"\"|path_reference = \"$DNASCAN_DIR\/hg38\/hg38.fa\"|" scripts/paths.py > scripts/paths.py_temp
-
-sed "s|path_hisat_index = \"\"|path_hisat_index = \"$DNASCAN_DIR\/hg38\/hg38\"|" scripts/paths.py_temp > scripts/paths.py
-
-sed "s|path_bwa_index = \"\"|path_bwa_index = \"$DNASCAN_DIR\/hg38\/hg38.fa\"|" scripts/paths.py > scripts/paths.py_temp
-
-
+echo "###########################################IMPORTANT######################################################"
+echo "Hisat2-build and bwa-index are still creating their indexes. Please wait untill they complete their task."
+echo "You can check whether or not they are still running using the 'top' command"
+echo "##########################################################################################################"
