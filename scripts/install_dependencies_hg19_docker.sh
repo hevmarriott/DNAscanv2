@@ -13,6 +13,8 @@ apt-get install -y vim
 
 apt-get install -y python3
 
+apt-get install -y perl
+
 apt-get install -y wget bzip2
 
 apt-get install -y ttf-dejavu
@@ -43,33 +45,33 @@ conda config --add channels r
 
 conda config --add channels bioconda
 
-conda install -y samtools
+conda install -y python=3.8.0
 
-conda install -y freebayes
+conda install -y samtools>=1.10
 
-conda install -y bedtools
+conda install -y freebayes>=1.0.2
 
-conda install -y sambamba
+conda install -y bedtools2>=2.25.0
 
-conda install -y samblaster
+conda install -y sambamba>=0.6.6
 
-conda install -y vcftools
+conda install -y samblaster>=0.1.24
 
-conda install -y bcftools
+conda install -y vcftools>=0.1.13
 
-conda install -y gatk
+conda install -y bcftools>=1.10.0
 
-conda install -y hisat2
+conda install -y hisat2>=2.1.0
 
-conda install -y bwa
+conda install -y bwa=0.7.17
 
-conda install -y rtg-tools
+conda install -y rtg-tools=3.12
 
-conda install -y multiqc
+conda install -y multiqc=1.10.1
 
-conda install -y fastqc
+conda install -y fastqc=0.11.9
 
-conda install -y expansionhunter
+conda install -y expansionhunter=4.0.2
 
 cd $DNASCAN_DIR
 
@@ -117,24 +119,10 @@ echo export PATH=$INSTALL_DIR/manta/bin:$PATH >> ~/.bashrc
 
 cd $DNASCAN_DIR
 
-mkdir iobio
+sed "s|path_reference = \"\"|path_reference = \"$DNASCAN_DIR\/hg19\/hg19.fa\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
-cd iobio
+sed "s|path_hisat_index = \"\"|path_hisat_index = \"$DNASCAN_DIR\/hg19\/hg19\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
-git clone https://github.com/tonydisera/gene.iobio.git
-
-git clone https://github.com/tonydisera/vcf.iobio.io.git
-
-git clone https://github.com/chmille4/bam.iobio.io.git
-
-cd ..
-
-cd $DNASCAN_DIR
-
-sed "s|path_reference = \"\"|path_reference = \"$DNASCAN_DIR\/hg19\/hg19.fa\"|" scripts/paths.py > scripts/paths.py_temp
-
-sed "s|path_hisat_index = \"\"|path_hisat_index = \"$DNASCAN_DIR\/hg19\/hg19\"|" scripts/paths.py_temp > scripts/paths.py
-
-sed "s|path_bwa_index = \"\"|path_bwa_index = \"$DNASCAN_DIR\/hg19\/hg19.fa\"|" scripts/paths.py > scripts/paths.py_temp
+sed "s|path_bwa_index = \"\"|path_bwa_index = \"$DNASCAN_DIR\/hg19\/hg19.fa\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
 
