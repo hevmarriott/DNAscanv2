@@ -541,6 +541,7 @@ Intensive mode pipeline (top performance on indels):
 Tools needed for generating graphical reports 
 * RTG Tools >= 3.6.2 
 * Multiqc >= 1.2 
+* Fastqc >=0.11.9
 
 
 Tools needed for a container based deployment 
