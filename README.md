@@ -77,10 +77,10 @@ source ~/.bashrc
 #### Obtain with Docker
 
 IMPORTANT: if you want to use the intensive mode or the annotation step of DNAscan you need to register and download both Annovar and GATK 4.1.9.0. Remember to mirror into the container the folder where you have deployed these using the -v flag or copy them inside the container using the docker cp command as described below.
-The easiest way to get started with DNAscan is to use its Docker image:
+The easiest way to get started with DNAscan is to use its Docker image, which has all dependencies and the reference genome build and BWA/Hisat2 indexes installed, except for Annovar and GATK 4.1.9.0:
 
 ```bash
-sudo docker run  -v /path/to/your/data_folder:/container/path/where/you/want/your/data --storage-opt size=50G  -it compbio/dnascan /bin/bash
+sudo docker run  -v /path/to/your/data_folder:/container/path/where/you/want/your/data --storage-opt size=50G  -it hevmarriott/dnascan_hg19 OR hevmarriott/dnascan_hg38 /bin/bash
 ```
 Please set the needed container size taking into account the "Minimum requirements".
 
@@ -120,7 +120,7 @@ docker run -v /path/to/your/data_folder:/container/path/where/you/want/your/data
 
 ```
 
-Then install git, download this repository and run the install_dependencies.sh script:
+Then install git, download this repository and run the install_dependencies.sh script, which will install all dependencies including Annovar and GATK 4.1.9.0, and the referecne genome build and BWA/Hisat2 indexes:
 
 ```bash
 
