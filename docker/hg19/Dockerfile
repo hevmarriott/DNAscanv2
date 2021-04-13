@@ -5,7 +5,7 @@
 
 FROM ubuntu:latest
 MAINTAINER Alfredo Iacoangeli "alfredo.iacoangeli@kcl.ac.uk"
-
+SHELL ["/bin/bash", "-c"]
 RUN apt-get update
 RUN apt-get install -y git
 RUN cd $PWD
