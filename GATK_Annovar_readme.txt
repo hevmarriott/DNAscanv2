@@ -1,9 +1,9 @@
-If you are reading this file you have already installed all DNAscan dependencies except GATK 3.8 and Annovar.
-These two software require registration to be used. Please register and download Annovar at http://www.openbioinformatics.org/annovar/annovar_download_form.php and GATK 3.8 at https://software.broadinstitute.org/gatk/download/ .
+If you are reading this file you have already installed all DNAscan dependencies except GATK 4.1.9.0 and Annovar.
+Please download GATK-4.1.9.0 at https://github.com/broadinstitute/gatk/releases/download/4.1.9.0/gatk-4.1.9.0.zip and unzip in the desired directory. Annovar requires registration to be used - please register and download Annovar at http://www.openbioinformatics.org/annovar/annovar_download_form.php
 
-After succefully registering and downloading the two softwares you can either change the appropiate paths in paths.py, follow the installation instructions on the software websites and download the needed Annovar databases (see below) or extract annovar.tar download and run the following command:
+After successfully downloading the two softwares you can either change the appropiate paths in paths_configs.py, follow the installation instructions on the software websites and download the needed Annovar databases (see below) or extract annovar.tar download and run the following command:
 
-bash /path/to/DNAscan/scripts/install_annovar_and_gatk.sh $path_to_setup_dir $path_to_DNASCAN_dir $path_to_annovar $path_to_gatk.bz2_download_dir
+bash /path/to/DNAscan/scripts/install_annovar_and_gatk.sh $path_to_setup_dir $path_to_DNASCAN_dir $path_to_annovar $path_to_gatk_directory
 
 To download the Annovar databases use the following commands replacing the appropiate paths:
 
@@ -15,7 +15,7 @@ $ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar exac0
 
 $ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar dbnsfp30a $DNAscan_INSTALL_DIR/humandb/
 
-$ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar clinvar_20170130 $DNAscan_INSTALL_DIR/humandb/
+$ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar clinvar_20210123 $DNAscan_INSTALL_DIR/humandb/
 
 $ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar avsnp147 $DNAscan_INSTALL_DIR/humandb/
 
