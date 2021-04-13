@@ -45,6 +45,8 @@ conda config --add channels r
 
 conda config --add channels bioconda
 
+conda config --add channels zechxu
+
 conda install -y python=3.8.0
 
 conda install -y samtools>=1.10
