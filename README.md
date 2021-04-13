@@ -119,8 +119,9 @@ After installing docker run an Ubuntu image:
 docker run -v /path/to/your/data_folder:/container/path/where/you/want/your/data  -it [--storage-opt size=500G] ubuntu /bin/bash 
 
 ```
+Before you do this, make sure that you have downloaded and/or registered Annovar and GATK 4.1.9.0 if you want to run the normal/fast modes and perform annotation. 
 
-Then install git, download this repository and run the install_dependencies.sh script, which will install all dependencies including Annovar and GATK 4.1.9.0, and the referecne genome build and BWA/Hisat2 indexes:
+Then install git, download this repository and run the install_dependencies.sh script, which downloads the hg19 reference genome build and BWA/Hisat2 indexes as well as the Annovar databases:
 
 ```bash
 
