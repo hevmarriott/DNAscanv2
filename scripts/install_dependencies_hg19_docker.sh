@@ -51,7 +51,7 @@ conda install -y samtools>=1.10
 
 conda install -y freebayes>=1.0.2
 
-conda install -y bedtools >=2.25.0
+conda install -y bedtools>=2.25.0
 
 conda install -y sambamba>=0.6.6
 
