@@ -14,8 +14,6 @@ RUN cd DNAscan
 RUN bash scripts/install_dependencies_hg19_docker.sh /home/DNAscan/local/ /home/DNAscan/ 
 RUN source ~/.bashrc
 
-EXPOSE 8080
-
 WORKDIR /home/DNAscan/
 
 ENTRYPOINT cat /home/DNAscan/docker/welcome_message.txt
