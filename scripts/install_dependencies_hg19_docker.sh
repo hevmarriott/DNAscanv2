@@ -45,15 +45,13 @@ conda config --add channels r
 
 conda config --add channels bioconda
 
-conda config --add channels zechxu
-
 conda install -y python=3.8.0
 
 conda install -y samtools>=1.10
 
 conda install -y freebayes>=1.0.2
 
-conda install -y bedtools2>=2.25.0
+conda install -c zechxu -y bedtools2>=2.25.0
 
 conda install -y sambamba>=0.6.6
 
