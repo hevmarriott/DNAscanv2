@@ -19,6 +19,8 @@ apt-get install -y vim
 
 apt-get install -y python3
 
+apt-get install -y perl
+
 apt-get install -y ttf-dejavu
 
 apt-get install -y wget bzip2
@@ -63,31 +65,33 @@ conda config --add channels r
 
 conda config --add channels bioconda
 
-conda install -y samtools
+conda install -y python=3.8.0
 
-conda install -y freebayes
+conda install -y samtools=1.10
 
-conda install -y bedtools
+conda install -y freebayes>=1.0.2
 
-conda install -y vcftools
+conda install -y bedtools>=2.25.0
 
-conda install -y bcftools
+conda install -y vcftools>=0.1.13
 
-conda install -y hisat2
+conda install -y bcftools=1.10.2
 
-conda install -y bwa
+conda install -y hisat2>=2.1.0
 
-conda install -y rtg-tools
+conda install -y bwa=0.7.17
 
-conda install -y multiqc
+conda install -y rtg-tools=3.12
 
-conda install -y fastqc
+conda install -y multiqc>=1.2
 
-conda install -y expansionhunter
+conda install -y fastqc=0.11.9
 
-conda install -y sambamba
+conda install -y expansionhunter=4.0.2
 
-conda install -y samblaster
+conda install -y sambamba>=0.6.6
+
+conda install -y samblaster>0.1.24
 
 cd $DNASCAN_DIR
 
@@ -115,37 +119,13 @@ apt-get install -y -qq bzip2 gcc g++ make python zlib1g-dev
 
 cd $INSTALL_DIR
 
-mkdir manta
+wget https://github.com/Illumina/manta/releases/download/v1.6.0/manta-1.6.0.centos6_x86_64.tar.bz2
 
-cd manta
+tar -xjf manta-1.6.0.centos6_x86_64.tar.bz2
 
-wget https://github.com/Illumina/manta/releases/download/v1.6.0/manta-1.6.0.release_src.tar.bz2
+export PATH=$INSTALL_DIR/manta-1.6.0.centos6_x86_64/bin:$PATH
 
-tar -xjf manta-1.6.0.release_src.tar.bz2
-
-mkdir build && cd build
-
-../manta-1.6.0.release_src/configure --jobs=4 --prefix=$INSTALL_DIR/manta/
-
-make -j4 install
-
-export PATH=$INSTALL_DIR/manta/bin:$PATH
-
-echo export PATH=$INSTALL_DIR/manta/bin:$PATH >> ~/.bashrc
-
-cd $DNASCAN_DIR
-
-mkdir iobio
-
-cd iobio
-
-git clone https://github.com/tonydisera/gene.iobio.git
-
-git clone https://github.com/tonydisera/vcf.iobio.io.git
-
-git clone https://github.com/chmille4/bam.iobio.io.git
-
-cd ..
+echo export PATH=$INSTALL_DIR/manta-1.6.0.centos6_x86_64/bin:$PATH >> ~/.bashrc
 
 cd $DNASCAN_DIR
 
