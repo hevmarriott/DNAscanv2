@@ -636,13 +636,13 @@ annovar_operations = "g,f,f,f,f"
 **Singularity** is also a container project similar to Docker and does not require sudo privileges to run. This can be very important if you decide to use our framework on a machine for which you do not have such privileges. E.g. your institution HPC cluster. In this case you can use Singularity to convert the docker image into a singularity image and run a bash shell in the resulting Singularity container:
 
 ```bash 
-$ singularity shell docker://compbio/dnascan
+$ singularity shell docker://hevmarriott/dnascan_hg19 OR docker://hevmarriott/dnascan_hg38
 ```
 After starting the bash shell inside the singularity container you can find a working deployment of DNAscan in /DNAscan
 
 ```bash 
-$ Singularity.dnascan> cd /DNAscan
-$ Singularity.dnascan> cat /DNAscan/docker/welcome_message.txt
+$ Singularity.dnascan_hg19 OR .dnascan_hg38 > cd /DNAscan
+$ Singularity.dnascan_hg19 OR .dnascan_hg38 > cat /DNAscan/docker/welcome_message.txt
 ```
 
 
