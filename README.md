@@ -60,7 +60,7 @@ Please make sure all dependencies are installed before running DNAscan. Instruct
 To obtain DNAscan please use git to download the most recent development tree:
 
 ```bash
-git clone https://github.com/KHP-Informatics/DNAscan.git
+git clone https://github.com/hevmarriott/DNAscan.git
 ```
 
 Once you have downloaded DNAscan, you can set up all needed dependencies running the install_dependencies.sh script available in DNAscan/scripts. Before running install_dependencies.sh please download and uncompress Annovar by registering at the following [link](http://download.openbioinformatics.org/annovar_download_form.php) and unzip GATK 4.1.9.0 after downloading at the following [link](https://github.com/broadinstitute/gatk/releases/download/4.1.9.0/gatk-4.1.9.0.zip). Install_dependencies.sh will install all software dependencies, the hg19 reference genome and its hisat2 and bwa indexes (these jobs run in the background and will finish after the script ends) and update paths_configs.py accordingly. 
