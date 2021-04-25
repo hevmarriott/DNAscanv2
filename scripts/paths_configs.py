@@ -69,6 +69,8 @@ path_gatk = ""
 
 path_bed = "data/test_data.bed"
 
+path_gene_list = "data/list_of_genes.txt"
+
 #path_bed="/users/k1513213/brc_scratch/indels_project/gene_list_positions_sorted_no_overlap.bed"
 
 #hg19 can be downloaded from http://hgdownload.cse.ucsc.edu/goldenPath/hg19/
