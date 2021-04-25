@@ -68,8 +68,6 @@ from argparse import RawTextHelpFormatter
 
 path_gene_list = paths_configs.path_gene_list
 
-port_num = paths_configs.port_num
-
 path_vcftools = paths_configs.path_vcftools
 
 GATK_HC_custom_options = paths_configs.GATK_HC_custom_options
