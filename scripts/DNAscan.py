@@ -630,7 +630,7 @@ if BED or path_gene_list:
         
          print(
         "\nSplitting genomic regions into subsets of equal length to distribute work across available threads using user-defined bed file in paths_configs.py...\n"
-    )
+         )
 
         if path_gene_list:
 
