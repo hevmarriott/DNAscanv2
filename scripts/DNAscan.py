@@ -664,7 +664,7 @@ if BED or path_gene_list:
             #os.system("rm %stmp/%s%s" %(out,zero,str(i)))
 
             i += 1
-
+            
     elif BED == False:
 
         if path_gene_list:
