@@ -356,7 +356,7 @@ parser.add_argument(
     action="store_true",
     dest="debug",
     help=
-    'if this flag is set DNAscan will not delete intermediete and temporary files (Default = "False")',
+    'if this flag is set DNAscan will not delete intermediate and temporary files (Default = "False")',
     default=False)
 
 parser.add_argument(
@@ -613,7 +613,7 @@ if reference == "grch37" or  reference == "grch38" :
         
         annotation = False
     
-if BED or path_gene_list:
+if BED == True or path_gene_list:
 
     if path_bed:
 
