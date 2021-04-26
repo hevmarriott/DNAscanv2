@@ -517,15 +517,16 @@ print("\n################################################")
 
 # 5. Create working dir tree
 
+print(
+    "\nCreating working directory tree...\n"
+)
+
 os.system(
     "mkdir %s ; mkdir  %slogs ; mkdir  %sreports ; mkdir  %sresults ; mkdir %stmp"
     % (out, out, out, out, out))
 
-
-5.1
-
 print(
-                "############DNAscan Options############ \n\n DNAscan is running an anlysis with the following specifics:\n"
+                "############DNAscan Options############ \n\n DNAscan is running an analysis with the following specifics:\n"
             )
 
 options_log = open('%s/logs/options.log' %(out), 'w')
@@ -558,6 +559,10 @@ if reference == "grch37" or  reference == "grch38" :
     else:
         
         ref_hg = "hg38"
+        
+    print(
+        "\nSplitting genomic regions into subsets of equal length to distribute work across available threads...\n"
+    )
     
     os.system("zcat %s/exome_%s.bed.gz | sed 's/chr//g' | bgzip -c > %s/exome_%s.bed.gz" %(path_to_db,ref_hg,path_to_db,reference) )
     os.system("zcat %s/%s_gene_db.txt.gz | sed 's/chr//g' | bgzip -c > %s/%s_gene_db.txt.gz" %(path_to_db,ref_hg,path_to_db,reference) )
@@ -600,6 +605,10 @@ if reference == "grch37" or  reference == "grch38" :
     else:
         
         ref_hg = "hg38"
+        
+    print(
+        "\nSplitting genomic regions into subsets of equal length to distribute work across available threads...\n"
+    )
     
     os.system("zcat %s/exome_%s.bed.gz | sed 's/chr//g' | bgzip -c > %s/exome_%s.bed.gz" %(path_to_db,ref_hg,path_to_db,reference) )
     os.system("zcat %s/%s_gene_db.txt.gz | sed 's/chr//g' | bgzip -c > %s/%s_gene_db.txt.gz" %(path_to_db,ref_hg,path_to_db,reference) )
@@ -623,7 +632,7 @@ if BED or path_gene_list:
         if path_gene_list:
 
             print(
-                "\n\nWARNING: Both a bed file and a list of genes were provided. DNAscan will ignore the list of genes.\n\n"
+                "\n\nWARNING: Both a bed file and a list of genes were provided to split analysis regions. DNAscan will ignore the list of genes.\n\n"
             )
 
         os.system(
@@ -656,6 +665,10 @@ if BED or path_gene_list:
     elif BED == False:
 
         if path_gene_list:
+            
+            print(
+                "\n\nAs you have provided a gene list to DNAscan, it will now look for and restrict further analysis to those genes found in the sample by creating a custom bed file.\n\n"
+            )
 
             os.system(
                 "zgrep -iwf %s %s%s_gene_names.txt.gz | awk '{print $2}' > %smatched_genes.txt"
@@ -787,6 +800,10 @@ else:
 # 7. Remove duplicates command line.
 # The output from HISAT2 and BWA is piped into $samblaster_cmq during the alignment
 if rm_dup == "True":
+    
+    print(
+        "\nDuplicates will be removed from alignment output with HISAT2 (fast mode) or BWA-MEM (normal and intensive modes).\n"
+    )
 
     samblaster_cmq = "%ssamblaster --ignoreUnmated |" % (path_samblaster)
 
