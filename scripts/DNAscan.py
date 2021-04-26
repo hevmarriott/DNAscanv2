@@ -607,7 +607,7 @@ if reference == "grch37" or  reference == "grch38" :
         ref_hg = "hg38"
         
     print(
-        "\nSplitting genomic regions into subsets of equal length to distribute work across available threads...\n"
+        "\nAdapting the database provided (exome, gene_db or gene_list) to the reference genome...\n"
     )
     
     os.system("zcat %s/exome_%s.bed.gz | sed 's/chr//g' | bgzip -c > %s/exome_%s.bed.gz" %(path_to_db,ref_hg,path_to_db,reference) )
@@ -629,7 +629,7 @@ if BED or path_gene_list:
         # distribute the work across the available threads.
         
          print(
-        "\nSplitting genomic regions into subsets of equal length to distribute work across available threads...\n"
+        "\nSplitting genomic regions into subsets of equal length to distribute work across available threads using user-defined bed file in paths_configs.py...\n"
     )
 
         if path_gene_list:
@@ -670,7 +670,7 @@ if BED or path_gene_list:
         if path_gene_list:
             
             print(
-                "\nAs you have provided a gene list to DNAscan, it will now look for and restrict further analysis to those genes found in the sample...\n"
+                "\nAs you have provided a gene list to DNAscan, it will now look for and restrict further analysis to those genes found in each sample...\n"
             )
 
             os.system(
@@ -748,6 +748,10 @@ else:
     # analyses in several subprocesses
 
     if exome:
+        
+        print(
+        "\nSplitting exome regions into subsets of equal length to distribute work across available threads using user-defined bed file in paths_configs.py...\n"
+        )
 
         os.system("zcat %sdb/exome_%s.bed.gz > %stmp/exome_%s.bed" %
                   (dnascan_dir, reference, out, reference))
@@ -788,6 +792,10 @@ else:
                 i += 1
 
     else:
+        
+         print(
+        "\nSplitting genomic regions into subsets of equal length to distribute work across available threads by creating a bed file from the reference genome index...\n"
+         )
 
         os.system("cat %s.fai | awk '{print $1\"\t0\t\"$2}' > %sreference.bed"
                   % (path_reference, out))
@@ -1053,7 +1061,7 @@ if alignment:
         if format != "fastq":
 
             print(
-                "WARNING: Fastq format input data is requiered if you want to perform the alignment stage\n"
+                "WARNING: Fastq format input data is required if you want to perform the alignment stage\n"
             )
 
         if "alignment.log" in os.listdir(out + "logs"):
