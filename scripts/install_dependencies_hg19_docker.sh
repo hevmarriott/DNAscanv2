@@ -73,6 +73,8 @@ conda install -y fastqc=0.11.9
 
 conda install -y expansionhunter=4.0.2
 
+conda install -y wham=1.8.0
+
 cd $DNASCAN_DIR
 
 mkdir hg19
