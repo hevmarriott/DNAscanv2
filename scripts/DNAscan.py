@@ -30,7 +30,7 @@
 #   10.2 Freebayes snv and indel calling
 # 11. Perform variant hard filtering
 # 12. Perform known expansions search with ExpansionHunter
-# 13. Structural Variant calling
+# 13. Structural Variant calling with Manta and Whamg
 # 14. Annotation with Annovar
 # 15. Microbes screening
 #   15.1 Extract non human reads
@@ -113,6 +113,8 @@ path_reference = paths_configs.path_reference
 path_expansionHunter_jsons = paths_configs.path_expansionHunter_jsons
 
 path_manta = paths_configs.path_manta
+
+path_whamg = paths_configs.path_whamg
 
 path_bedtools = paths_configs.path_bedtools
 
@@ -253,7 +255,7 @@ parser.add_argument(
     action="store_true",
     dest="SV",
     help=
-    'if this flag is set the structural variant calling stage will be performed (Default = "False") ',
+    'if this flag is set the structural variant calling stage will be performed with Manta and Whamg (Default = "False") ',
     default=False)
 
 parser.add_argument(
