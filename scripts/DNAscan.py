@@ -928,6 +928,8 @@ if alignment:
 
                 os.system("%ssamtools view -H %ssorted.bam > %sheader.txt" %
                           (path_samtools, out, out))
+                
+                print("\nMerging HISAT2 and BWA-MEM aligned reads...\n")
 
                 os.system(
                     "%ssamtools merge -c -@ %s -f -h %sheader.txt %ssorted_merged.bam %ssorted.bam  %ssorted_bwa.bam"
@@ -1031,6 +1033,8 @@ if alignment:
 
                 os.system("%ssamtools view -H %ssorted.bam > %sheader.txt" %
                           (path_samtools, out, out))
+                
+                print("\nMerging HISAT2 and BWA-MEM aligned reads...\n")
 
                 os.system(
                     "%ssamtools merge -c -@ %s -f -h %sheader.txt %ssorted_merged.bam %ssorted.bam  %ssorted_bwa.bam"
@@ -1178,7 +1182,7 @@ if variantcalling:
                 while counter < int(num_cpu) + 1:
                     
                     print(
-                        "\nCalling indels with GATK Haplotype Caller on indel positions identified...\n"
+                        "\nCalling indels with GATK Haplotype Caller on indel positions identified by samtools mpileup...\n"
                     )
 
                     command = "%sjava -jar %sgatk-package-4.1.9.0-local.jar HaplotypeCaller -R %s -I %s -L %smpileup_positions%s.bed -O %sgatk_indels%s.vcf %s" % (
@@ -1262,7 +1266,7 @@ if variantcalling:
                     # with Freebayes and indels with GATK hc, resulting in two vcf files.
                     # For the annotation step these two files are merged together.
                     
-                    print("\nMerging the SNV (Freebayes) and indel (GATK Haplotype Caller) VCFs...\n")
+                    print("\nMerging the SNV (Freebayes) and indel (GATK Haplotype Caller) VCFs to enable downstream annotation to take place...\n")
 
                     os.system(
                         "%svcftools  --vcf %sfreebayes.vcf --minGQ 30 --minDP 2 --exclude-bed %smpileup_positions.bed  --recode --recode-INFO-all --out %sSNPs_only"
