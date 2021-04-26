@@ -9,7 +9,7 @@
 ################################################################
 # Script structure:
 # 1. Import python modules
-# 2. Define paths_configs viriables
+# 2. Define paths_configs variables
 # 3. Define options from command line
 # 4. Parse options from command line
 # 5. Create working dir tree
@@ -18,7 +18,7 @@
 # 8. Alignment
 #   8.1 Aligns paired end reads
 #       8.1.1 Fast mode alignment
-#       8.1.2 Normal and intesive mode alignment
+#       8.1.2 Normal and intensive mode alignment
 #   8.2 Aligns single end reads
 #       8.2.1 Fast mode alignment
 #       8.2.2 Normal and intesive mode alignment
@@ -33,7 +33,7 @@
 # 13. Structural Variant calling
 # 14. Annotation with Annovar
 # 15. Microbes screening
-#   15.1 Exctract non human reads
+#   15.1 Extract non human reads
 #   15.2 Identifies present non-human microbes
 #       15.2.1 Identifies present viruses
 #       15.2.2 Generates virus report
@@ -625,9 +625,12 @@ if reference == "grch37" or  reference == "grch38" :
 if BED or path_gene_list:
 
     if BED == True and path_bed:
-
         # splitting the analysis region into subsets of equal length to
         # distribute the work across the available threads.
+        
+         print(
+        "\nSplitting genomic regions into subsets of equal length to distribute work across available threads...\n"
+    )
 
         if path_gene_list:
 
@@ -667,7 +670,7 @@ if BED or path_gene_list:
         if path_gene_list:
             
             print(
-                "\n\nAs you have provided a gene list to DNAscan, it will now look for and restrict further analysis to those genes found in the sample by creating a custom bed file.\n\n"
+                "\nAs you have provided a gene list to DNAscan, it will now look for and restrict further analysis to those genes found in the sample...\n"
             )
 
             os.system(
@@ -802,7 +805,7 @@ else:
 if rm_dup == "True":
     
     print(
-        "\nDuplicates will be removed from alignment output with HISAT2 (fast mode) or BWA-MEM (normal and intensive modes).\n"
+        "\nDuplicates will be removed after alignment. If you want to change this, specify --rm-dup "False" in the command line.\n"
     )
 
     samblaster_cmq = "%ssamblaster --ignoreUnmated |" % (path_samblaster)
@@ -835,6 +838,10 @@ if alignment:
             # 8.1.1 Fast mode uses HISAT2 only to align all reads
 
             if mode == "fast":
+                
+                print(
+                    "\nPerforming paired read alignment with HISAT2 in fast mode...\n"
+                )
 
                 os.system(
                     "%shisat2 %s --no-spliced-alignment -p %s -x %s -1 %s -2 %s | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s  --tmpdir=%s -o %ssorted.bam  /dev/stdin"
@@ -845,6 +852,11 @@ if alignment:
                 bam_file = "%ssorted.bam" % (out)
 
                 os.system("touch  %slogs/alignment.log" % (out))
+                
+                print(
+                    "\nCompleted paired read alignment with HISAT2.\n"
+                )
+                
 
             # 8.1.2 Normal and intensive modes use HISAT2 to align all reads,
             # then soft-clipped and unaligned reads are realigned with BWA mem
@@ -873,6 +885,10 @@ if alignment:
                     rg_option_hisat2 = ""
 
                     rg_option_bwa = ""
+                    
+                print(
+                    "\nPerforming paired read alignment with HISAT2 in normal/intensive mode...\n"
+                )
                 print(
                     "%shisat2 %s %s  --no-softclip --no-spliced-alignment -p %s -x %s -1 %s -2 %s | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted.bam /dev/stdin; %ssamtools index -@ %s %ssorted.bam"
                     % (path_hisat, hisat_custom_options, rg_option_hisat2, num_cpu, path_hisat_index,
@@ -891,6 +907,9 @@ if alignment:
                 os.system(
                     "%ssamtools view -@ %s -bhf 4 %ssorted.bam | samtools bam2fq - > %sunaligned_reads.fq"
                     % (path_samtools, num_cpu, out, out))
+                print(
+                    "\nPerforming paired read alignment of soft-clipped and unaligned HISAT2 reads with BWA-MEM in normal/intensive mode...\n"
+                )
                 print(
                     "%sbwa mem %s %s -t %s %s %sunaligned_reads.fq | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted_bwa.bam  /dev/stdin ; %ssamtools index -@ %s %ssorted_bwa.bam "
                     % (path_bwa, bwa_custom_options, rg_option_bwa, num_cpu, path_bwa_index, out,
@@ -921,6 +940,10 @@ if alignment:
                 bam_file = "%ssorted_merged.bam" % (out)
 
                 os.system("touch  %slogs/alignment.log" % (out))
+                
+                print(
+                    "\nCompleted paired read alignment with HISAT2 and BWA-MEM.\n"
+                )
 
         # 8.2 Aligns single end reads
 
@@ -929,6 +952,10 @@ if alignment:
             # 8.2.1 Fast mode uses HISAT2 only to align all reads
 
             if mode == "fast":
+                
+                print(
+                    "\nPerforming single-end read alignment with HISAT2 in fast mode...\n"
+                )
 
                 os.system(
                     "%shisat2 %s --no-spliced-alignment -p %s -x %s -U %s | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted.bam /dev/stdin"
@@ -939,6 +966,10 @@ if alignment:
                 bam_file = "%ssorted.bam" % (out)
 
                 os.system("touch  %salignment.log" % (out))
+                
+                print(
+                    "\nCompleted single-end read alignment with HISAT2.\n"
+                )
 
             # 8.2.2 Normal and intensive modes use HISAT2 to align all reads,
             # then soft-clipped and unaligned reads are realigned with BWA mem
@@ -967,6 +998,10 @@ if alignment:
                     rg_option_hisat2 = ""
                     
                     rg_option_bwa = ""
+                
+                print(
+                    "\nPerforming single-end read alignment with HISAT2 in normal/intensive mode...\n"
+                )
 
                 os.system(
                     "%shisat2 %s --no-softclip --no-spliced-alignment -p %s -x %s -U %s | %s %ssamtools view -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted.bam /dev/stdin; %ssamtools index -@ %s %ssorted.bam"
@@ -978,6 +1013,10 @@ if alignment:
                 os.system(
                     "%ssamtools view -@ %s -bhf 4 %ssorted.bam | samtools bam2fq - > %sunaligned_reads.fq"
                     % (path_samtools, num_cpu, out, out))
+                
+                print(
+                    "\nPerforming single-end read alignment of soft-clipped and unaligned HISAT2 reads with BWA-MEM in normal/intensive mode...\n"
+                )
 
                 os.system(
                     "%sbwa mem %s %s -t %s %s %sunaligned_reads.fq| %s %ssamtools view -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted_bwa.bam /dev/stdin; %ssamtools index -@ %s %ssorted_bwa.bam "
@@ -1004,6 +1043,10 @@ if alignment:
                 bam_file = "%ssorted_merged.bam" % (out)
 
                 os.system("touch  %slogs/alignment.log" % (out))
+                
+                print(
+                    "\nCompleted single-end read alignment with HISAT2 and BWA-MEM.\n"
+                )
 
     else:
 
@@ -1030,6 +1073,10 @@ if alignment:
 # 9. Convert input sam file into bam
 
 if format == "sam" and "sam2bam.log" not in os.listdir(out + "logs"):
+    
+    print(
+        "\nConverting input sam file into bam format...\n"
+    )
 
     os.system("%ssamtools view -Sb %s  > %ssorted.bam" % (path_samtools,
                                                           input_file, out))
@@ -1068,7 +1115,7 @@ if variantcalling:
         else:
 
             # 10.1 GATK hc indel calling (only performed in intensive mode)
-            # In intesive mode, DNAscan calls snvs with Freebayes and indels
+            # In intensive mode, DNAscan calls snvs with Freebayes and indels
             # with GATK hc. GATK hc is used only on those positions of the
             # genome for which the alignment stage identifies one insertion or
             # deletion in at least on read.
