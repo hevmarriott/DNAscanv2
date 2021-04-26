@@ -622,12 +622,10 @@ if reference == "grch37" or  reference == "grch38" :
         
         annotation = False
     
-if BED or path_gene_list:
-
-    if BED == True and path_bed:
+if BED == True:
         # splitting the analysis region into subsets of equal length to
         # distribute the work across the available threads.
-        
+    if path_bed:
          print(
         "\nSplitting genomic regions into subsets of equal length to distribute work across available threads using user-defined bed file in paths_configs.py...\n"
          )
@@ -665,9 +663,14 @@ if BED or path_gene_list:
 
             i += 1
             
-    elif BED == False:
+    else:
+        sys.exit(
+            '\n\n\ERROR: the BED flag was used but neither a bed file nor a gene list was provided\n\n'
+        )
+            
+elif BED == False:
 
-        if path_gene_list:
+    if path_gene_list:
             
             print(
                 "\nAs you have provided a gene list to DNAscan, it will now look for and restrict further analysis to those genes found in each sample...\n"
@@ -731,12 +734,6 @@ if BED or path_gene_list:
                 # os.system("rm %stmp/%s%s" %(out,zero,str(i)))
 
                 i += 1
-
-    else:
-
-        sys.exit(
-            '\n\n\ERROR: the BED flag was used but neither a bed file nor a gene list was provided\n\n'
-        )
 
 #    os.system(
 #        "%sbedtools makewindows -n %s -i winnum -b %s | awk \'{print $1\"\t\"$2\"\t\"$3 >> \"%stemp\"$4\".bed\"}\'" %
