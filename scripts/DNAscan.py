@@ -1134,6 +1134,9 @@ if variantcalling:
                 # 10.1.1 identification of potential indel sites
                 # Samtools mpileup is used to identify those positions of the genome for which the alignment stage identifies one insertion or deletion in at least on read.
                 # GATK hc is used to call indels only on those positions
+                print(
+                    "\nIdentifying potential indel sites with samtools mpileup...\n"
+                )
 
                 counter = 1
 
@@ -1176,6 +1179,10 @@ if variantcalling:
                 ps = []
 
                 while counter < int(num_cpu) + 1:
+                    
+                    print(
+                        "\nCalling indels with GATK Haplotype Caller on indel positions identified...\n"
+                    )
 
                     command = "%sjava -jar %sgatk-package-4.1.9.0-local.jar HaplotypeCaller -R %s -I %s -L %smpileup_positions%s.bed -O %sgatk_indels%s.vcf %s" % (
                         path_java, path_gatk, path_reference, bam_file, out,
@@ -1204,6 +1211,10 @@ if variantcalling:
                     % (path_vcftools, out, out))
 
                 os.system("touch  %slogs/VC_gatk.log" % (out))
+                
+                print(
+                    "\nCompleted indel calling with GATK Haplotype Caller.\n"
+                )
 
             # 10.2 Freebayes snv and indel calling
 
@@ -1216,7 +1227,9 @@ if variantcalling:
                 os.system("date")
 
                 while counter < int(num_cpu) + 1:
-
+                    
+                    print("\nPerforming SNV calling with Freebayes...\n")
+              
                     command = path_freebayes + "freebayes " + freebayes_custom_options + " --genotype-qualities " + " -t " + out + "temp" + \
                         str(counter) + ".bed" + " -f " + path_reference + " -b " + bam_file + " > " + out + "/freebayes" + str(counter) + ".vcf"
 
@@ -1241,12 +1254,18 @@ if variantcalling:
                     % (path_bedtools, out, out))
 
                 vcf = "freebayes.vcf"
+                
+                print(
+                    "\nCompleted SNV calling with Freebayes.\n"
+                )
 
                 if mode == "intensive":
 
                     # If intensive mode variant calling was performed, DNAscan called snvs
                     # with Freebayes and indels with GATK hc, resulting in two vcf files.
                     # For the annotation step these two files are merged together.
+                    
+                    print("\nMerging the SNV (Freebayes) and indel (GATK Haplotype Caller) VCFs...\n")
 
                     os.system(
                         "%svcftools  --vcf %sfreebayes.vcf --minGQ 30 --minDP 2 --exclude-bed %smpileup_positions.bed  --recode --recode-INFO-all --out %sSNPs_only"
@@ -1282,9 +1301,11 @@ if variantcalling:
                         os.system(
                             "rm %s%s.vcf* %sgatk_indels* %smpileup_positions* %sindels_only.log"
                             % (out, sample_name, out, out, out))
-
+                        
+                    print("\nCompleted merging of SNV and indel calls.\n")
+      
                 else:
-
+            
                     os.system(
                         "cat %sfreebayes.vcf | bgzip -c > %s%s_sorted.vcf.gz" %
                         (out, out, sample_name))
@@ -1307,6 +1328,7 @@ if variantcalling:
 # 11. Perform variant hard filtering
 
 if filter_string:
+    print("\nHard filtering of SNV/indel variants is being performed...\n")
     print('%sbcftools filter -i \" %s \" %s | bgzip -c > %s%s_sorted_filtered.vcf.gz ; %stabix -fp vcf %s%s_sorted_filtered.vcf.gz' 
         % ( path_bcftools, filter_string, variant_results_file, out, sample_name, path_tabix, out,sample_name))
     os.system(
@@ -1315,7 +1337,9 @@ if filter_string:
 
     variant_results_file = "%s%s_sorted_filtered.vcf.gz" % (
         out, sample_name)
-
+    
+    print("\nVariant hard filtering is complete.\n")
+    
 # 12. Performs known expansions search with ExpansionHunter
 # Known expansions have to be described in a json file placed in the json
 # folder (paths_configs.py).
@@ -1329,6 +1353,8 @@ if expansion:
         )
 
     else:
+        
+        print("\nExpansionHunter is scanning the genome for repeat expansions specified in the variant_catalog json...\n")
 
         os.system(
             "%sExpansionHunter --reads %s --reference %s  --variant-catalog %s/variant_catalog_%s.json --output-prefix %s/temp_EH"
@@ -1341,6 +1367,8 @@ if expansion:
                sample_name))
 
         os.system("touch  %slogs/EH.log" % (out))
+        
+        print("\nRepeat expansion scanning is complete.\n")
 
         if not debug:
 
@@ -1413,6 +1441,8 @@ if annotation:
                                                                   sample_name)
 
     else:
+        
+        print("\nAnnotation is being performed using Annovar, with the databases and respective operations defined in paths_configs.py...\n")
 
         os.system(
             "perl %stable_annovar.pl  --thread %s --vcfinput %s %s -buildver %s -remove -protocol %s -operation %s -nastring . --outfile %s/annovar.vcf"
@@ -1436,6 +1466,8 @@ if annotation:
                                                                   sample_name)
 
         os.system("touch  %slogs/annovar.log" % (out))
+        
+        print("\nAnnotation is complete.\n")
 
 else:
 
@@ -1459,7 +1491,7 @@ if virus or bacteria or custom_microbes:
     else:
 
         # 15.1 Exctract non human reads
-
+        print("\nExtracting non-human reads...\n")
         os.system(
             "%ssamtools view -@ %s -hf 4 %s | %ssamtools bam2fq -s %ssingleton_reads.fastq -@ %s - > %sunaligned_reads.fastq ; cat %ssingleton_reads.fastq >> %sunaligned_reads.fastq ; gzip  %sunaligned_reads.fastq "
             % (path_samtools, num_cpu, bam_file, path_samtools, out, num_cpu,
@@ -1470,7 +1502,7 @@ if virus or bacteria or custom_microbes:
         if virus:
 
             # 15.2.1 Identifies present viruses
-
+            print("\nIdentifying viruses present in sample...\n")
             os.system(
                 "%shisat2 --no-spliced-alignment -p %s -x %s -U %sunaligned_reads.fastq.gz | %ssamtools view -@ %s -hSb -  | %ssamtools sort -@ %s -T %stemp.file -o %soutput_virus.bam -"
                 % (path_hisat, num_cpu, path_virus_index, out, path_samtools,
@@ -1481,7 +1513,7 @@ if virus or bacteria or custom_microbes:
                 % (path_samtools, num_cpu, out, path_samtools, out, out))
 
             # 15.2.2 Generates virus report
-
+            print("\nGenerating virus coverage and stats report...\n")
             os.system(
                 "awk \'{print $1}\' %svirus_stats.txt > %svirus_list.txt ; for i in $(cat %svirus_list.txt | grep C_); do printf \"$i \"; %ssamtools depth %soutput_virus.bam -r $i | awk \'$3>0 {print $0}\' | wc -l; done > %svirus_coverage_stats.txt"
                 % (out, out, out, path_samtools, out, out))
@@ -1499,7 +1531,7 @@ if virus or bacteria or custom_microbes:
 
             virus_results = open('%sresults/virus_results.txt' % (out), 'w')
 
-            virus_results.write("Id\tGenome_lenth\tNumber_of_reds\tCoverage\n")
+            virus_results.write("Id\tGenome_length\tNumber_of_reads\tCoverage\n")
 
             while i < len(virus_coverage_stats_lines):
 
@@ -1518,11 +1550,13 @@ if virus or bacteria or custom_microbes:
 
                 os.system("rm %svirus_stats.txt  %svirus_coverage_stats.txt" %
                           (out, out))
-
+             print("\nVirus coverage and stats report is now available.\n")
+            
         if bacteria:
 
             # 15.2.3 Identifies present bacteria
-
+            print("\nIdentifying bacteria present in sample...\n")
+            
             os.system(
                 "%shisat2 --no-spliced-alignment -p %s -x %s -U %sunaligned_reads.fastq.gz | %ssamtools view -hSb -  | %ssamtools sort -T %stemp.file -o %soutput_bacteria.bam -"
                 % (path_hisat, num_cpu, path_bacteria_index, out,
@@ -1533,7 +1567,8 @@ if virus or bacteria or custom_microbes:
                 % (path_samtools, num_cpu, out, path_samtools, out, out))
 
             # 15.2.4 Generates bacteria report
-
+            print("\nGenerating bacteria coverage and stats report...\n")
+            
             os.system(
                 "awk \'{print $1}\' %sbacteria_stats.txt > %sbacteria_list.txt ; for i in $(cat %sbacteria_list.txt| grep ref); do printf \"$i \"; %ssamtools depth %soutput_bacteria.bam -r $i | awk \'$3>0 {print $0}\' | wc -l; done > %sbacteria_coverage_stats.txt"
                 % (out, out, out, path_samtools, out, out))
@@ -1553,7 +1588,7 @@ if virus or bacteria or custom_microbes:
                                     'w')
 
             bacteria_results.write(
-                "Id\tGenome_lenth\tNumber_of_reds\tCoverage\n")
+                "Id\tGenome_length\tNumber_of_reads\tCoverage\n")
 
             while i < len(bacteria_coverage_stats_lines):
 
@@ -1573,11 +1608,14 @@ if virus or bacteria or custom_microbes:
                 os.system(
                     "rm %sbacteria_stats.txt  %sbacteria_coverage_stats.txt" %
                     (out, out))
+                
+            print("\nBacteria coverage and stats report is now available.\n")
 
         if custom_microbes:
 
             # 15.2.5 Identifies present user-selected microbes
-
+            print("\nIdentifying user-selected microbes that are present in sample...\n")
+            
             os.system(
                 "%shisat2 --no-spliced-alignment -p %s -x %s -U %sunaligned_reads.fastq.gz | %ssamtools view -hSb -  | %ssamtools sort -T %stemp.file -o %soutput_custom_microbes.bam -"
                 % (path_hisat, num_cpu, path_custom_microbes_index, out,
@@ -1588,7 +1626,8 @@ if virus or bacteria or custom_microbes:
                 % (path_samtools, num_cpu, out, path_samtools, out, out))
 
             # 15.2.6 Generates user-selected microbes report
-
+            print("\nGenerating user-selected microbe coverage and stats report...\n")
+            
             os.system(
                 "awk \'{print $1}\' %scustom_microbes_stats.txt > %scustom_microbes_list.txt ; for i in $(cat %scustom_microbes_list.txt| grep ref); do printf \"$i \"; %ssamtools depth %soutput_custom_microbes.bam -r $i | awk \'$3>0 {print $0}\' | wc -l; done > %scustom_microbes_coverage_stats.txt"
                 % (out, out, out, path_samtools, out, out))
@@ -1611,7 +1650,7 @@ if virus or bacteria or custom_microbes:
                 '%sresults/custom_microbes_results.txt' % (out), 'w')
 
             custom_microbes_results.write(
-                "Id\tGenome_lenth\tNumber_of_reds\tCoverage\n")
+                "Id\tGenome_length\tNumber_of_reads\tCoverage\n")
 
             while i < len(custom_microbes_coverage_stats_lines):
 
@@ -1632,8 +1671,12 @@ if virus or bacteria or custom_microbes:
                 os.system(
                     "rm %scustom_microbes_stats.txt  %scustom_microbes_coverage_stats.txt"
                     % (out, out))
+                
+             print("\nMicrobe coverage and stats report is now available.\n")
 
         os.system("touch  %slogs/microbes.log" % (out))
+        
+        print("\nMicrobe screening is complete.\n")
 
 # 16. Alignment report generation ( samtools flagstat and stats )
 
@@ -1646,6 +1689,8 @@ if alignment_report:
         )
 
     else:
+        
+        print("\nGenerating alignment report...\n")
 
         os.system("%ssamtools flagstat -@ %s %s > %sreports/%s_flagstat.txt" %
                   (path_samtools, num_cpu, bam_file, out, sample_name))
@@ -1654,6 +1699,9 @@ if alignment_report:
                   (path_samtools, num_cpu, bam_file, out, sample_name))
 
         os.system("touch  %slogs/alignment_report.log" % (out))
+        
+        print("\nAlignment report is now available.\n")
+        
 
 # 17. Sequencing data report generation ( fastqc )
 
@@ -1674,12 +1722,16 @@ if sequencing_report:
         else:
 
             java_option = ""
-
+        
+        print("\nGenerating sequencing report...\n")
+        
         os.system("%sfastqc %s -o %sreports -f %s -t %s %s %s" %
                   (path_fastqc, java_option, out, format, num_cpu, input_file,
                    input_file2))
 
         os.system("touch  %slogs/sequencing_report.log" % (out))
+        
+        print("\nSequencing report is now available.\n")
 
 # 18. Snv and indel calling report generation ( bcftools stats )
 
@@ -1692,12 +1744,15 @@ if calls_report:
         )
 
     else:
-
+        print("\nGenerating SNV and indel calls report...\n")
+        
         os.system(
             "%sbcftools stats --threads %s %s > %sreports/%s_vcfstats.txt" %
             (path_bcftools, num_cpu, variant_results_file, out, sample_name))
 
         os.system("touch  %slogs/calls_report.log" % (out))
+        
+        print("\nCalls report for SNVs and indels are now available.\n")
 
 # 19. Html report generation ( Multiqc )
 
@@ -1710,11 +1765,15 @@ if alignment_report or calls_report or sequencing_report:
         )
 
     else:
+        
+        print("\nGenerating HTML report...\n")
 
         os.system(
             "%smultiqc -o %sreports %sreports" % (path_multiqc, out, out))
 
         os.system("touch  %slogs/multiqc.log" % (out))
+        
+        print("\nHTML report created.\n")
 
 # 20. Annotated variants report generation
 
@@ -1735,6 +1794,8 @@ if results_report:
             )
 
         else:
+            
+            print("\nGenerating report of annotated variant calls...\n")
 
             os.system("zcat %s > %stemp.vcf" % (variant_results_file, out))
 
@@ -1794,6 +1855,8 @@ if results_report:
             out_file_all.close()
 
             os.system("touch  %slogs/results_report.log" % (out))
+            
+            print("\nCalls report for annotated variants is now available.\n")
 
 # 21. Starting iobio services
 
@@ -1847,7 +1910,7 @@ if iobio:
             print("https://gene.iobio.io")
 
 if alsgenescanner:
-
+    print("\n\nALSGeneScanner is running...\n\n")
     os.system(
         "python3 %s/alsgenescanner.py %s/annovar.vcf.%s_multianno.txt %s/results/%s_alsgenescanner_all.txt"
         % (path_scripts, out, reference, out, sample_name))
@@ -1867,4 +1930,5 @@ if alsgenescanner:
         "cat %s/results/%s_alsgenescanner_all.txt | head -1 > %s/results/%s_alsgenescanner_all_ranked.txt ; cat %s/results/%s_alsgenescanner_all.txt | grep -i pathog | sed 's/ /_/g'| sort -k10nr >> %s/results/%s_alsgenescanner_all_ranked.txt ; cat %s/results/%s_alsgenescanner_all.txt | grep '^chr'  | grep -iv pathog | sed 's/ /_/g'| sort -k10nr >> %s/results/%s_alsgenescanner_all_ranked.txt  "
         % (out, sample_name, out, sample_name, out, sample_name, out, sample_name, 
            out, sample_name, out, sample_name))
+    print("\n\nALSGeneScanner is complete.\n\n")
     
