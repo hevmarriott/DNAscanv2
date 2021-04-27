@@ -21,7 +21,7 @@
 #       8.1.2 Normal and intensive mode alignment
 #   8.2 Aligns single end reads
 #       8.2.1 Fast mode alignment
-#       8.2.2 Normal and intensive mode alignment
+#       8.2.2 Normal and intesive mode alignment
 # 9. If input file is a sam file, it converts it into bam
 # 10. Variant (snv and indel) calling
 #   10.1 GATK hc indel calling (only performed in intensive mode)
@@ -865,7 +865,6 @@ if alignment:
 
             # 8.1.2 Normal and intensive modes use HISAT2 to align all reads,
             # then soft-clipped and unaligned reads are realigned with BWA mem
-            # BWA-mem is also run for all reads for Whamg to perform SV calling 
 
             if mode == "normal" or mode == "intensive":
 
@@ -873,7 +872,7 @@ if alignment:
                 # support read group missing anymore. Default values for RG id,
                 # lb, pl, pu, and sm are defined in paths_configs.py. Please change
                 # them as needed.
-                
+
                 if mode == "intensive":
 
                     RG = True
@@ -935,21 +934,6 @@ if alignment:
                 os.system(
                     "%ssamtools merge -c -@ %s -f -h %sheader.txt %ssorted_merged.bam %ssorted.bam  %ssorted_bwa.bam"
                     % (path_samtools, num_cpu, out, out, out, out))
-                
-                #this may need some work to put in another section!!!!
-                
-                print("\nPerforming paired read read alignment with BWA-MEM in intensive mode for downstream SV calling with Whamg...\n")
-                
-                print( 
-                    "%sbwa mem %s %s -t %s %s %s %s | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted_bwa_wham.bam  /dev/stdin ; %ssamtools index -@ %s %ssorted_bwa_wham.bam "
-                    % (path_bwa, bwa_custom_options, rg_option_bwa, num_cpu, path_bwa_index, input_file, input_file2,
-                       samblaster_cm1, path_samtools, num_cpu, path_sambamba, num_cpu, tmp_dir, out, path_samtools, num_cpu, out))
-                os.system(
-                    "%sbwa mem %s %s -t %s %s %s %s | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted_bwa_wham.bam  /dev/stdin ; %ssamtools index -@ %s %ssorted_bwa_wham.bam "
-                    % (path_bwa, bwa_custom_options, rg_option_bwa, num_cpu, path_bwa_index, input_file, input_file2,
-                       samblaster_cm1, path_samtools, num_cpu, path_sambamba, num_cpu, tmp_dir, out, path_samtools, num_cpu, out))
-                
-             
 
                 if not debug:
 
@@ -961,15 +945,12 @@ if alignment:
                           (path_samtools, num_cpu, out))
 
                 bam_file = "%ssorted_merged.bam" % (out)
-                       
-                wham_bam_file = "%ssorted_bwa_wham.bam" % (out)
 
                 os.system("touch  %slogs/alignment.log" % (out))
                 
                 print(
                     "\nCompleted paired read alignment with HISAT2 and BWA-MEM.\n"
                 )
-                
 
         # 8.2 Aligns single end reads
 
