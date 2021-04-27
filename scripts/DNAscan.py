@@ -1408,74 +1408,49 @@ if SV:
         print(
             "WARNING: The presence of SV.log in logs is telling you that structural variant calling was already peformed, please remove SV.log if you wish to perform this stage anyway\n"
         )
-        
+
     else:
-        
-        if paired == "1":
-           
-            if BED == True:
 
-                os.system("bgzip -c %s  > %s/temp.bed.gz" % (path_bed, out))
+        if BED:
 
-                os.system(
-                    "%ssortBed -i %s/temp.bed.gz | bgzip -c > %s/sorted.bed.gz" %
-                    (path_bedtools, out, out))
+            os.system("bgzip -c %s  > %s/temp.bed.gz" % (path_bed, out))
 
-                os.system("%stabix -p bed %s/sorted.bed.gz" % (path_tabix, out))
+            os.system(
+                "%ssortBed -i %s/temp.bed.gz | bgzip -c > %s/sorted.bed.gz" %
+                (path_bedtools, out, out))
 
-                os.system("mkdir %smanta" % (out))
+            os.system("%stabix -p bed %s/sorted.bed.gz" % (path_tabix, out))
 
-                os.system(
-                    "%sconfigManta.py --bam %s --referenceFasta %s --runDir %smanta --callRegions %s/sorted.bed.gz"
-                    % (path_manta, bam_file, path_reference, out, out))
+            os.system("mkdir %smanta" % (out))
 
-            else:
+            os.system(
+                "%sconfigManta.py --bam %s --referenceFasta %s --runDir %smanta --callRegions %s/sorted.bed.gz"
+                % (path_manta, bam_file, path_reference, out, out))
 
-                os.system("mkdir %smanta" % (out))
+        else:
 
-                os.system(
-                    "%sconfigManta.py --bam %s --referenceFasta %s --runDir %smanta"
-                    % (path_manta, bam_file, path_reference, out))
+            os.system("mkdir %smanta" % (out))
 
-                os.system("%smanta/runWorkflow.py -j %s -m local" % (out, num_cpu))
+            os.system(
+                "%sconfigManta.py --bam %s --referenceFasta %s --runDir %smanta"
+                % (path_manta, bam_file, path_reference, out))
 
-                os.system(
-                    "mv %s/manta/results/variants/diploidSV.vcf.gz  %s/results/%s_SV.vcf.gz"
-                    % (out, out, sample_name))
+        os.system("%smanta/runWorkflow.py -j %s -m local" % (out, num_cpu))
 
-                os.system(
-                    "mv %s/manta/results/variants/diploidSV.vcf.gz.tbi  %s/results/%s_SV.vcf.gz.tbi"
-                    % (out, out, sample_name))
-                
-                if mode == "intensive":
-                    
-                    print("\nAs you have selected intensive mode, SV calling is also being performed with Whamg...\n")
-                    
-                    exclude_regions = "GL000207.1,GL000226.1,GL000229.1,GL000231.1,GL000210.1,GL000239.1,GL000235.1,GL000201.1, GL000247.1,GL000245.1,GL000197.1,GL000203.1,GL000246.1,GL000249.1,GL000196.1,GL000248.1,GL000244.1,GL000238.1,GL000202.1,GL000234.1,GL000232.1,GL000206.1,GL000240.1,GL000236.1,GL000241.1,GL000243.1,GL000242.1,GL000230.1,GL000237.1,GL000233.1,GL000204.1,GL000198.1,GL000208.1,GL000191.1,GL000227.1,GL000228.1,GL000214.1,GL000221.1,GL000209.1,GL000218.1,GL000220.1,GL000213.1,GL000211.1,GL000199.1,GL000217.1,GL000216.1,GL000215.1,GL000205.1,GL000219.1,GL000224.1,GL000223.1,GL000195.1,GL000212.1,GL000222.1,GL000200.1,GL000193.1,GL000194.1,GL000225.1,GL000192.1,NC_007605"
-                    
-                    os.system(
-                        "%swhamg -x %s -e %s -a %s -f %s | perl %sfiltWhamG.pl > %s/results/%s_whamSV.vcf 2> %s/results/%s_whamSV.err"
-                        % (path_whamg, num_cpu, exclude_regions, path_reference, wham_bam_file, 
-                           path_scripts, out, sample_name, out, sample_name))
-                        
-                    os.system(
-                        "bgzip -c %s/results/%s_whamSV.vcf > %s/results/%s_whamSV.vcf.gz"
-                        % (out, sample_name, out, sample_name))
-                    
-                    os.system(
-                        " %stabix -p vcf %s/results/%s_whamSV.vcf.gz"
-                        % (path_tabix, out, sample_name))
+        os.system(
+            "mv %s/manta/results/variants/diploidSV.vcf.gz  %s/results/%s_SV.vcf.gz"
+            % (out, out, sample_name))
 
-            if not debug:
+        os.system(
+            "mv %s/manta/results/variants/diploidSV.vcf.gz.tbi  %s/results/%s_SV.vcf.gz.tbi"
+            % (out, out, sample_name))
 
-                os.system("rm -r %stemp.bed.gz  %ssorted.bed.gz %smanta" %
-                        (out, out, out))
+        if not debug:
 
-            os.system("touch  %slogs/SV.log" % (out))
-        
-         else:
-                
-                print("\nSV calling can only be performed with paired-end input data.\n")
+            os.system("rm -r %stemp.bed.gz  %ssorted.bed.gz %smanta" %
+                      (out, out, out))
+
+        os.system("touch  %slogs/SV.log" % (out))
 
 # 14. Annotation with Annovar
 
