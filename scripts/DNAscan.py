@@ -21,7 +21,7 @@
 #       8.1.2 Normal and intensive mode alignment
 #   8.2 Aligns single end reads
 #       8.2.1 Fast mode alignment
-#       8.2.2 Normal and intesive mode alignment
+#       8.2.2 Normal and intensive mode alignment
 # 9. If input file is a sam file, it converts it into bam
 # 10. Variant (snv and indel) calling
 #   10.1 GATK hc indel calling (only performed in intensive mode)
