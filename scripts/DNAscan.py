@@ -525,6 +525,8 @@ os.system(
     "mkdir %s ; mkdir  %slogs ; mkdir  %sreports ; mkdir  %sresults ; mkdir %stmp"
     % (out, out, out, out, out))
 
+if 
+
 print(
                 "############DNAscan Options############ \n\n DNAscan is running an analysis with the following specifics:\n"
             )
@@ -540,6 +542,18 @@ for arg in vars(args):
 options_log.close()
 
 print('\nOptions saved onto %s/logs/options.log \n' %(out))
+
+#Functions for checking output files
+
+def is_file_OK(file):
+    if os.path.getsize(file) > 0:
+        with open(file, 'r') as f:
+            if any(not line.startswith("#") for line in f):
+                print("\n%s has sufficient data for DNAscan to continue\n" % file)
+            else:
+                sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate\n" % file)            
+    else:
+        sys.exit("WARNING: %s is empty - DNAscan will now terminate\n" % file)
       
       
 # 6. Bed splitting: splitting the analysis region into subsets of equal length to distribute the work across the available threads.
