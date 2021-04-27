@@ -523,6 +523,8 @@ Fast mode pipeline (ideal if focusing on SNVs):
 * HISAT2 >= 2.1.0
 * Freebayes >= 1.0.2
 * Python >= 3 (if using Expansion Hunter 4.0.2, only versions 3.5.x, 3.6.x, >=3.7.0, >= 3.8.0 are supported - tested with 3.8.0)
+* Pysam = 0.16.0.1
+* Pyvcf = 0.6.8
 * Perl (tested with 5.16.3 x86_64-Linux)
 * Vcftools >= 0.1.13 
 * Bedtools2 >= 2.25
@@ -530,7 +532,7 @@ Fast mode pipeline (ideal if focusing on SNVs):
 * Sambamba >= 0.6.6
 * Manta 1.6.0 (optional, needed only if interested in structural variants)
 * ExpansionHunter = 4.0.2 (optional, needed only if interested in known motif expansions)
-* Bcftools >= 1.10 (optional, needed only if interested in performing custome variant filtering and calls report)
+* Bcftools >= 1.10 (optional, needed only if interested in performing custom variant filtering and calls report)
 * Annovar "Version >= $Date: 2016-02-01 00:11:18 -0800 (Mon, 1 Feb 2016)" (optional, needed only if interested in performing variant annotation)
 
 Normal mode pipeline (better performance on indels and SVs):
