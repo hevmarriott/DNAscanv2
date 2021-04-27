@@ -936,23 +936,28 @@ if alignment:
 
                 os.system(
                     "%ssamtools merge -c -@ %s -f -h %sheader.txt %ssorted_merged.bam %ssorted.bam  %ssorted_bwa.bam"
-                    % (path_samtools, num_cpu, out, out, out, out))
+                    % (path_samtools, num_cpu, out, out, out, out)) 
                 
-                #this may need some work to put in another section!!!!
+                    if mode == "intensive" and SV:
+                    
+                        RG = True
+                    
+                        rg_option_bwa = " -R '@RG\\tID:%s\\tLB:%s\\tPL:%s\\tPU:%s\\tSM:%s' " % (
+                            RG_ID, RG_LB, RG_PL, RG_PU, RG_SM)
+                    
+                        print("\nPerforming paired read read alignment with BWA-MEM in intensive mode for downstream SV calling with Whamg...\n")
+                    
+                        print(
+                            "%sbwa mem %s %s -t %s %s %s %s | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted_bwa_wham.bam  /dev/stdin ; %ssamtools index -@ %s %ssorted_bwa_wham.bam "
+                            % (path_bwa, bwa_custom_options, rg_option_bwa, num_cpu, path_bwa_index, input_file, input_file2,
+                            samblaster_cmq, path_samtools, num_cpu, path_sambamba, num_cpu, tmp_dir, out, path_samtools, num_cpu, out))
+                        os.system(
+                            "%sbwa mem %s %s -t %s %s %s %s | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted_bwa_wham.bam  /dev/stdin ; %ssamtools index -@ %s %ssorted_bwa_wham.bam "
+                            % (path_bwa, bwa_custom_options, rg_option_bwa, num_cpu, path_bwa_index, input_file, input_file2,
+                            samblaster_cmq, path_samtools, num_cpu, path_sambamba, num_cpu, tmp_dir, out, path_samtools, num_cpu, out))
+                    
+                        wham_bam_file = "%ssorted_bwa_wham.bam" % (out)
                 
-                print("\nPerforming paired read read alignment with BWA-MEM in intensive mode for downstream SV calling with Whamg...\n")
-                
-                print( 
-                    "%sbwa mem %s %s -t %s %s %s %s | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted_bwa_wham.bam  /dev/stdin ; %ssamtools index -@ %s %ssorted_bwa_wham.bam "
-                    % (path_bwa, bwa_custom_options, rg_option_bwa, num_cpu, path_bwa_index, input_file, input_file2,
-                       samblaster_cm1, path_samtools, num_cpu, path_sambamba, num_cpu, tmp_dir, out, path_samtools, num_cpu, out))
-                os.system(
-                    "%sbwa mem %s %s -t %s %s %s %s | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted_bwa_wham.bam  /dev/stdin ; %ssamtools index -@ %s %ssorted_bwa_wham.bam "
-                    % (path_bwa, bwa_custom_options, rg_option_bwa, num_cpu, path_bwa_index, input_file, input_file2,
-                       samblaster_cm1, path_samtools, num_cpu, path_sambamba, num_cpu, tmp_dir, out, path_samtools, num_cpu, out))
-                
-             
-
                 if not debug:
 
                     os.system(
@@ -963,8 +968,6 @@ if alignment:
                           (path_samtools, num_cpu, out))
 
                 bam_file = "%ssorted_merged.bam" % (out)
-                       
-                wham_bam_file = "%ssorted_bwa_wham.bam" % (out)
 
                 os.system("touch  %slogs/alignment.log" % (out))
                 
