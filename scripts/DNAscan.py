@@ -59,6 +59,7 @@ import os.path
 import re
 import paths_configs
 import subprocess
+import pysam
 
 from argparse import RawTextHelpFormatter
 
@@ -545,13 +546,27 @@ print('\nOptions saved onto %s/logs/options.log \n' %(out))
 
 #Functions for checking output files
 
-def is_file_OK(file):
+def is_variant_file_OK(file, t):
     if os.path.getsize(file) > 0:
-        with open(file, 'r') as f:
-            if any(not line.startswith("#") for line in f):
-                print("\n%s has sufficient data for DNAscan to continue\n" % file)
-            else:
-                sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate\n" % file)            
+        if t == "bam":
+            with pysam.AlignmentFile(file, 'rb') as f:
+                if any(not line.startswith("#") for line in f):
+                    print("\n%s has sufficient data for DNAscan to continue\n" % file)
+                else:
+                    sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate\n" % file)            
+        elif t == "sam":
+            with pysam.AlignmentFile(file, 'r') as f:
+                if any(not line.startswith("#") for line in f):
+                    print("\n%s has sufficient data for DNAscan to continue\n" % file)
+                else:
+                    sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate\n" % file)  
+        elif t == "vcf":
+            with vcf.Reader(filename=file) as f:
+                if any(not line.startswith("#") for line in f):
+                    print("\n%s has sufficient data for DNAscan to continue\n" % file)
+                else:
+                    sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate\n" % file)
+    
     else:
         sys.exit("WARNING: %s is empty - DNAscan will now terminate\n" % file)
       
