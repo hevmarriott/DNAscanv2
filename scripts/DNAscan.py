@@ -60,7 +60,6 @@ import re
 import paths_configs
 import subprocess
 import pysam
-import vcf
 
 from argparse import RawTextHelpFormatter
 
