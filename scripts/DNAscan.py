@@ -550,19 +550,22 @@ def is_variant_file_OK(file, t):
     if os.path.isfile(file) == True:
         if os.path.getsize(file) > 0:
             if t == "bam":
-                with pysam.AlignmentFile(file, 'rb') as f:
+                bamfile = os.system("cat %s" % file )
+                with bamfile as f:
                     for line in f:
                         if any(not line.startswith("#")):
                             print("\n%s has sufficient data for DNAscan to continue...\n" % file)
                         else:
                             sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)              
             elif t == "vcf":
-                with vcf.Reader(filename=file) as f:
-                    if any(not line.startswith("#") for line in f):
-                        print("\n%s has sufficient data for DNAscan to continue...\n" % file)
-                    else:
-                        sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)
-    
+                vcffile = os.system("zcat %s" % file)
+                with vcffile as f:
+                    for line in f:
+                        if any(not line.startswith("#") for line in f):
+                            print("\n%s has sufficient data for DNAscan to continue...\n" % file)
+                        else:
+                            sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)
+            
         else:
             sys.exit("WARNING: %s is empty - DNAscan will now terminate.\n" % file)
     else:
