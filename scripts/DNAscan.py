@@ -527,7 +527,6 @@ os.system(
     "mkdir %s ; mkdir  %slogs ; mkdir  %sreports ; mkdir  %sresults ; mkdir %stmp"
     % (out, out, out, out, out))
 
-if 
 
 print(
                 "############DNAscan Options############ \n\n DNAscan is running an analysis with the following specifics:\n"
