@@ -555,7 +555,7 @@ def is_variant_file_OK(file, t):
                     else:
                         print("\n%s has sufficient data for DNAscan to continue...\n" % file)
                 f.close()
-            elif t == "vcf":
+            elif t == "Vcf":
                 with vcf.Reader(open(file, 'r')) as f:
                     if any(not line.startswith("#") for line in f):
                         print("\n%s has sufficient data for DNAscan to continue...\n" % file)
@@ -1324,7 +1324,7 @@ if variantcalling:
                     variant_results_file = "%s%s_sorted.vcf.gz" % (out,
                                                                    sample_name)
                     
-                    is_variant_file_OK(variant_results_file, "vcf")
+                    is_variant_file_OK(variant_results_file, "Vcf")
 
                     os.system("%stabix -p vcf %s%s_sorted.vcf.gz" %
                               (path_tabix, out, sample_name))
@@ -1349,7 +1349,7 @@ if variantcalling:
                     variant_results_file = "%s%s_sorted.vcf.gz" % (out,
                                                                    sample_name)
                     
-                    is_variant_file_OK(variant_results_file, "vcf")
+                    is_variant_file_OK(variant_results_file, "Vcf")
                     
                     print(
                     "\nCompleted SNV calling with Freebayes.\n"
@@ -1377,7 +1377,7 @@ if filter_string:
     variant_results_file = "%s%s_sorted_filtered.vcf.gz" % (
         out, sample_name)
     
-    is_variant_file_OK(variant_results_file, "vcf")
+    is_variant_file_OK(variant_results_file, "Vcf")
     
     print("\nVariant hard filtering is complete.\n")
     
@@ -1409,7 +1409,7 @@ if expansion:
         
         expansion_results_file = "%s/results/%s_expansions.vcf.gz" % (out, sample_name)
         
-        is_variant_file_OK(expansion_results_file, "vcf")
+        is_variant_file_OK(expansion_results_file, "Vcf")
 
         os.system("touch  %slogs/EH.log" % (out))
         
@@ -1471,7 +1471,7 @@ if SV:
             
         structural_results_file = "%s/results/%s_SV.vcf.gz" % (out, sample_name)
         
-        is_variant_file_OK(structural_results_file, "vcf")
+        is_variant_file_OK(structural_results_file, "Vcf")
         
         if not debug:
 
@@ -1519,7 +1519,7 @@ if annotation:
 
         variant_results_file = "%sresults/%s_annotated.vcf.gz" % (out,
                                                                   sample_name)
-        is_variant_file_OK(variant_results_file, "vcf")
+        is_variant_file_OK(variant_results_file, "Vcf")
 
         os.system("touch  %slogs/annovar.log" % (out))
         
