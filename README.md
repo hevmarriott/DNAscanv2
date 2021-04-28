@@ -524,7 +524,6 @@ Fast mode pipeline (ideal if focusing on SNVs):
 * Freebayes >= 1.0.2
 * Python >= 3 (if using Expansion Hunter 4.0.2, only versions 3.5.x, 3.6.x, >=3.7.0, >= 3.8.0 are supported - tested with 3.8.0)
 * Pysam = 0.16.0.1
-* Pyvcf = 0.6.8
 * Perl (tested with 5.16.3 x86_64-Linux)
 * Vcftools >= 0.1.13 
 * Bedtools2 >= 2.25
