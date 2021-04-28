@@ -560,6 +560,7 @@ def is_variant_file_OK(file, t):
                     print("\n%s has sufficient data for DNAscan to continue...\n" % file)
                 else:
                     sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)
+                f.close()
         else:
             sys.exit("WARNING: %s is empty - DNAscan will now terminate.\n" % file)
     else:
