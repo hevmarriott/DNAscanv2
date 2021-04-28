@@ -60,6 +60,7 @@ import re
 import paths_configs
 import subprocess
 import pysam
+import gzip 
 
 from argparse import RawTextHelpFormatter
 
@@ -555,7 +556,7 @@ def is_variant_file_OK(file, t):
                         print("\n%s has sufficient data for DNAscan to continue...\n" % file)
                 f.close()
             elif t == "Vcf":
-                with open(file, 'r') as f:
+                with gzip.open(file, 'r') as f:
                     if any(not line.startswith("#") for line in f):
                         print("\n%s has sufficient data for DNAscan to continue...\n" % file)
                     else:
