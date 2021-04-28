@@ -832,7 +832,7 @@ else:
 if rm_dup == "True":
     
     print(
-        "\nDuplicates will be removed after alignment. If you want to change this, specify --rm-dup "False" in the command line.\n"
+        "\nDuplicates will be removed after alignment.\n"
     )
 
     samblaster_cmq = "%ssamblaster --ignoreUnmated |" % (path_samblaster)
