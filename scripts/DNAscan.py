@@ -1728,7 +1728,8 @@ if virus or bacteria or custom_microbes:
                     "rm %scustom_microbes_stats.txt  %scustom_microbes_coverage_stats.txt"
                     % (out, out))
                 
-             print("\nMicrobe coverage and stats report is now available.\n")
+            print("\nMicrobe coverage and stats report is now available.\n"
+                 )
 
         os.system("touch  %slogs/microbes.log" % (out))
         
