@@ -822,7 +822,7 @@ else:
         path_bed = "%sreference.bed" % (out)
         
         os.system(
-            "%sbedtools makewindows -n %s -i winnum -b %s | awk \'{print $1\"\t\"$2\"\t\"$3 >> \"%stemp\"$4\".bed\"}\'
+            "%sbedtools makewindows -n %s -i winnum -b %s | awk \'{print $1\"\t\"$2\"\t\"$3 >> \"%stemp\"$4\".bed\"}\'"
             % (path_bedtools, num_cpu, path_bed, out))
 
     BED = True
