@@ -551,17 +551,17 @@ def is_variant_file_OK(file, t):
         if os.path.getsize(file) > 0:
             if t == "bam":
                 path_samtools = paths_configs.path_samtools
-                bamfile = os.system("%ssamtools view %s" % (path_samtools, file))
-                if any(not line.startswith("#") for line in bamfile.readlines()):
-                    print("\n%s has sufficient data for DNAscan to continue...\n" % file)
-                else:
-                    sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)              
+                with os.system("%ssamtools view %s" % (path_samtools, file)) as bamfile:
+                    if any(not line.startswith("#") for line in bamfile.readlines()):
+                        print("\n%s has sufficient data for DNAscan to continue...\n" % file)
+                    else:
+                        sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)              
             elif t == "vcf":
-                vcffile = os.system("zmore %s" % file)
-                if any(not line.startswith("#") for line in vcffile.readlines()):
-                    print("\n%s has sufficient data for DNAscan to continue...\n" % file)
-                else:
-                    sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)
+                with os.system("zmore %s" % file) as vcffile:
+                    if any(not line.startswith("#") for line in vcffile.readlines()):
+                        print("\n%s has sufficient data for DNAscan to continue...\n" % file)
+                    else:
+                        sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)
             
         else:
             sys.exit("WARNING: %s is empty - DNAscan will now terminate.\n" % file)
