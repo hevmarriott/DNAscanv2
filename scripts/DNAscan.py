@@ -652,12 +652,13 @@ if BED == True:
         # splitting the analysis region into subsets of equal length to
         # distribute the work across the available threads.
     if path_bed:
+        
          print(
         "\nSplitting genomic regions into subsets of equal length to distribute work across available threads using user-defined bed file in paths_configs.py...\n"
          )
-
+        
         if path_gene_list:
-
+            
             print(
                 "\n\nWARNING: Both a bed file and a list of genes were provided to split analysis regions. DNAscan will ignore the list of genes.\n\n"
             )
