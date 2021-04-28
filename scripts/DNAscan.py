@@ -547,7 +547,7 @@ print('\nOptions saved onto %s/logs/options.log \n' %(out))
 #Functions for checking output files
 def is_variant_file_OK(file, t):
     if os.path.isfile(file) == True:
-        if os.path.getsize(file) > 0:
+        if os.path.getsize(file) != 0:
             if t == "bam":
                 with pysam.AlignmentFile(file, 'rb') as f:
                     if f.nreferences == 0 and f.mapped == 0 and f.unmapped == 0:
@@ -556,7 +556,7 @@ def is_variant_file_OK(file, t):
                         print("\n%s has sufficient data for DNAscan to continue...\n" % file)
                 f.close()
             elif t == "vcf":
-                with vcf.Reader(filename=file) as f:
+                with vcf.Reader(open(file, 'r')) as f:
                     if any(not line.startswith("#") for line in f):
                         print("\n%s has sufficient data for DNAscan to continue...\n" % file)
                     else:
