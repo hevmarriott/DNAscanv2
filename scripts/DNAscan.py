@@ -557,7 +557,7 @@ def is_variant_file_OK(file, t):
                 f.close()
             elif t == "Vcf":
                 with gzip.open(file, 'r') as f:
-                    if any(not line.startswith("#") for line in f):
+                    if any(not line.startswith(b"#") for line in f):
                         print("\n%s has sufficient data for DNAscan to continue...\n" % file)
                     else:
                         sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)
