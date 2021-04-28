@@ -556,12 +556,13 @@ def is_variant_file_OK(file, t):
                         print("\n%s has sufficient data for DNAscan to continue...\n" % file)
                 f.close()
             elif t == "Vcf":
-                with vcf.Reader(open(file, 'r')) as f:
-                    if any(not line.startswith("#") for line in f):
-                        print("\n%s has sufficient data for DNAscan to continue...\n" % file)
-                    else:
+                f = pysam.VariantFile(file, 'r')
+                for r in f.fetch(str(chr), int(start), int(end):
+                    empty = next(f.fetch(chr,start,end), None) is None
+                    if empty:
                         sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)
-
+                    else:
+                        print("\n%s has sufficient data for DNAscan to continue...\n" % file)
         else:
             sys.exit("WARNING: %s is empty - DNAscan will now terminate.\n" % file)
     else:
