@@ -812,17 +812,17 @@ else:
 
     else:
         
-         print(
-        "\nSplitting genomic regions into subsets of equal length to distribute work across available threads by creating a bed file from the reference genome index...\n"
-         )
-
+        print(
+            "\nSplitting genomic regions into subsets of equal length to distribute work across available threads by creating a bed file from the reference genome index...\n"
+        )
+        
         os.system("cat %s.fai | awk '{print $1\"\t0\t\"$2}' > %sreference.bed"
                   % (path_reference, out))
-
+        
         path_bed = "%sreference.bed" % (out)
-
+        
         os.system(
-            "%sbedtools makewindows -n %s -i winnum -b %s | awk \'{print $1\"\t\"$2\"\t\"$3 >> \"%stemp\"$4\".bed\"}\'"
+            "%sbedtools makewindows -n %s -i winnum -b %s | awk \'{print $1\"\t\"$2\"\t\"$3 >> \"%stemp\"$4\".bed\"}\'
             % (path_bedtools, num_cpu, path_bed, out))
 
     BED = True
