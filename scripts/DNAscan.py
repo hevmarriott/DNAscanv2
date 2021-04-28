@@ -704,12 +704,12 @@ elif BED == False:
         os.system(
             "zgrep -viwf %smatched_genes.txt %s  > %sunmatched_genes.txt" %
             (out, path_gene_list, out))
-
-            if os.stat("%sunmatched_genes.txt" % (out)).st_size != 0:
-
-                print(
-                    "\n\nWARNING: some genes provided in the gene list were not found, please check which ones in %sunmatched_genes.txt "
-                    % (out))
+        
+        if os.stat("%sunmatched_genes.txt" % (out)).st_size != 0:
+            
+            print(
+                "\n\nWARNING: some genes provided in the gene list were not found, please check which ones in %sunmatched_genes.txt "
+                % (out))
                 
          os.system(
              "zgrep -iwf %s %s%s_gene_names.txt.gz | awk '{print $1}' > %smatched_genes_codes.txt"
