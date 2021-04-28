@@ -545,29 +545,30 @@ options_log.close()
 print('\nOptions saved onto %s/logs/options.log \n' %(out))
 
 #Functions for checking output files
-
 def is_variant_file_OK(file, t):
     if os.path.isfile(file) == True:
         if os.path.getsize(file) > 0:
             if t == "bam":
-                path_samtools = paths_configs.path_samtools
-                with os.system("%ssamtools view %s" % (path_samtools, file)) as bamfile:
-                    if any(not line.startswith("#") for line in bamfile.readlines()):
-                        print("\n%s has sufficient data for DNAscan to continue...\n" % file)
+                with pysam.AlignmentFile(file, 'rb') as f:
+                    if f.nreferences == 0 and f.mapped == 0 and f.unmapped == 0:
+                        sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)print("\n%s has sufficient data for DNAscan to continue...\n" % file)
                     else:
-                        sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)              
+                        print("\n%s has sufficient data for DNAscan to continue...\n" % file)
+                f.close()
             elif t == "vcf":
-                with os.system("zmore %s" % file) as vcffile:
-                    if any(not line.startswith("#") for line in vcffile.readlines()):
+                with vcf.Reader(filename=file) as f:
+                    if any(not line.startswith("#") for line in f):
                         print("\n%s has sufficient data for DNAscan to continue...\n" % file)
                     else:
                         sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)
-            
+
         else:
             sys.exit("WARNING: %s is empty - DNAscan will now terminate.\n" % file)
     else:
         sys.exit("WARNING: %s does not exist - DNAscan will now terminate.\n" % file)
-      
+
+            
+
       
 # 6. Bed splitting: splitting the analysis region into subsets of equal length to distribute the work across the available threads.
 # To do this DNAscan uses a bed file.
