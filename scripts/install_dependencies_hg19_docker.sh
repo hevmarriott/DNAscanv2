@@ -49,8 +49,6 @@ conda install -y python=3.8.0
 
 conda install -y pysam=0.16.0.1
 
-conda install -y pyvcf=0.6.8
-
 conda install -y samtools=1.10
 
 conda install -y freebayes>=1.0.2
