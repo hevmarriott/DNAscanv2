@@ -1604,7 +1604,9 @@ if virus or bacteria or custom_microbes:
 
                 os.system("rm %svirus_stats.txt  %svirus_coverage_stats.txt" %
                           (out, out))
-             print("\nVirus coverage and stats report is now available.\n")
+            
+            print("\nVirus coverage and stats report is now available.\n"
+                 )
             
         if bacteria:
 
