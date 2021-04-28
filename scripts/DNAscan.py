@@ -1471,12 +1471,16 @@ if SV:
         os.system(
             "mv %s/manta/results/variants/diploidSV.vcf.gz.tbi  %s/results/%s_SV.vcf.gz.tbi"
             % (out, out, sample_name)
-
+            
+        SV_results_file = "%s/results/%s_SV.vcf.gz" % (out, sample_name)
+        
+        is_variant_file_OK(SV_results_file, "vcf")
+        
         if not debug:
 
             os.system("rm -r %stemp.bed.gz  %ssorted.bed.gz %smanta" %
                       (out, out, out))
-
+            
         os.system("touch  %slogs/SV.log" % (out))
             
         print("\nStructural variant calling is complete.\n")
@@ -1518,6 +1522,7 @@ if annotation:
 
         variant_results_file = "%sresults/%s_annotated.vcf.gz" % (out,
                                                                   sample_name)
+        is_variant_file_OK(variant_results_file, "vcf")
 
         os.system("touch  %slogs/annovar.log" % (out))
         
