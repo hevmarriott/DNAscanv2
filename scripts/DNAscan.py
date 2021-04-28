@@ -1462,10 +1462,10 @@ if SV:
         os.system(
             "mv %s/manta/results/variants/diploidSV.vcf.gz  %s/results/%s_SV.vcf.gz"
             % (out, out, sample_name))
-
+        
         os.system(
             "mv %s/manta/results/variants/diploidSV.vcf.gz.tbi  %s/results/%s_SV.vcf.gz.tbi"
-            % (out, out, sample_name)
+            % (out, out, sample_name))
             
         structural_results_file = "%s/results/%s_SV.vcf.gz" % (out, sample_name)
         
