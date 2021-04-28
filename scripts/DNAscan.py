@@ -551,7 +551,7 @@ def is_variant_file_OK(file, t):
             if t == "bam":
                 with pysam.AlignmentFile(file, 'rb') as f:
                     if f.nreferences == 0 and f.mapped == 0 and f.unmapped == 0:
-                        sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)print("\n%s has sufficient data for DNAscan to continue...\n" % file)
+                        sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)
                     else:
                         print("\n%s has sufficient data for DNAscan to continue...\n" % file)
                 f.close()
