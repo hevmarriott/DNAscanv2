@@ -553,26 +553,20 @@ def is_variant_file_OK(file, t):
             if t == "bam":
                 with pysam.AlignmentFile(file, 'rb') as f:
                     if any(not line.startswith("#") for line in f):
-                        print("\n%s has sufficient data for DNAscan to continue\n" % file)
+                        print("\n%s has sufficient data for DNAscan to continue...\n" % file)
                     else:
-                        sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate\n" % file)            
-            elif t == "sam":
-                with pysam.AlignmentFile(file, 'r') as f:
-                    if any(not line.startswith("#") for line in f):
-                        print("\n%s has sufficient data for DNAscan to continue\n" % file)
-                    else:
-                        sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate\n" % file)  
+                        sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)              
             elif t == "vcf":
                 with vcf.Reader(filename=file) as f:
                     if any(not line.startswith("#") for line in f):
-                        print("\n%s has sufficient data for DNAscan to continue\n" % file)
+                        print("\n%s has sufficient data for DNAscan to continue...\n" % file)
                     else:
-                        sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate\n" % file)
+                        sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)
     
         else:
-            sys.exit("WARNING: %s is empty - DNAscan will now terminate\n" % file)
+            sys.exit("WARNING: %s is empty - DNAscan will now terminate.\n" % file)
     else:
-        sys.exit("WARNING: %s is empty - DNAscan will now terminate\n" % file)
+        sys.exit("WARNING: %s does not exist - DNAscan will now terminate.\n" % file)
       
       
 # 6. Bed splitting: splitting the analysis region into subsets of equal length to distribute the work across the available threads.
@@ -888,6 +882,8 @@ if alignment:
                        path_sambamba, num_cpu, tmp_dir, out))
 
                 bam_file = "%ssorted.bam" % (out)
+                
+                is_variant_file_OK(bam_file, "bam")
 
                 os.system("touch  %slogs/alignment.log" % (out))
                 
@@ -978,6 +974,8 @@ if alignment:
                           (path_samtools, num_cpu, out))
 
                 bam_file = "%ssorted_merged.bam" % (out)
+                
+                is_variant_file_OK(bam_file, "bam")
 
                 os.system("touch  %slogs/alignment.log" % (out))
                 
@@ -1004,6 +1002,8 @@ if alignment:
                        num_cpu, out))
 
                 bam_file = "%ssorted.bam" % (out)
+                
+                is_variant_file_OK(bam_file, "bam")
 
                 os.system("touch  %salignment.log" % (out))
                 
@@ -1083,6 +1083,8 @@ if alignment:
                         % (out, out, out))
 
                 bam_file = "%ssorted_merged.bam" % (out)
+                
+                is_variant_file_OK(bam_file, "bam")
 
                 os.system("touch  %slogs/alignment.log" % (out))
                 
@@ -1124,6 +1126,8 @@ if format == "sam" and "sam2bam.log" not in os.listdir(out + "logs"):
                                                           input_file, out))
 
     bam_file = "%ssorted.bam" % (out)
+    
+    is_variant_file_OK(bam_file, "bam")
 
     os.system("touch  %slogs/sam2bam.log" % (out))
 
@@ -1288,10 +1292,6 @@ if variantcalling:
                     % (path_bedtools, out, out))
 
                 vcf = "freebayes.vcf"
-                
-                print(
-                    "\nCompleted SNV calling with Freebayes.\n"
-                )
 
                 if mode == "intensive":
 
@@ -1326,6 +1326,8 @@ if variantcalling:
 
                     variant_results_file = "%s%s_sorted.vcf.gz" % (out,
                                                                    sample_name)
+                    
+                    is_variant_file_OK(variant_results_file, "vcf")
 
                     os.system("%stabix -p vcf %s%s_sorted.vcf.gz" %
                               (path_tabix, out, sample_name))
@@ -1349,6 +1351,12 @@ if variantcalling:
 
                     variant_results_file = "%s%s_sorted.vcf.gz" % (out,
                                                                    sample_name)
+                    
+                    is_variant_file_OK(variant_results_file, "vcf")
+                    
+                    print(
+                    "\nCompleted SNV calling with Freebayes.\n"
+                    )
 
                 if not debug:
 
@@ -1371,6 +1379,8 @@ if filter_string:
 
     variant_results_file = "%s%s_sorted_filtered.vcf.gz" % (
         out, sample_name)
+    
+    is_variant_file_OK(variant_results_file, "vcf")
     
     print("\nVariant hard filtering is complete.\n")
     
