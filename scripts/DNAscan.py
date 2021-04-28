@@ -691,71 +691,71 @@ if BED == True:
         sys.exit('\n\n\ERROR: the BED flag was used but neither a bed file nor a gene list was provided\n\n')
             
 elif BED == False:
-
+    
     if path_gene_list:
-            
-            print(
-                "\nAs you have provided a gene list to DNAscan, it will now look for and restrict further analysis to those genes found in each sample...\n"
-            )
+        print(
+            "\nAs you have provided a gene list to DNAscan, it will now look for and restrict further analysis to those genes found in each sample...\n"
+        )
 
-            os.system(
-                "zgrep -iwf %s %s%s_gene_names.txt.gz | awk '{print $2}' > %smatched_genes.txt"
-                % (path_gene_list, path_to_db, reference, out))
-
-            os.system(
-                "zgrep -viwf %smatched_genes.txt %s  > %sunmatched_genes.txt" %
-                (out, path_gene_list, out))
+        os.system(
+            "zgrep -iwf %s %s%s_gene_names.txt.gz | awk '{print $2}' > %smatched_genes.txt"
+            % (path_gene_list, path_to_db, reference, out))
+        
+        os.system(
+            "zgrep -viwf %smatched_genes.txt %s  > %sunmatched_genes.txt" %
+            (out, path_gene_list, out))
 
             if os.stat("%sunmatched_genes.txt" % (out)).st_size != 0:
 
                 print(
                     "\n\nWARNING: some genes provided in the gene list were not found, please check which ones in %sunmatched_genes.txt "
                     % (out))
-
+                
+         os.system(
+             "zgrep -iwf %s %s%s_gene_names.txt.gz | awk '{print $1}' > %smatched_genes_codes.txt"
+             % (path_gene_list, path_to_db, reference, out))
+        
+        os.system(
+            "zgrep -wf %smatched_genes_codes.txt %s%s_gene_db.txt | awk '{i=1; while (i<= int($8)) {n=split($9,a,/,/);n=split($10,b,/,/); print $2\"\t\"a[i]\"\t\"b[i]; i+=1}}' > %scustom_tmp.bed "
+            % (out, path_to_db, reference, out))
+        
+        os.system(
+            "%sbedtools sort -i  %scustom_tmp.bed> %scustom_sorted.bed" 
+            % (path_bedtools, out, out))
+        
+        os.system(
+            "%sbedtools merge -i  %scustom_sorted.bed> %scustom.bed" 
+            % (path_bedtools, out, out))
+        
+        os.system("rm %scustom_sorted.bed %scustom_tmp.bed" % (out, out))
+        
+        os.system(
+            "awk \'{i=$2; while (i < $3) {print $1\"\t\"i\"\t\"i+1 ;  i++}}\' %scustom.bed > %stmp/tmp.bed"
+            % (out, out))
+        
+        os.system(
+            "split -d -l `wc -l %stmp/tmp.bed | awk '{if ($1/%s > int($1/%s)) print int($1/%s)+1; else print int($1/%s)}'` %stmp/tmp.bed %stmp/"
+            % (out, num_cpu, num_cpu, num_cpu, num_cpu, out, out))
+        
+        #os.system("rm %stmp/tmp.bed" %( out))
+        
+        i = 0
+        
+        zero = "0"
+        
+        while i < int(num_cpu):
+            
+            if i > 9:
+                
+                zero = ""
+                
             os.system(
-                "zgrep -iwf %s %s%s_gene_names.txt.gz | awk '{print $1}' > %smatched_genes_codes.txt"
-                % (path_gene_list, path_to_db, reference, out))
-
-            os.system(
-                "zgrep -wf %smatched_genes_codes.txt %s%s_gene_db.txt | awk '{i=1; while (i<= int($8)) {n=split($9,a,/,/);n=split($10,b,/,/); print $2\"\t\"a[i]\"\t\"b[i]; i+=1}}' > %scustom_tmp.bed "
-                % (out, path_to_db, reference, out))
-
-            os.system(
-                "%sbedtools sort -i  %scustom_tmp.bed> %scustom_sorted.bed" %
-                (path_bedtools, out, out))
-
-            os.system("%sbedtools merge -i  %scustom_sorted.bed> %scustom.bed"
-                      % (path_bedtools, out, out))
-
-            os.system("rm %scustom_sorted.bed %scustom_tmp.bed" % (out, out))
-
-            os.system(
-                "awk \'{i=$2; while (i < $3) {print $1\"\t\"i\"\t\"i+1 ;  i++}}\' %scustom.bed > %stmp/tmp.bed"
-                % (out, out))
-
-            os.system(
-                "split -d -l `wc -l %stmp/tmp.bed | awk '{if ($1/%s > int($1/%s)) print int($1/%s)+1; else print int($1/%s)}'` %stmp/tmp.bed %stmp/"
-                % (out, num_cpu, num_cpu, num_cpu, num_cpu, out, out))
-
-            #os.system("rm %stmp/tmp.bed" %( out))
-
-            i = 0
-
-            zero = "0"
-
-            while i < int(num_cpu):
-
-                if i > 9:
-
-                    zero = ""
-
-                os.system(
-                    "%sbedtools merge -i %stmp/%s%s > %stemp%s.bed" %
-                    (path_bedtools, out, zero, str(i), out, str(int(i) + 1)))
-
-                # os.system("rm %stmp/%s%s" %(out,zero,str(i)))
-
-                i += 1
+                "%sbedtools merge -i %stmp/%s%s > %stemp%s.bed" %
+                (path_bedtools, out, zero, str(i), out, str(int(i) + 1)))
+            
+            # os.system("rm %stmp/%s%s" %(out,zero,str(i)))
+            
+            i += 1
 
 #    os.system(
 #        "%sbedtools makewindows -n %s -i winnum -b %s | awk \'{print $1\"\t\"$2\"\t\"$3 >> \"%stemp\"$4\".bed\"}\'" %
