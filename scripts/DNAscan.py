@@ -552,13 +552,13 @@ def is_variant_file_OK(file, t):
             if t == "bam":
                 path_samtools = paths_configs.path_samtools
                 bamfile = os.system("%ssamtools view %s" % (path_samtools, file))
-                if any(not line.startswith("#") for line in bamfile):
+                if any(not line.startswith("#") for line in bamfile.readlines()):
                     print("\n%s has sufficient data for DNAscan to continue...\n" % file)
                 else:
                     sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)              
             elif t == "vcf":
                 vcffile = os.system("zmore %s" % file)
-                if any(not line.startswith("#") for line in vcffile):
+                if any(not line.startswith("#") for line in vcffile.readlines()):
                     print("\n%s has sufficient data for DNAscan to continue...\n" % file)
                 else:
                     sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)
