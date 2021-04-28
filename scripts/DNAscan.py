@@ -1467,9 +1467,9 @@ if SV:
             "mv %s/manta/results/variants/diploidSV.vcf.gz.tbi  %s/results/%s_SV.vcf.gz.tbi"
             % (out, out, sample_name)
             
-        SV_results_file = "%s/results/%s_SV.vcf.gz" % (out, sample_name)
+        structural_results_file = "%s/results/%s_SV.vcf.gz" % (out, sample_name)
         
-        is_variant_file_OK(SV_results_file, "vcf")
+        is_variant_file_OK(structural_results_file, "vcf")
         
         if not debug:
 
