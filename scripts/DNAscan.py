@@ -652,48 +652,43 @@ if BED == True:
         # splitting the analysis region into subsets of equal length to
         # distribute the work across the available threads.
     if path_bed:
-        
-         print(
-        "\nSplitting genomic regions into subsets of equal length to distribute work across available threads using user-defined bed file in paths_configs.py...\n"
-         )
+        print(
+            "\nSplitting genomic regions into subsets of equal length to distribute work across available threads using user-defined bed file in paths_configs.py...\n"
+        )
         
         if path_gene_list:
-            
             print(
                 "\n\nWARNING: Both a bed file and a list of genes were provided to split analysis regions. DNAscan will ignore the list of genes.\n\n"
             )
-
+            
         os.system(
             "awk \'{i=$2; while (i < $3) {print $1\"\t\"i\"\t\"i+1 ;  i++}}\' %s > %stmp/tmp.bed"
             % (path_bed, out))
-
+        
         os.system(
             "split -d -l `wc -l %stmp/tmp.bed | awk '{if ($1/%s > int($1/%s)) print int($1/%s)+1; else print int($1/%s)}'` %stmp/tmp.bed %stmp/"
             % (out, num_cpu, num_cpu, num_cpu, num_cpu, out, out))
-
+        
         os.system("rm %stmp/tmp.bed" % (out))
-
+        
         i = 0
-
+        
         zero = "0"
-
+        
         while i < int(num_cpu):
-
+            
             if i > 9:
-
+                
                 zero = ""
 
-            os.system("%sbedtools merge -i %stmp/%s%s > %stemp%s.bed" %
-                      (path_bedtools, out, zero, str(i), out, str(int(i) + 1)))
+            os.system("%sbedtools merge -i %stmp/%s%s > %stemp%s.bed" % (path_bedtools, out, zero, str(i), out, str(int(i) + 1)))
 
             #os.system("rm %stmp/%s%s" %(out,zero,str(i)))
-
+            
             i += 1
             
     else:
-        sys.exit(
-            '\n\n\ERROR: the BED flag was used but neither a bed file nor a gene list was provided\n\n'
-        )
+        sys.exit('\n\n\ERROR: the BED flag was used but neither a bed file nor a gene list was provided\n\n')
             
 elif BED == False:
 
