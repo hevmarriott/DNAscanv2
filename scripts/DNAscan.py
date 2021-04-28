@@ -556,11 +556,10 @@ def is_variant_file_OK(file, t):
                 f.close()
             elif t == "Vcf":
                 f = pysam.VariantFile(file, 'r')
-                empty = f.fetch() is None
-                if empty:
-                    sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)
-                else:
+                if f.fetch() != None:
                     print("\n%s has sufficient data for DNAscan to continue...\n" % file)
+                else:
+                    sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)
         else:
             sys.exit("WARNING: %s is empty - DNAscan will now terminate.\n" % file)
     else:
