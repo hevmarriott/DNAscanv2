@@ -1422,12 +1422,12 @@ if SV:
         )
 
     else:
-        
-        print(
-            "\nStructural variants are being called with Manta...\n"
-        )
 
         if BED:
+            
+            print(
+            "\nStructural variants are being called with Manta...\n"
+            )
 
             os.system("bgzip -c %s  > %s/temp.bed.gz" % (path_bed, out))
 
@@ -1444,6 +1444,10 @@ if SV:
                 % (path_manta, bam_file, path_reference, out, out))
 
         else:
+            
+            print(
+            "\nStructural variants are being called with Manta...\n"
+            )
 
             os.system("mkdir %smanta" % (out))
 
