@@ -17,7 +17,7 @@ sudo apt-get install -y update
 
 sudo apt-get install -y vim
 
-sudo apt-get install -y python3
+sudo apt-get install -y python2
 
 sudo apt-get install -y perl
 
