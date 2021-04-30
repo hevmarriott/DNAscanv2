@@ -23,7 +23,7 @@ sudo apt-get install -y perl
 
 sudo apt-get install -y ttf-dejavu
 
-sudo apt-get install -y wget bzip2
+sudo apt-get install -y wget bzip2 gzip
 
 mkdir $INSTALL_DIR
 
@@ -69,31 +69,31 @@ conda install -y python=3.8.0
 
 conda install -y pysam=0.16.0.1
 
-conda install -y samtools=1.10
+conda install -y samtools=1.9
 
-conda install -y freebayes>=1.0.2
+conda install -y freebayes=1.0.2
 
-conda install -y bedtools>=2.25.0
+conda install -y bedtools=2.25.0
 
-conda install -y vcftools>=0.1.13
+conda install -y vcftools=0.1.16
 
-conda install -y bcftools=1.10.2
+conda install -y bcftools=1.9
 
-conda install -y hisat2>=2.1.0
+conda install -y hisat2=2.2.1
 
 conda install -y bwa=0.7.17
 
 conda install -y rtg-tools=3.12
 
-conda install -y multiqc>=1.2
+conda install -y multiqc=1.10.1
 
 conda install -y fastqc=0.11.9
 
-conda install -y expansionhunter=4.0.2
+conda install -y expansionhunter=3.2.2
 
-conda install -y sambamba>=0.6.6
+conda install -y sambamba=0.7.1
 
-conda install -y samblaster>0.1.24
+conda install -y samblaster=0.1.26
 
 cd $DNASCAN_DIR
 
