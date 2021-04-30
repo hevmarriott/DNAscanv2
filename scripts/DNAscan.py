@@ -1837,7 +1837,7 @@ if results_report:
     if "annovar.log" not in os.listdir(out + "logs") or not path_gene_list:
 
         print(
-            "WARNING: Either the annotation was not peformed or path_gene_list was not provided in paths_configs.py, please perform annotation using the -annotation flag and specify the a gene list in paths_configs.py if you wish to perform this stage \n"
+            "WARNING: Either the annotation was not peformed or path_gene_list was not provided in paths_configs.py, please perform annotation using the -annotation flag and specify the a gene list in paths_configs.py if you wish to generate an annotation results report.\n"
         )
 
     else:
