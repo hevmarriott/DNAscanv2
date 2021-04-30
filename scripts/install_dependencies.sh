@@ -15,15 +15,15 @@ NUM_CPUS=$5
 
 apt-get install -y update
 
-apt-get install -y vim
+sudo apt-get install -y vim
 
-apt-get install -y python3
+sudo apt-get install -y python3
 
-apt-get install -y perl
+sudo apt-get install -y perl
 
-apt-get install -y ttf-dejavu
+sudo apt-get install -y ttf-dejavu
 
-apt-get install -y wget bzip2
+sudo apt-get install -y wget bzip2
 
 mkdir $INSTALL_DIR
 
@@ -115,9 +115,9 @@ nohup bwa index hg19.fa &
 
 nohup hisat2-build -p $NUM_CPUS hg19.fa hg19 &
 
-apt-get update -qq
+sudo apt-get update -qq
 
-apt-get install -y -qq bzip2 gcc g++ make python zlib1g-dev
+sudo apt-get install -y -qq bzip2 gcc g++ make python zlib1g-dev
 
 cd $INSTALL_DIR
 
