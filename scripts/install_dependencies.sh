@@ -13,7 +13,7 @@ GATK_DOWNLOAD_DIR=$4
 
 NUM_CPUS=$5
 
-apt-get install -y update
+sudo apt-get install -y update
 
 sudo apt-get install -y vim
 
