@@ -125,9 +125,9 @@ Then install git, download this repository and run the install_dependencies.sh s
 
 ```bash
 
-apt-get update
+sudo apt-get update
 
-apt-get install git
+sudo apt-get install git
 
 git clone https://github.com/KHP-Informatics/DNAscan.git
 
@@ -519,19 +519,19 @@ npm start
 #### List of dependencies
 
 Fast mode pipeline (ideal if focusing on SNVs):
-* Samtools >= 1.10
-* HISAT2 >= 2.1.0
-* Freebayes >= 1.0.2
+* Samtools >= 1.9
+* HISAT2 = 2.2.1
+* Freebayes = 1.0.2
 * Python >= 3 (if using Expansion Hunter 4.0.2, only versions 3.5.x, 3.6.x, >=3.7.0, >= 3.8.0 are supported - tested with 3.8.0)
 * Pysam = 0.16.0.1
 * Perl (tested with 5.16.3 x86_64-Linux)
-* Vcftools >= 0.1.13 
-* Bedtools2 >= 2.25
+* Vcftools = 0.1.16
+* Bedtools = 2.25
 * Samblaster >= 0.1.24
 * Sambamba >= 0.6.6
 * Manta 1.6.0 (optional, needed only if interested in structural variants)
-* ExpansionHunter = 4.0.2 (optional, needed only if interested in known motif expansions)
-* Bcftools >= 1.10 (optional, needed only if interested in performing custom variant filtering and calls report)
+* ExpansionHunter = 3.2.2 (optional, needed only if interested in known motif expansions)
+* Bcftools >= 1.9 (optional, needed only if interested in performing custom variant filtering and calls report)
 * Annovar "Version >= $Date: 2016-02-01 00:11:18 -0800 (Mon, 1 Feb 2016)" (optional, needed only if interested in performing variant annotation)
 
 Normal mode pipeline (better performance on indels and SVs):
@@ -566,7 +566,7 @@ chmod +x Miniconda3-latest-Linux-x86_64.sh
 In the file /path_to_your_home_dir/.bashrc add the following line:
 
 ```bash
-export PATH=/path/to/Miniconda2/installation/directory/Miniconda3/bin:$PATH 
+export PATH=/path/to/Miniconda3/installation/directory/Miniconda3/bin:$PATH 
 ```
 Bioconda is a repository of binary bioinformatics tools which makes it very easy to install many open source softwares. 
 To install the needed dependencies with Bioconda:
