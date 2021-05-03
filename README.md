@@ -1,4 +1,4 @@
-![alt text](https://github.com/KHP-Informatics/DNAscan/blob/master/DNAscan_logo.001.jpeg)
+![alt text](https://github.com/hevmarriott/DNAscanv2/blob/master/DNAscan_logo.001.jpeg)
 
 # DNAscan
 ```diff
@@ -28,7 +28,7 @@
 
 DNAscan is a fast and efficient bioinformatics pipeline that allows for the analysis of DNA Next Generation sequencing data, requiring very little computational effort and memory usage. DNAscan can analyse 40x whole genome NGS data in ~8 hours, using as little as 8 cpus and 16 Gbs of RAM while guaranteeing a very high performance. We do this by exploiting state-of-the-art bioinformatics tools. DNAscan can screen your DNA NGS data for single nucleotide variants, small indels, structural variants, repeat expansions, viral (or any other organism’s) genetic material. Its results are annotated using a wide range of databases including ClinVar, EXAC, dbSNP and CADD and uploaded onto the gene.iobio platform for an on-the-fly analysis/interpretation.
 
-![alt text](https://github.com/KHP-Informatics/DNAscan/raw/master/DNAscan_pipeline_pic.jp2)
+![alt text](https://github.com/hevmarriott/DNAscanv2/raw/master/DNAscan_pipeline_pic.jp2)
 
 Figure 1. Central panel: Pipeline overview. DNAscan accepts sequencing data, and optionally variant files. The pipeline firstly performs an alignment step (details in the left panel), followed by a customizable data analysis protocol (details in the right panel). Finally, results are annotated and a user friendly report is generated. Right panel: detailed description of the post alignment analysis pipeline (intensive mode). Aligned reads are used by the variant calling pipeline (Freebayes + GATK HC + Bcftools), both aligned and unaligned reads are used by Manta and ExpansionHunter (for which known repeat description files have to be provided) to look for structural variants. The unaligned reads are mapped to a database of known viral genomes (NCBI database) to screen for the presence of their genetic material in the input sequencing data. Left panel: Alignment stage description. Raw reads are aligned with HISAT2. Resulting soft/hard-clipped reads and unaligned reads are realigned with BWA mem and then merged with the others using samtools.
 
@@ -344,9 +344,9 @@ DNAscan output tree:
 
 ```bash
 
-./$out_dir-| # this is the folder given to DNAsca using the -out flag. It will contain the aligned sequencing data ($sample_name.bam) as well as some temporary files
+./$out_dir-| # this is the folder given to DNAscan using the -out flag. It will contain the aligned sequencing data ($sample_name.bam) as well as some temporary files
            |
-           |-results # This will contain the output of the analyses. E.g. $sample_name_sorted.vcf.gz , $sample_name_SV.vcf.gz, virus_results.txt, etc  
+           |-results # This will contain the output of the analyses. E.g. $sample_name_sorted.vcf.gz , $sample_name_manta_SV.vcf.gz, virus_results.txt, etc  
            |
            |-reports # If any report flags are used, this folder will contain the reports. E.g. $sample_name_vcfstats.txt if the -calls_report flag is used
            |
@@ -588,7 +588,7 @@ conda install samtools
 ```
 And add samtools to paths_configs.py:
 ```bash
-path_samtools = "path/to/miniconda3/envs/DNAscan-env-name/bin/
+path_samtools = "path/to/miniconda3/samtools/bin/
 ```
 NOTE: if using Miniconda3 to install dependencies, paths to all binary dependencies end in bin/ as shown above.
 
@@ -640,13 +640,13 @@ annovar_operations = "g,f,f,f,f"
 **Singularity** is also a container project similar to Docker and does not require sudo privileges to run. This can be very important if you decide to use our framework on a machine for which you do not have such privileges. E.g. your institution HPC cluster. In this case you can use Singularity to convert the docker image into a singularity image and run a bash shell in the resulting Singularity container:
 
 ```bash 
-$ singularity shell docker://hevmarriott/dnascan_hg19 OR docker://hevmarriott/dnascan_hg38
+$ singularity shell docker://hevmarriott/dnascanv2_hg19 OR docker://hevmarriott/dnascanv2_hg38
 ```
 After starting the bash shell inside the singularity container you can find a working deployment of DNAscan in /DNAscan
 
 ```bash 
-$ Singularity.dnascan_hg19 OR .dnascan_hg38 > cd /DNAscan
-$ Singularity.dnascan_hg19 OR .dnascan_hg38 > cat /DNAscan/docker/welcome_message.txt
+$ Singularity.dnascanv2_hg19 OR .dnascanv2_hg38 > cd /DNAscan
+$ Singularity.dnascanv2_hg19 OR .dnascanv2_hg38 > cat /DNAscan/docker/welcome_message.txt
 ```
 
 
