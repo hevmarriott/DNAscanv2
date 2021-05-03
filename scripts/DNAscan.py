@@ -951,9 +951,12 @@ if SV:
             if mode == "normal" or mode == "intensive":
                 print("\nStructural variants are being called with Whamg...\n")
                 
+                if format == "fastq":
+                    bam_file = wham_bam_file
+                
                 os.system(
                     "%swhamg -x %s -e %s -a %s -f %s -z | perl %sfiltWhamG.pl > %s/results/%s_whamg_SV.vcf 2> %s/results/%s_whamg_SV.err"
-                    % (path_whamg, num_cpu, whamg_exclude_regions, path_reference, wham_bam_file,
+                    % (path_whamg, num_cpu, whamg_exclude_regions, path_reference, bam_file,
                        path_scripts, out, sample_name, out, sample_name))
                 os.system(
                     "bgzip -c %s/results/%s_whamg_SV.vcf > %s/results/%s_whamg_SV.vcf.gz"
