@@ -383,7 +383,7 @@ else:
     tmp_dir = "/tmp"
 
 
-print(tmp_dir)
+print("\nTemporary files will be held at this directory: %s\n" % (tmp_dir))
 # 8. Alignment
 # Performs alignment if input sequencing data is in fastq format
 
