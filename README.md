@@ -30,7 +30,7 @@ DNAscan is a fast and efficient bioinformatics pipeline that allows for the anal
 
 ![alt text](https://github.com/KHP-Informatics/DNAscan/raw/master/DNAscan_pipeline_pic.jp2)
 
-Figure 1. Central panel: Pipeline overview. DNAscan accepts sequencing data, and optionally variant files. The pipeline firstly performs an alignment step (details in the left panel), followed by a customizable data analysis protocol (details in the right panel). Finally, results are annotated and a user friendly report is generated. Right panel: detailed description of the post alignment analysis pipeline (intensive mode). Aligned reads are used by the variant calling pipeline (Freebayes + GATK HC + Bcftools), both aligned and unaligned reads are used by Manta and ExpansionHunter (for which known repeat description files have to be provided)  to look for structural variants. The unaligned reads are mapped to a database of known viral genomes (NCBI database) to screen for the presence of their genetic material in the input sequencing data. Left panel: Alignment stage description. Raw reads are aligned with HISAT2. Resulting soft/hard-clipped reads and unaligned reads are realigned with BWA mem and then merged with the others using samtools.
+Figure 1. Central panel: Pipeline overview. DNAscan accepts sequencing data, and optionally variant files. The pipeline firstly performs an alignment step (details in the left panel), followed by a customizable data analysis protocol (details in the right panel). Finally, results are annotated and a user friendly report is generated. Right panel: detailed description of the post alignment analysis pipeline (intensive mode). Aligned reads are used by the variant calling pipeline (Freebayes + GATK HC + Bcftools), both aligned and unaligned reads are used by Manta and ExpansionHunter (for which known repeat description files have to be provided) to look for structural variants. The unaligned reads are mapped to a database of known viral genomes (NCBI database) to screen for the presence of their genetic material in the input sequencing data. Left panel: Alignment stage description. Raw reads are aligned with HISAT2. Resulting soft/hard-clipped reads and unaligned reads are realigned with BWA mem and then merged with the others using samtools.
 
 
 ## Citation
@@ -184,7 +184,8 @@ Also, one of the three analysis modes can be chosen with the -mode option:
 -mode  MODE            options are fast, normal, intensive [string] (default = "fast")
 
 ```
-Fast mode uses Hisat2 and Freebayes to quickly align and call variants. It is ideal if you are focusing your analysis on single nucleotide variants. Normal mode performs an alignment refinement using BWA on selected reads. This step improves the alignment of soft-clipped reads and reads containing small indels. It is recommended if your focus is on structural variants. Intensive mode adds a further indel calling step to the pipeline using GATK Haplotype Caller which improves the performance on small indels. If your analysis focuses on the discovery of non human material (e.g. viruses or bacteria) in your sequencing data, please note that that the selceted mode does not affect this step. A detailed description of the 3 modes can be found in the [DNAscan paper](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2791-8).  
+Fast mode uses Hisat2 and Freebayes to quickly align and call variants. It is ideal if you are focusing your analysis on single nucleotide variants. Normal mode performs an alignment refinement using BWA on selected reads. This step improves the alignment of soft-clipped reads and reads containing small indels. It is recommended if your focus is on structural variants. Intensive mode adds a further indel calling step to the pipeline using GATK Haplotype Caller which improves the performance on small indels. If your analysis focuses on the discovery of non human material (e.g. viruses or bacteria) in your sequencing data, please note that that the selected mode does not affect this step. A detailed description of the 3 modes can be found in the [DNAscan paper](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2791-8).
+Structural variant calling with Whamg can now be performed in normal and intensive modes, as it requires paired-end reads to be aligned using BWA. 
 
 Finally, a set of optional arguments can be used to customise the analysis:
 
@@ -522,7 +523,7 @@ Fast mode pipeline (ideal if focusing on SNVs):
 * Samtools >= 1.9
 * HISAT2 = 2.2.1
 * Freebayes = 1.0.2
-* Python >= 3 (if using Expansion Hunter 4.0.2, only versions 3.5.x, 3.6.x, >=3.7.0, >= 3.8.0 are supported - tested with 3.8.0)
+* Python >= 3 (if using Expansion Hunter 3.2.2, only versions 3.5.x, 3.6.x, >=3.7.0, >= 3.8.0 are supported - tested with 3.8.0)
 * Pysam = 0.16.0.1
 * Perl (tested with 5.16.3 x86_64-Linux)
 * Vcftools = 0.1.16
@@ -536,9 +537,11 @@ Fast mode pipeline (ideal if focusing on SNVs):
 
 Normal mode pipeline (better performance on indels and SVs):
 * BWA 0.7.17
+* Whamg 1.8.0 (optional, needed only if interested in structural variants)
 
 Intensive mode pipeline (top performance on indels):
 * Genome Analysis Toolkit 4.1.9.0
+* Whamg 1.8.0 (optional, needed only if interested in structural variants)
 
 Tools needed for generating graphical reports 
 * RTG Tools >= 3.6.2 
