@@ -82,6 +82,8 @@ path_hisat_index = ""
 
 path_manta = ""
 
+path_whamg = ""
+
 path_bedtools = ""
 
 path_tabix = ""
