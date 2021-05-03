@@ -169,7 +169,7 @@ options_log.close()
 
 print('\nOptions saved onto %s/logs/options.log \n' %(out))
 
-#Functions for checking output files
+# Function for checking output result files
 def is_variant_file_OK(file, t):
     if os.path.isfile(file) == True:
         if os.path.getsize(file) != 0:
@@ -236,10 +236,10 @@ if reference == "grch37" or  reference == "grch38" :
         annotation = False
     
 if BED or path_gene_list:
-    if path_bed:
+    if len(path_bed) != 0:
         # splitting the analysis region into subsets of equal length to
         # distribute the work across the available threads.
-        if path_gene_list:
+        if len(path_gene_list) != 0:
             print(
                 "\n\nWARNING: Both a bed file and a list of genes were provided. DNAscan will ignore the list of genes.\n\n"
             )
@@ -265,7 +265,7 @@ if BED or path_gene_list:
             i += 1
 
     else:
-        if path_gene_list:
+        if len(path_gene_list) != 0:
             os.system(
                 "zgrep -iwf %s %s%s_gene_names.txt.gz | awk '{print $2}' > %smatched_genes.txt"
                 % (path_gene_list, path_to_db, reference, out))
@@ -328,7 +328,7 @@ else:
                   (dnascan_dir, reference, out, reference))
         path_bed = "%stmp/exome_%s.bed" % (out, reference)
         
-        if path_bed:
+        if len(path_bed) != 0:
             # splitting the analysis region into subsets of equal length to
             # distribute the work across the available threads.
             os.system(
