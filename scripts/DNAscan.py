@@ -811,10 +811,10 @@ if variantcalling:
 
 # 11. Perform variant hard filtering
 
-if filter_string:
+if filter_string and len(variant_results_file) != 0:
     print("\nHard filtering of SNV/indel variants is being performed...\n")
     print('%sbcftools filter -i \" %s \" %s | bgzip -c > %s%s_sorted_filtered.vcf.gz ; %stabix -fp vcf %s%s_sorted_filtered.vcf.gz' 
-        % ( path_bcftools, filter_string, variant_results_file, out, sample_name, path_tabix, out,sample_name))
+          % ( path_bcftools, filter_string, variant_results_file, out, sample_name, path_tabix, out,sample_name))
     os.system(
         "%sbcftools filter -i \'%s\' %s | bgzip -c > %s%s_sorted_filtered.vcf.gz ; %stabix -fp vcf %s%s_sorted_filtered.vcf.gz " % (
             path_bcftools, filter_string, variant_results_file, out, sample_name, path_tabix, out,sample_name))
