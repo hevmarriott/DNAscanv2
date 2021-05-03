@@ -902,81 +902,84 @@ if SV:
         )
 
     else:
-        if BED:
-            print(
-            "\nStructural variants are being called with Manta...\n"
-            )
+        if paired == "1":
+            if BED:
+                print(
+                    "\nStructural variants are being called with Manta...\n"
+                )
+                os.system("bgzip -c %s  > %s/temp.bed.gz" % (path_bed, out))
+                os.system(
+                    "%ssortBed -i %s/temp.bed.gz | bgzip -c > %s/sorted.bed.gz" %
+                    (path_bedtools, out, out))
+                
+                os.system("%stabix -p bed %s/sorted.bed.gz" % (path_tabix, out))
+                os.system("mkdir %smanta" % (out))
+                os.system(
+                    "%sconfigManta.py --bam %s --referenceFasta %s --runDir %smanta --callRegions %s/sorted.bed.gz"
+                    % (path_manta, bam_file, path_reference, out, out))
+                
+            else:
+                print(
+                    "\nStructural variants are being called with Manta...\n")
+                
+                os.system("mkdir %smanta" % (out))
+                os.system(
+                    "%sconfigManta.py --bam %s --referenceFasta %s --runDir %smanta"
+                    % (path_manta, bam_file, path_reference, out))
 
-            os.system("bgzip -c %s  > %s/temp.bed.gz" % (path_bed, out))
+            os.system("%smanta/runWorkflow.py -j %s -m local" % (out, num_cpu))
             os.system(
-                "%ssortBed -i %s/temp.bed.gz | bgzip -c > %s/sorted.bed.gz" %
-                (path_bedtools, out, out))
-
-            os.system("%stabix -p bed %s/sorted.bed.gz" % (path_tabix, out))
-            os.system("mkdir %smanta" % (out))
+                "mv %s/manta/results/variants/diploidSV.vcf.gz  %s/results/%smanta_SV.vcf.gz"
+                % (out, out, sample_name))
             os.system(
-                "%sconfigManta.py --bam %s --referenceFasta %s --runDir %smanta --callRegions %s/sorted.bed.gz"
-                % (path_manta, bam_file, path_reference, out, out))
-
-        else:
-            print(
-            "\nStructural variants are being called with Manta...\n"
-            )
-
-            os.system("mkdir %smanta" % (out))
-            os.system(
-                "%sconfigManta.py --bam %s --referenceFasta %s --runDir %smanta"
-                % (path_manta, bam_file, path_reference, out))
-
-        os.system("%smanta/runWorkflow.py -j %s -m local" % (out, num_cpu))
-        os.system(
-            "mv %s/manta/results/variants/diploidSV.vcf.gz  %s/results/%smanta_SV.vcf.gz"
-            % (out, out, sample_name))
-        os.system(
-            "mv %s/manta/results/variants/diploidSV.vcf.gz.tbi  %s/results/%smanta_SV.vcf.gz.tbi"
-            % (out, out, sample_name))
+                "mv %s/manta/results/variants/diploidSV.vcf.gz.tbi  %s/results/%smanta_SV.vcf.gz.tbi"
+                % (out, out, sample_name))
             
-        manta_SV_results_file = "%s/results/%smanta_SV.vcf.gz" % (out, sample_name)
+            manta_SV_results_file = "%s/results/%smanta_SV.vcf.gz" % (out, sample_name)
         
-        if mode == "fast":
-            is_variant_file_OK(manta_SV_results_file, "Vcf")
-        
-        if not debug:
-            os.system("rm -r %stemp.bed.gz  %ssorted.bed.gz %smanta" %
-                      (out, out, out))
-            
-        os.system("touch  %slogs/SV.log" % (out))
-            
-        print("\nStructural variant calling with Manta is complete.\n")
-        
-        if mode == "normal" or mode == "intensive":
-            print("\nStructural variants are being called with Whamg\n...")
-            
-            exclude_regions = "GL000207.1, GL000226.1, GL000229.1, GL000231.1, GL000210.1, GL000239.1, GL000235.1, GL000201.1, GL000247.1, GL000245.1, GL000197.1, GL000203.1, GL000246.1, GL000249.1, GL000196.1, GL000248.1, GL000244.1, GL000238.1, GL000202.1, GL000234.1, GL000232.1, GL000206.1, GL000240.1, GL000236.1, GL000241.1, GL000243.1, GL000242.1, GL000230.1, GL000237.1, GL000233.1, GL000204.1, GL000198.1, GL000208.1, GL000191.1, GL000227.1, GL000228.1, GL000214.1, GL000221.1, GL000209.1, GL000218.1, GL000220.1, GL000213.1, GL000211.1, GL000199.1, GL000217.1, GL000216.1, GL000215.1, GL000205.1, GL000219.1, GL000224.1, GL000223.1, GL000195.1, GL000212.1, GL000222.1, GL000200.1, GL000193.1, GL000194.1, GL000225.1, GL000192.1, NC_007605"
-            
-            os.system(
-                "%swhamg -x %s -e %s -a %s -f %s | perl %sfiltWhamG.pl > %s/results/%swhamg_SV.vcf 2> %s/results/%swhamg_SV.err"
-                % (path_whamg, num_cpu, exclude_regions, path_reference, wham_bam_file,
-                   path_scripts, out, sample_name, out, sample_name))
-            os.system(
-                "bgzip -c %s/results/%swhamg_SV.vcf > %s/results/%swhamg_SV.vcf.gz"
-                % (out, sample_name, out, sample_name))
-            os.system(
-                " %stabix -p vcf %s/results/%swhamg_SV.vcf.gz"
-                % (path_tabix, out, sample_name))
+            if mode == "fast":
+                is_variant_file_OK(manta_SV_results_file, "Vcf")
             
             if not debug:
-                os.system("rm %s/results/%swhamg_SV.err %s/results/%swhamg_SV.vcf" % (out, sample_name, out, sample_name))
-                
-            whamg_SV_results_file = "%s/results/%swhamg_SV.vcf.gz" % (out, sample_name)
-            
-            is_variant_file_OK(whamg_SV_results_file, "Vcf")
-            
-            print("\nStructural variant calling with Whamg is complete.\n")
-                
-            is_variant_file_OK(manta_SV_results_file, "Vcf")
+                os.system("rm -r %stemp.bed.gz  %ssorted.bed.gz %smanta" %
+                          (out, out, out))
             
             os.system("touch  %slogs/SV.log" % (out))
+            
+            print("\nStructural variant calling with Manta is complete.\n")
+        
+            if mode == "normal" or mode == "intensive":
+                print("\nStructural variants are being called with Whamg\n...")
+                
+                exclude_regions = "GL000207.1, GL000226.1, GL000229.1, GL000231.1, GL000210.1, GL000239.1, GL000235.1, GL000201.1, GL000247.1, GL000245.1, GL000197.1, GL000203.1, GL000246.1, GL000249.1, GL000196.1, GL000248.1, GL000244.1, GL000238.1, GL000202.1, GL000234.1, GL000232.1, GL000206.1, GL000240.1, GL000236.1, GL000241.1, GL000243.1, GL000242.1, GL000230.1, GL000237.1, GL000233.1, GL000204.1, GL000198.1, GL000208.1, GL000191.1, GL000227.1, GL000228.1, GL000214.1, GL000221.1, GL000209.1, GL000218.1, GL000220.1, GL000213.1, GL000211.1, GL000199.1, GL000217.1, GL000216.1, GL000215.1, GL000205.1, GL000219.1, GL000224.1, GL000223.1, GL000195.1, GL000212.1, GL000222.1, GL000200.1, GL000193.1, GL000194.1, GL000225.1, GL000192.1, NC_007605"
+                os.system(
+                    "%swhamg -x %s -e %s -a %s -f %s | perl %sfiltWhamG.pl > %s/results/%swhamg_SV.vcf 2> %s/results/%swhamg_SV.err"
+                    % (path_whamg, num_cpu, exclude_regions, path_reference, wham_bam_file,
+                       path_scripts, out, sample_name, out, sample_name))
+                os.system(
+                    "bgzip -c %s/results/%swhamg_SV.vcf > %s/results/%swhamg_SV.vcf.gz"
+                    % (out, sample_name, out, sample_name))
+                os.system(
+                    " %stabix -p vcf %s/results/%swhamg_SV.vcf.gz"
+                    % (path_tabix, out, sample_name))
+            
+                if not debug:
+                    os.system("rm %s/results/%swhamg_SV.err %s/results/%swhamg_SV.vcf" % (out, sample_name, out, sample_name))
+                
+                whamg_SV_results_file = "%s/results/%swhamg_SV.vcf.gz" % (out, sample_name)
+            
+                is_variant_file_OK(whamg_SV_results_file, "Vcf")
+            
+                print("\nStructural variant calling with Whamg is complete.\n")
+                
+                is_variant_file_OK(manta_SV_results_file, "Vcf")
+            
+                os.system("touch  %slogs/SV.log" % (out))
+                
+        else:
+            print(
+                "\n\nWARNING: Structural variant calling cannot be performed with single end reads. If you want this to be performed, please provide paired-end aligned reads to DNAscan.\n\n"
+            )
             
             
 # 14. Annotation with Annovar
@@ -1241,21 +1244,26 @@ if sequencing_report:
         )
 
     else:
-
-        if path_java != "":
-            java_option = "-j " + path_java + "java"
-
-        else:
-            java_option = ""
-        
-        print("\nGenerating sequencing report...\n")
-        
-        os.system("%sfastqc %s -o %sreports -f %s -t %s %s %s" %
+        if format == "fastq":
+            if path_java != "":
+                java_option = "-j " + path_java + "java"
+            else:
+                java_option = ""
+            
+            print("\nGenerating sequencing report...\n")
+            
+            os.system("%sfastqc %s -o %sreports -f %s -t %s %s %s" %
                   (path_fastqc, java_option, out, format, num_cpu, input_file,
                    input_file2))
-        os.system("touch  %slogs/sequencing_report.log" % (out))
+            os.system("touch  %slogs/sequencing_report.log" % (out))
         
-        print("\nSequencing report is now available.\n")
+            print("\nSequencing report is now available.\n")
+            
+        else:
+            print(
+                "WARNING: The sequencing report cannot be generated as the input data is not in fastq format.\n"
+            )
+            
 
 # 18. Snv and indel calling report generation ( bcftools stats )
 
@@ -1301,72 +1309,74 @@ if results_report:
     if "annovar.log" not in os.listdir(out + "logs") or not path_gene_list:
 
         print(
-            "WARNING: Either the annotation was not peformed or path_gene_list was not provided in paths_configs.py, please perform annotation using the -annotation flag and specify the a gene list in paths_configs.py if you wish to generate an annotation results report.\n"
+            "WARNING: Either the annotation was not peformed or path_gene_list was not provided in paths_configs.py, please perform annotation using the -annotation flag and/or specify the a gene list in paths_configs.py if you wish to generate an annotation results report.\n"
         )
 
     else:
-
-        if "results_report.log" in os.listdir(out + "logs"):
-
-            print(
-                "WARNING: The presence of results_report.log in logs is telling you that the results report was already produced, please remove results_report.log if you wish to perform this stage anyway\n"
-            )
-
-        else:
+        if annotation:
             
-            print("\nGenerating report of annotated variant calls...\n")
+            if "results_report.log" in os.listdir(out + "logs"):
+                print(
+                    "WARNING: The presence of results_report.log in logs is telling you that the results report was already produced, please remove results_report.log if you wish to perform this stage anyway\n"
+                )
 
-            os.system("zcat %s > %stemp.vcf" % (variant_results_file, out))
+            else:
+                print("\nGenerating report of annotated variant calls...\n")
 
-            #vcf = open('%stemp.vcf' % (out), 'r')
-            #vcf_lines = vcf.readlines()
+                os.system("zcat %s > %stemp.vcf" % (variant_results_file, out))
 
-            gene_list_file = open(path_gene_list)
-            gene_list_lines = gene_list_file.readlines()
-            gene_list = gene_list_lines
-            out_file_all = open(
-                '%sreports/%s_all_variants.txt' % (out, sample_name), 'w')
+                #vcf = open('%stemp.vcf' % (out), 'r')
+                #vcf_lines = vcf.readlines()
 
-            counter = 0
+                gene_list_file = open(path_gene_list)
+                gene_list_lines = gene_list_file.readlines()
+                gene_list = gene_list_lines
+                out_file_all = open(
+                    '%sreports/%s_all_variants.txt' % (out, sample_name), 'w')
+                
+                counter = 0
 
-            for i in gene_list:
-                with open('%stemp.vcf' % (out)) as vcf:
+                for i in gene_list:
+                    with open('%stemp.vcf' % (out)) as vcf:
+                        for j in vcf:
+                            check1 = re.search(
+                                r'(^chr)|(^[0-9,X,Y,M]+\t)', j, flags=0)
+                            check = re.search(
+                                "=%s;" % (i.strip().upper()), j, flags=0)
 
-                    for j in vcf:
-                        check1 = re.search(
-                            r'(^chr)|(^[0-9,X,Y,M]+\t)', j, flags=0)
-                        check = re.search(
-                            "=%s;" % (i.strip().upper()), j, flags=0)
+                            if check and check1:
+                                infos = j.split('ANNOVAR_DATE')[1][12:].split(
+                                    'ALLELE_END')[0].replace(";", "\t")
+                                
+                                if counter == 0:
+                                    replaced_1 = re.sub(
+                                        '=[a-z,A-Z,0-9,\.,\_,\-,:,>,<]+', '',
+                                        infos)
+                                    
+                                    out_file_all.write(
+                                        'CHR\tPosition\tRef\tAlt\tGenotype\t%s\n' %
+                                        (replaced_1))
 
-                        if check and check1:
-                            infos = j.split('ANNOVAR_DATE')[1][12:].split(
-                                'ALLELE_END')[0].replace(";", "\t")
+                                    counter = 1
 
-                            if counter == 0:
-                                replaced_1 = re.sub(
-                                    '=[a-z,A-Z,0-9,\.,\_,\-,:,>,<]+', '',
-                                    infos)
+                                replaced = re.sub('[a-z,A-Z,0-9,\.,\_,\-,:,>,<]+=',
+                                                  '', infos)
 
                                 out_file_all.write(
-                                    'CHR\tPosition\tRef\tAlt\tGenotype\t%s\n' %
-                                    (replaced_1))
+                                    '%s\t%s\t%s\t%s\t%s\t%s\n' %
+                                    (j.split('\t')[0], j.split('\t')[1],
+                                     j.split('\t')[3], j.split('\t')[4],
+                                     j.split('\t')[-1].split(':')[0], replaced))
 
-                                counter = 1
+                out_file_all.close()
 
-                            replaced = re.sub('[a-z,A-Z,0-9,\.,\_,\-,:,>,<]+=',
-                                              '', infos)
-
-                            out_file_all.write(
-                                '%s\t%s\t%s\t%s\t%s\t%s\n' %
-                                (j.split('\t')[0], j.split('\t')[1],
-                                 j.split('\t')[3], j.split('\t')[4],
-                                 j.split('\t')[-1].split(':')[0], replaced))
-
-            out_file_all.close()
-
-            os.system("touch  %slogs/results_report.log" % (out))
+                os.system("touch  %slogs/results_report.log" % (out))
             
-            print("\nCalls report for annotated variants is now available.\n")
+                print("\nCalls report for annotated variants is now available.\n")
+                
+        else:
+            print("WARNING: The results report cannot be generated as annotation has not been performed on the input variant file/s.\n")
+                
 
 # 21. Starting iobio services
 
