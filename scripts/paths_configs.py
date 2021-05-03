@@ -84,6 +84,8 @@ path_manta = ""
 
 path_whamg = ""
 
+whamg_exclude_regions = ""
+
 path_bedtools = ""
 
 path_tabix = ""
