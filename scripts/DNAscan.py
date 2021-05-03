@@ -952,7 +952,7 @@ if SV:
                 print("\nStructural variants are being called with Whamg...\n")
                 
                 os.system(
-                    "%swhamg -x %s -e %s -a %s -f %s | perl %sfiltWhamG.pl > %s/results/%s_whamg_SV.vcf 2> %s/results/%s_whamg_SV.err"
+                    "%swhamg -x %s -e %s -a %s -f %s -z | perl %sfiltWhamG.pl > %s/results/%s_whamg_SV.vcf 2> %s/results/%s_whamg_SV.err"
                     % (path_whamg, num_cpu, whamg_exclude_regions, path_reference, wham_bam_file,
                        path_scripts, out, sample_name, out, sample_name))
                 os.system(
