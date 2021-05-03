@@ -953,7 +953,7 @@ if SV:
                 
                 os.system(
                     "%swhamg -x %s -e %s -a %s -f %s | perl %sfiltWhamG.pl > %s/results/%s_whamg_SV.vcf 2> %s/results/%s_whamg_SV.err"
-                    % (path_whamg, num_cpu, wham_exclude_regions, path_reference, wham_bam_file,
+                    % (path_whamg, num_cpu, whamg_exclude_regions, path_reference, wham_bam_file,
                        path_scripts, out, sample_name, out, sample_name))
                 os.system(
                     "bgzip -c %s/results/%s_whamg_SV.vcf > %s/results/%s_whamg_SV.vcf.gz"
