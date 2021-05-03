@@ -91,6 +91,8 @@ conda install -y fastqc=0.11.9
 
 conda install -y expansionhunter=3.2.2
 
+conda install -y wham=1.8.0
+
 conda install -y sambamba=0.7.1
 
 conda install -y samblaster=0.1.26
