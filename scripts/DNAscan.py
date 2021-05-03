@@ -31,7 +31,7 @@
 #   10.2 Freebayes snv and indel calling
 # 11. Perform variant hard filtering
 # 12. Perform known expansions search with ExpansionHunter
-# 13. Structural Variant calling with Manta and Whamg
+# 13. Structural Variant calling with Manta and Whamg (normal and intensive mode)
 # 14. Annotation with Annovar
 # 15. Microbes screening
 #   15.1 Extract non human reads
