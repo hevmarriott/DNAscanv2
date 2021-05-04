@@ -314,7 +314,7 @@ if BED or path_gene_list:
 
         else:
             sys.exit(
-                '\n\n\ERROR: the BED flag was used but neither a bed file nor a gene list was provided\n\n'
+                '\n\nERROR: the BED flag was used but neither a bed file nor a gene list was provided. Either specify a bed file in paths_configs.py or remove the BED flag so DNAscan can create a BED file from the reference genome.\n\n'
             )
 
 #    os.system(
