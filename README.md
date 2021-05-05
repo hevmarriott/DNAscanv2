@@ -63,16 +63,17 @@ To obtain DNAscan please use git to download the most recent development tree:
 git clone https://github.com/hevmarriott/DNAscan.git
 ```
 
-Once you have downloaded DNAscan, you can set up all needed dependencies running the install_dependencies.sh script available in DNAscan/scripts. Before running install_dependencies.sh please download and uncompress Annovar by registering at the following [link](http://download.openbioinformatics.org/annovar_download_form.php) and unzip GATK 4.1.9.0 after downloading at the following [link](https://github.com/broadinstitute/gatk/releases/download/4.1.9.0/gatk-4.1.9.0.zip). Install_dependencies.sh will install all software dependencies, the hg19 reference genome and its hisat2 and bwa indexes (these jobs run in the background and will finish after the script ends) and update paths_configs.py accordingly. 
+Once you have downloaded DNAscan, you can set up all needed dependencies for either hg19 or hg38 by running the install_dependencies_(hg19/hg38).sh script available in DNAscan/scripts. Before running install_dependencies.sh please download and uncompress Annovar by registering at the following [link](http://download.openbioinformatics.org/annovar_download_form.php) and unzip GATK 4.1.9.0 after downloading at the following [link](https://github.com/broadinstitute/gatk/releases/download/4.1.9.0/gatk-4.1.9.0.zip). Install_dependencies.sh will install all software dependencies, the selected reference genome and its hisat2 and bwa indexes (these jobs run in the background and will finish after the script ends (approximately 1 hour) and update paths_configs.py accordingly. The only requirement before running DNAscan is to edit paths_configs.py with the paths of the newly installed software dependencies.
 
 ```bash
 
-bash scripts/install_dependencies.sh /path/to/set_up/directory/ /path/to/DNAscan/directory/ /path/to/annovar/directory/ /path/to/gatk-
+bash scripts/install_dependencies_(hg19/hg38).sh /path/to/set_up/directory/ /path/to/DNAscan/directory/ /path/to/annovar/directory/ /path/to/gatk-
 4.1.9.0/directory/ $num_threads
 
 source ~/.bashrc
 
 ```
+NOTE: If you want to perform annotation with Annovar, the CADD database takes up ~50GB of storage - please comment this line out before running the install script if it is not required. 
 
 #### Obtain with Docker
 
@@ -88,7 +89,7 @@ The -v option adds your data folder (assuming you have some data to run DNAscan 
 The --storage-opt size=Ngigas option defines the maximum size of the container, setting it to N gigabytes. This number would depend on you plans. If you want to perform annotation, the databases used by DNAscan (clinvar,CADD,etc) are about 350G. We recommend N = 500 if you want to install the whole pipeline (including annotation). To this number you should add what you need for your analysis, e.g. if you are planning to download data, the size of your data to analyse etc. A way to workaround this is to use the mirrored host folder as outdir for your analysis and as annovar folder. This folder does not have a size limit. 
 
 IMPORTANT: To detach from the container without stopping it, use Ctrl+p, Ctrl+q.
-IMPORTANT: When running DNAscan inside a docker container, if you want to use the iobio services (and for example upload your results into the gene.iobio platform), these would not be visible by your browser unless they are in the folder which is mirrored on the host system. Considering the previous command to run an ubuntu image, the easiest way to do this would be to use the folder where you imported the data inside the container (/container/path/where/you/want/your/data) as an outdir when running DNAsca. In this way the DNAscan results can be found in /path/to/your/data_folder on the host system.
+IMPORTANT: When running DNAscan inside a docker container, if you want to use the iobio services (and for example upload your results into the gene.iobio platform), these would not be visible by your browser unless they are in the folder which is mirrored on the host system. Considering the previous command to run an ubuntu image, the easiest way to do this would be to use the folder where you imported the data inside the container (/container/path/where/you/want/your/data) as an outdir when running DNAscan. In this way the DNAscan results can be found in /path/to/your/data_folder on the host system.
 
 If you want to add data to the container while this is already running you can use the docker cp command. First detach from the container without stopping it using Ctrl+p, Ctrl+q, then cp your data inside the container:
 
@@ -119,9 +120,9 @@ After installing docker run an Ubuntu image:
 docker run -v /path/to/your/data_folder:/container/path/where/you/want/your/data  -it [--storage-opt size=500G] ubuntu /bin/bash 
 
 ```
-Before you do this, make sure that you have downloaded and/or registered Annovar and GATK 4.1.9.0 if you want to run the normal/fast modes and perform annotation. 
+Before you do this, make sure that you have registered and downloaded Annovar and installed GATK 4.1.9.0 if you want to run the normal/fast modes and perform annotation. 
 
-Then install git, download this repository and run the install_dependencies.sh script, which downloads the hg19 reference genome build and BWA/Hisat2 indexes as well as the Annovar databases:
+Then install git, download this repository and run the install_dependencies_(hg19/hg38).sh script, which downloads the selected reference genome build and BWA/Hisat2 indexes as well as the Annovar databases:
 
 ```bash
 
@@ -129,13 +130,13 @@ sudo apt-get update
 
 sudo apt-get install git
 
-git clone https://github.com/KHP-Informatics/DNAscan.git
+git clone https://github.com/hevmarriott/DNAscanv2.git
 
 cd DNAscan
 
 #By default install_dependencies.sh downloads the following Annovar databases: Exac, Refgene, Dbnsfp, Clinvar and Avsnp. If you wish to download the CADD database (about 350G) please uncomment the appropiate line. If you are not interested in performing annotation, please # the annovar lines in the install_dependencies.sh script. 
 
-bash scripts/install_dependencies.sh /path/to/set_up/directory/ /path/to/DNAscan/directory/ /path/to/annovar/directory/ /path/to/gatk-4.1.9.0/directory/ $num_threads
+bash scripts/install_dependencies_(hg19/hg38).sh /path/to/set_up/directory/ /path/to/DNAscan/directory/ /path/to/annovar/directory/ /path/to/gatk-4.1.9.0/directory/ $num_threads
 
 source ~/.bashrc
 
@@ -164,7 +165,7 @@ Its basic use requires the following options:
   -iobio                if this flag is set the iobio service links will be provided at the end of the analysis (Default = "False")
   -alignment            if this flag is set the alignment stage will be performed (Default = "False")
   -expansion            if this flag is set DNAscan will look for the expansions described in the json folder described in paths_configs.py  (Default = "False"). It requires a path to a folder containing the json repeat-specification files to be specified in paths_configs.py
-  -SV                   if this flag is set the structural variant calling stage will be performed (Default = "False") 
+  -SV                   if this flag is set the structural variant calling stage will be performed with Manta (in all modes) and Whamg (in normal/intensive mode) (Default = "False") 
   -virus                if this flag is set DNAscan will perform viral scanning (Default = "False")  
   -bacteria             if this flag is set DNAscan will perform bacteria scanning (Default = "False") 
   -custom_microbes      if this flag is set DNAscan will perform a customized microbe scanning according to the provided microbe data base in paths_configs.py (Default = "False")  
