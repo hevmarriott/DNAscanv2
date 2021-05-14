@@ -139,7 +139,6 @@ sed "s|path_gatk = \"\"|path_gatk = \"$GATK_DOWNLOAD_DIR\/\"|" scripts/paths_con
 
 sed "s|dnascan_dir = \"\"|dnascan_dir = \"$DNASCAN_DIR\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
 
-
 sed "s|path_manta = \"\"|path_manta = \"$INSTALL_DIR\/manta-1.6.0.centos6_x86_64\/bin\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
 sed "s|path_samblaster = \"\"|path_samblaster = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
@@ -174,7 +173,11 @@ sed "s|path_tabix = \"\"|path_tabix = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scri
 
 sed "s|path_bedtools = \"\"|path_bedtools = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
-mv scripts/paths_configs.py_temp scripts/paths_configs.py
+sed "s|path_expansionHunter_jsons = \"\"|path_expansionHunter_jsons = \"$DNASCAN_DIR\/repeats\/hg38\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
+
+sed "s|path_to_db = \"\"|path_to_db = \"$DNASCAN_DIR\/db\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
+
+mv scripts/paths_configs.py scripts/paths_configs.py_temp
 
 chmod +x scripts/*
 
