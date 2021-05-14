@@ -181,6 +181,12 @@ sed "s|path_tabix = \"\"|path_tabix = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scri
 
 sed "s|path_bedtools = \"\"|path_bedtools = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
+sed "s|path_expansionHunter_jsons = \"\"|path_expansionHunter_jsons = \"$DNASCAN_DIR\/repeats\/hg19\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
+
+sed "s|path_to_db = \"\"|path_to_db = \"$DNASCAN_DIR\/db\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
+
+mv scripts/paths_configs.py scripts/paths_configs.py_temp
+
 mv scripts/paths_configs.py_temp scripts/paths_configs.py
 
 chmod +x scripts/*
