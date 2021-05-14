@@ -147,6 +147,8 @@ sed "s|path_gatk = \"\"|path_gatk = \"$GATK_DOWNLOAD_DIR\/\"|" scripts/paths_con
 
 sed "s|dnascan_dir = \"\"|dnascan_dir = \"$DNASCAN_DIR\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
 
+for i in path_manta path_samblaster path_sambamba path_whamg path_expansionHunter path_fastqc path_multiqc path_rtg path_bwa path_hisat path_bcftools path_samtools path_freebayes path_java path_vcftools path_tabix path_bedtools; do sed "s|$i = \"\"|$i = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scripts/paths_configs.py_temp >  scripts/paths_configs.py; done
+
 mv scripts/paths_configs.py_temp scripts/paths_configs.py
 
 chmod +x scripts/*
