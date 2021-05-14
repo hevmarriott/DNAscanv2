@@ -147,7 +147,39 @@ sed "s|path_gatk = \"\"|path_gatk = \"$GATK_DOWNLOAD_DIR\/\"|" scripts/paths_con
 
 sed "s|dnascan_dir = \"\"|dnascan_dir = \"$DNASCAN_DIR\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
 
-for i in path_manta path_samblaster path_sambamba path_whamg path_expansionHunter path_fastqc path_multiqc path_rtg path_bwa path_hisat path_bcftools path_samtools path_freebayes path_java path_vcftools path_tabix path_bedtools; do sed "s|$i = \"\"|$i = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scripts/paths_configs.py_temp >  scripts/paths_configs.py; done
+sed "s|path_manta = \"\"|path_manta = \"$INSTALL_DIR\/manta-1.6.0.centos6_x86_64\/bin\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
+
+sed "s|path_samblaster = \"\"|path_samblaster = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
+
+sed "s|path_sambamba = \"\"|path_sambamba = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
+
+sed "s|path_whamg = \"\"|path_whamg = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
+
+sed "s|path_expansionHunter = \"\"|path_expansionHunter = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
+
+sed "s|path_fastqc = \"\"|path_fastqc = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
+
+sed "s|path_multiqc = \"\"|path_multiqc = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
+
+sed "s|path_rtg = \"\"|path_rtg = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
+
+sed "s|path_bwa = \"\"|path_bwa = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
+
+sed "s|path_hisat = \"\"|path_hisat = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
+
+sed "s|path_bcftools = \"\"|path_bcftools = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
+
+sed "s|path_samtools = \"\"|path_samtools = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
+
+sed "s|path_freebayes = \"\"|path_freebayes = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
+
+sed "s|path_java = \"\"|path_java = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
+
+sed "s|path_vcftools = \"\"|path_vcftools = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
+
+sed "s|path_tabix = \"\"|path_tabix = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
+
+sed "s|path_bedtools = \"\"|path_bedtools = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
 mv scripts/paths_configs.py_temp scripts/paths_configs.py
 
