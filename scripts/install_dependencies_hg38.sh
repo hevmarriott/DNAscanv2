@@ -179,6 +179,8 @@ sed "s|path_to_db = \"\"|path_to_db = \"$DNASCAN_DIR\/db\/\"|" scripts/paths_con
 
 mv scripts/paths_configs.py scripts/paths_configs.py_temp
 
+mv scripts/paths_configs.py_temp scripts/paths_configs.py
+
 chmod +x scripts/*
 
 export PATH=$DNASCAN_DIR/scripts/:$PATH
