@@ -504,17 +504,12 @@ E.g. If the reference genome is the file hg19.fa, located in /home/dataset/ and 
 
 ### Graphic user interface
 
-We made a graphic user interface (GUI) for DNAscan to enable a wider audience to use it. The GUI source code is in DNAscanUGUI.zip. We used [UGUI](http://ugui.io/) to develop our GUI. To get it working please follow a few simple steps described below, however, detailed documentation and instruction about how to get it started can be found [here](http://ugui.io/tutorials/getting-started.html). If you do not have Node.js installed please get it from [here](https://nwjs.io/).
+We made a graphic user interface (GUI) for DNAscan to enable a wider audience to use it. After installing dependencies in scripts/install_dependencies(hg19/hg38.sh) and going to the DNAscan directory, please enter the following:
 
 ```bash
-export PATH=/path/to/DNAscan/scripts/:$PATH
-
-unzip DNAscanUGUI.ip
-cd UGUI
-npm install
-npm start
+python3 DNAscan_gui.py
 ```
-
+You can enter all required and customisation options as well as viewing the constructed command line input before running DNAscan. If you are happy with the options chosen, DNAscan will run in the window, and when done, all your files will be on your system.
 
 ### Dependencies
 
