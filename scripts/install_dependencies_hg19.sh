@@ -97,6 +97,8 @@ conda install -y sambamba=0.7.1
 
 conda install -y samblaster=0.1.26
 
+conda install -y pysimplegui=4.40.0
+
 cd $DNASCAN_DIR
 
 mkdir hg19
