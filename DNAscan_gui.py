@@ -51,7 +51,7 @@ sg.Column(reports)]], title='Customisation')],])
 
 col2 = sg.Column(col)
 
-DNAscan_logo = [sg.Image(r'C:\Users\Heather\OneDrive\Documents\PhD Clinical Neuroscience KCL\DNAscan\DNAscan_logo.001.png', size=(400,100)), sg.Text('Welcome to the DNAscan GUI!!!. Check out the Github documentation for more info.', font=2)]
+DNAscan_logo = [sg.Image(r'DNAscan_logo.001.png', size=(400,100)), sg.Text('Welcome to the DNAscan GUI!!!. Check out the Github documentation for more info.', font=2)]
 
 layout_usage = [[DNAscan_logo,col1,col2]]
 
