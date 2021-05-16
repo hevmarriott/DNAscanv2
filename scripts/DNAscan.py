@@ -32,6 +32,7 @@
 # 11. Perform variant hard filtering
 # 12. Perform known expansions search with ExpansionHunter
 # 13. Structural Variant calling with Manta and Whamg (normal and intensive mode)
+#   13.1 Merging of SV calls to create union set using SURVIVOR
 # 14. Annotation with Annovar
 # 15. Microbes screening
 #   15.1 Extract non human reads
@@ -171,7 +172,7 @@ options_log.close()
 print('\nOptions saved onto %s/logs/options.log \n' %(out))
 
 # Function for checking output result files
-def is_variant_file_OK(file, t):
+def is_variant_file_OK(file, t, s):
     if os.path.isfile(file) == True:
         if os.path.getsize(file) != 0:
             if t == "bam":
@@ -186,7 +187,10 @@ def is_variant_file_OK(file, t):
                     if any(not line.startswith(b"#") for line in f):
                         print("\n%s has sufficient data for DNAscan to continue...\n" % file)
                     else:
-                        sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)
+                        if s == "variantcalling":
+                            sys.exit("\nWARNING: %s only contains the header and no data, therefore DNAscan will now terminate.\n" % file)
+                        else:
+                            print("\nWARNING: %s only contains the header and no data.\n" % file)
                 f.close()
         else:
             sys.exit("WARNING: %s is empty - DNAscan will now terminate.\n" % file)
@@ -407,7 +411,7 @@ if alignment:
 
                 bam_file = "%ssorted.bam" % (out)
                 
-                is_variant_file_OK(bam_file, "bam")
+                is_variant_file_OK(bam_file, "bam", "alignment")
 
                 os.system("touch  %slogs/alignment.log" % (out))
                 
@@ -484,7 +488,7 @@ if alignment:
 
                 bam_file = "%ssorted_merged.bam" % (out)
                
-                is_variant_file_OK(bam_file, "bam")
+                is_variant_file_OK(bam_file, "bam", "alignment")
 
                 os.system("touch  %slogs/alignment.log" % (out))
                 
@@ -513,7 +517,7 @@ if alignment:
                     
                     wham_bam_file = "%ssorted_bwa_wham.bam" % (out)
                     
-                    is_variant_file_OK(wham_bam_file, "bam")
+                    is_variant_file_OK(wham_bam_file, "bam", "alignment")
                     
                     os.system("touch  %slogs/alignment.log" % (out))
                     
@@ -537,7 +541,7 @@ if alignment:
 
                 bam_file = "%ssorted.bam" % (out)
                 
-                is_variant_file_OK(bam_file, "bam")
+                is_variant_file_OK(bam_file, "bam", "alignment")
 
                 os.system("touch  %salignment.log" % (out))
                 
@@ -601,7 +605,7 @@ if alignment:
 
                 bam_file = "%ssorted_merged.bam" % (out)
                 
-                is_variant_file_OK(bam_file, "bam")
+                is_variant_file_OK(bam_file, "bam", "alignment")
 
                 os.system("touch  %slogs/alignment.log" % (out))
                 
@@ -636,7 +640,7 @@ if format == "sam" and "sam2bam.log" not in os.listdir(out + "logs"):
                                                           input_file, out))
     bam_file = "%ssorted.bam" % (out)
     
-    is_variant_file_OK(bam_file, "bam")
+    is_variant_file_OK(bam_file, "bam", "convert")
 
     os.system("touch  %slogs/sam2bam.log" % (out))
 
@@ -803,7 +807,7 @@ if variantcalling:
                     variant_results_file = "%s%s_sorted.vcf.gz" % (out,
                                                                    sample_name)
                     
-                    is_variant_file_OK(variant_results_file, "Vcf")
+                    is_variant_file_OK(variant_results_file, "Vcf", "variantcalling")
 
                     os.system("%stabix -p vcf %s%s_sorted.vcf.gz" %
                               (path_tabix, out, sample_name))
@@ -825,7 +829,7 @@ if variantcalling:
                     variant_results_file = "%s%s_sorted.vcf.gz" % (out,
                                                                    sample_name)
                     
-                    is_variant_file_OK(variant_results_file, "Vcf")
+                    is_variant_file_OK(variant_results_file, "Vcf", "variantcalling")
                     
                     print(
                     "\nCompleted SNV calling with Freebayes.\n"
@@ -852,7 +856,7 @@ if filter_string and len(variant_results_file) != 0:
     variant_results_file = "%s%s_sorted_filtered.vcf.gz" % (
         out, sample_name)
     
-    is_variant_file_OK(variant_results_file, "Vcf")
+    is_variant_file_OK(variant_results_file, "Vcf", "variantcalling")
     
     print("\nVariant hard filtering is complete.\n")
     
@@ -882,7 +886,7 @@ if expansion:
         
         expansion_results_file = "%s/results/%s_expansions.vcf.gz" % (out, sample_name)
         
-        is_variant_file_OK(expansion_results_file, "Vcf")
+        is_variant_file_OK(expansion_results_file, "Vcf", "expansion")
 
         os.system("touch  %slogs/EH.log" % (out))
         
@@ -970,11 +974,11 @@ if SV:
                 
                 whamg_SV_results_file = "%s/results/%s_whamg_SV.vcf.gz" % (out, sample_name)
             
-                is_variant_file_OK(whamg_SV_results_file, "Vcf")
+                is_variant_file_OK(whamg_SV_results_file, "Vcf", "SV")
             
                 print("\nStructural variant calling with Whamg is complete.\n")
                 
-                is_variant_file_OK(manta_SV_results_file, "Vcf")
+                is_variant_file_OK(manta_SV_results_file, "Vcf", "SV")
             
                 os.system("touch  %slogs/SV.log" % (out))
                 
@@ -1019,7 +1023,7 @@ if annotation:
 
         variant_results_file = "%sresults/%s_annotated.vcf.gz" % (out,
                                                                   sample_name)
-        is_variant_file_OK(variant_results_file, "Vcf")
+        is_variant_file_OK(variant_results_file, "Vcf", "annotation")
 
         os.system("touch  %slogs/annovar.log" % (out))
         
