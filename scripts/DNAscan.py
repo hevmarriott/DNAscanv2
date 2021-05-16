@@ -968,9 +968,6 @@ if SV:
                 os.system(
                     " %stabix -p vcf %s/results/%s_whamg_SV.vcf.gz"
                     % (path_tabix, out, sample_name))
-            
-                if not debug:
-                    os.system("rm %s/results/%s_whamg_SV.err %s/results/%s_whamg_SV.vcf" % (out, sample_name, out, sample_name))
                 
                 whamg_SV_results_file = "%s/results/%s_whamg_SV.vcf.gz" % (out, sample_name)
             
@@ -979,8 +976,25 @@ if SV:
                 print("\nStructural variant calling with Whamg is complete.\n")
                 
                 is_variant_file_OK(manta_SV_results_file, "Vcf", "SV")
+                
+                print("\nMerging SV calls with SURVIVOR.\n")
+                
+                os.system("gzip -d %s " % (manta_SV_results_file))
+                
+                os.system("ls %s/results/*SV.vcf > %s/results/sample_files" % (out, out)) 
+                
+                os.system("%sSURVIVOR merge %s/results/sample_files 1000 1 1 1 0 30 %s/results/%_merged_SV.vcf" % (path_SURVIVOR, out, out, sample_name))
+                
+                os.system("bgzip -c %s/results/%s_merged_SV.vcf > %s/results/%s_merged_SV.vcf.gz" % (out, sample_name, out, sample_name))
+                
+                if not debug:
+                    os.system("rm %s/results/%s_whamg_SV.err %s/results/%s_whamg_SV.vcf %s/results/%s_manta_SV.vcf" % (out, sample_name, out, sample_name, out, sample_name))
+                    
+                merged_SV_file = "%s/results/%s_merged_SV.vcf.gz" % (out, sample_name)
             
                 os.system("touch  %slogs/SV.log" % (out))
+                
+                print("\nSV merging is complete. \n")
                 
         else:
             print(
