@@ -61,6 +61,8 @@ path_samblaster = ""
 
 path_java = ""
 
+path_SURVIVOR = ""
+
 path_vcftools = ""
 
 path_scripts = "scripts/"
