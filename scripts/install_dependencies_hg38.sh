@@ -95,6 +95,8 @@ conda install -y samblaster=0.1.26
 
 conda install -y pysimplegui=4.40.0
 
+conda install -y survivor=1.0.7
+
 cd $DNASCAN_DIR
 
 mkdir hg38
@@ -179,7 +181,7 @@ sed "s|path_expansionHunter_jsons = \"\"|path_expansionHunter_jsons = \"$DNASCAN
 
 sed "s|path_to_db = \"\"|path_to_db = \"$DNASCAN_DIR\/db\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
-mv scripts/paths_configs.py scripts/paths_configs.py_temp
+sed "s|path_SURVIVOR = \"\"|path_SURVIVOR = \"$INSTALL_DIR\/Miniconda3\/bin\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
 
 mv scripts/paths_configs.py_temp scripts/paths_configs.py
 
