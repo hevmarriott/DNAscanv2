@@ -71,7 +71,7 @@ conda install -y pysam=0.16.0.1
 
 conda install -y samtools=1.9
 
-conda install -y freebayes=1.0.2
+conda install -y freebayes=1.3.2
 
 conda install -y bedtools=2.25.0
 
