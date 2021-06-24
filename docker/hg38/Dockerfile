@@ -4,17 +4,17 @@
 
 
 FROM ubuntu:latest
-MAINTAINER Alfredo Iacoangeli "alfredo.iacoangeli@kcl.ac.uk"
+MAINTAINER Heather Marriott "heather.marriott@kcl.ac.uk"
 SHELL ["/bin/bash", "-c"]
 RUN apt-get update
 RUN apt-get install -y git
 RUN apt-get install -y bash
 RUN cd $PWD
-RUN git clone https://github.com/hevmarriott/DNAscan.git
-RUN cd DNAscan
-RUN bash DNAscan/scripts/install_dependencies_hg38_docker.sh $PWD $PWD/DNAscan/ 
+RUN git clone https://github.com/hevmarriott/DNAscanv2.git
+RUN cd DNAscanv2
+RUN bash DNAscanv2/scripts/install_dependencies_hg38_docker.sh $PWD/DNAscanv2/local/ $PWD/DNAscanv2/ 
 RUN source ~/.bashrc
 
-WORKDIR $PWD/DNAscan/
+WORKDIR $PWD/DNAscanv2/
 
-ENTRYPOINT cat $PWD/DNAscan/docker/welcome_message.txt
+ENTRYPOINT cat $PWD/DNAscanv2/docker/welcome_message.txt
