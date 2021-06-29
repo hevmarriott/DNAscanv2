@@ -212,10 +212,14 @@ if alsgenescanner:
     #expansion = True
     BED = True
     path_expansionHunter_jsons = '%s/repeats/%s/' % (dnascan_dir, reference)
-    path_bed = '%s/als_gene_scanner.bed' % (path_to_db)
     path_gene_list = ""
     annovar_operations = "g,f,f"
     annovar_protocols = "refGene,dbnsfp30a,clinvar_20210123"
+    
+    if reference == "hg19":
+        path_bed = '%s/als_gene_scanner_hg19.bed' % (path_to_db)
+    else:
+        path_bed = '%s/als_gene_scanner_hg38.bed' % (path_to_db)
     
 # Y. adapt DB to reference
 
