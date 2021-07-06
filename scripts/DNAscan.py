@@ -725,7 +725,11 @@ if variantcalling:
                 
                 os.system(
                     "%sgatk --java-options '-Xmx%sg' HaplotypeCaller --native-pair-hmm-threads %s -R %s -I %s -L %smpileup_positions.bed -O %sgatk_indels.vcf %s" % (
-                        (path_gatk, RAM_GB, num_cpu, path_reference, bam_file, out, out, GATK_HC_custom_options)
+                        path_gatk, RAM_GB, num_cpu, path_reference, bam_file, out, out, GATK_HC_custom_options))
+                
+                print(
+                    "%sgatk --java-options '-Xmx%sg' HaplotypeCaller --native-pair-hmm-threads %s -R %s -I %s -L %smpileup_positions.bed -O %sgatk_indels.vcf %s" % (
+                        path_gatk, RAM_GB, num_cpu, path_reference, bam_file, out, out, GATK_HC_custom_options))
 
                 os.system(
                     "%sbedtools sort -header -i %sgatk_indels.vcf > %sgatk_indels_sorted.vcf"
