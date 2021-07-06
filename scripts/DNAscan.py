@@ -380,8 +380,11 @@ if rm_dup == "True":
     print(
         "\nDuplicates will be removed after alignment.\n"
     )
-
-    samblaster_cmq = "%ssamblaster --ignoreUnmated |" % (path_samblaster)
+    if exome = "True":
+        samblaster_cmq = "%ssamblaster --ignoreUnmated |" % (path_samblaster)
+    else:
+        samblaster_cmq = "%ssamblaster |" % (path_samblaster)
+        
 else:
     samblaster_cmq = ""
 
@@ -715,35 +718,20 @@ if variantcalling:
                 os.system(
                     "%sbedtools sort -i %smpileup_positions.bed > %stemp_sorted.bed ; mv  %stemp_sorted.bed %smpileup_positions.bed"
                     % (path_bedtools, out, out, out, out))
-
-                counter = 1
-                ps = []
-
-                while counter < int(num_cpu) + 1:
-                    
-                    print(
+                
+                print(
                         "\nCalling indels with GATK Haplotype Caller on indel positions identified by samtools mpileup...\n"
-                    )
-
-                    command = "%sjava -jar %sgatk-package-4.1.9.0-local.jar HaplotypeCaller -R %s -I %s -L %smpileup_positions%s.bed -O %sgatk_indels%s.vcf %s" % (
-                        path_java, path_gatk, path_reference, bam_file, out,
-                        str(counter), out, str(counter), GATK_HC_custom_options)
-
-                    proc_gatk = subprocess.Popen(command, shell=True)
-                    ps.append(proc_gatk)
-                    counter += 1
-
-                for proc_gatk in ps:
-                    proc_gatk.wait()
+                )
+                
+                os.system(
+                    "%sgatk --java-options '-Xmx%sg' HaplotypeCaller --native-pair-hmm-threads %s -R %s -I %s -L %smpileup_positions.bed -O %sgatk_indels.vcf %s" % (
+                        (path_gatk, RAM_GB, num_cpu, path_reference, bam_file, out, out, GATK_HC_custom_options)
 
                 os.system(
-                    "cat %sgatk_indels1.vcf | grep \"^#\" >> %sgatk_indels_merged.vcf ; for i in $(ls %s | grep gatk_indels | grep -v idx); do cat %s$i | grep -v \"^#\" >> %sgatk_indels_merged.vcf; done"
-                    % (out, out, out, out, out))
-                os.system(
-                    "%sbedtools sort -header -i %sgatk_indels_merged.vcf > %sgatk_indels_sorted_merged.vcf"
+                    "%sbedtools sort -header -i %sgatk_indels.vcf > %sgatk_indels_sorted.vcf"
                     % (path_bedtools, out, out))
                 os.system(
-                    "%svcftools  --vcf %sgatk_indels_sorted_merged.vcf --minGQ 30 --minDP 2  --recode --recode-INFO-all --out %sindels_only"
+                    "%svcftools  --vcf %sgatk_indels_sorted.vcf --minGQ 30 --minDP 2  --recode --recode-INFO-all --out %sindels_only"
                     % (path_vcftools, out, out))
                 os.system("touch  %slogs/VC_gatk.log" % (out))
                 
