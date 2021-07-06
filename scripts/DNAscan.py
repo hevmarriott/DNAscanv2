@@ -380,7 +380,7 @@ if rm_dup == "True":
     print(
         "\nDuplicates will be removed after alignment.\n"
     )
-    if exome = "True":
+    if exome == "True":
         samblaster_cmq = "%ssamblaster --ignoreUnmated |" % (path_samblaster)
     else:
         samblaster_cmq = "%ssamblaster |" % (path_samblaster)
