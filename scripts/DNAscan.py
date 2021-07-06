@@ -432,8 +432,8 @@ if alignment:
                 # Intensive mode uses GATK haplotype caller which does not
                 # support read group missing anymore. Default values for RG id,
                 # lb, pl, pu, and sm are defined in paths_configs.py. Please change
-                # them as needed.
-                if mode == "intensive":
+                # them as needed. Also, whamg structural variant calling requires RG tags in the input bam file/s.
+                if mode == "intensive" or SV:
                     RG = True
                 if RG:
                     rg_option_hisat2 = " --rg-id %s --rg LB:%s --rg PL:%s  --rg PU:%s --rg SM:%s " % (
