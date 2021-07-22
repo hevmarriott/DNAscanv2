@@ -43,7 +43,7 @@ def create_parser():
       action="store",
       dest="mode",
       default="fast",
-      help='options are fast, normal, intensive [string] (default = "fast")')
+      help='options are light, fast, normal, intensive [string] (default = "fast")')
 
   parser.add_argument(
       '-filter_string',
@@ -100,6 +100,14 @@ def create_parser():
       dest="SV",
       help=
       'if this flag is set the structural variant calling stage will be performed (Default = "False") ',
+      default=False)
+  
+  parser.add_argument(
+      '-MEI',
+      action="store_true",
+      dest="MEI",
+      help=
+      ' if this flag is set, mobile element insertion/transposable element calling will be performed (Default = "False") ',
       default=False)
 
   parser.add_argument(
