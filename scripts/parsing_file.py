@@ -43,7 +43,7 @@ def create_parser():
       action="store",
       dest="mode",
       default="fast",
-      help='options are light, fast, normal, intensive [string] (default = "fast")')
+      help='options are fast, normal, intensive [string] (default = "fast")')
 
   parser.add_argument(
       '-filter_string',
