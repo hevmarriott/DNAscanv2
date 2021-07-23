@@ -117,6 +117,14 @@ sudo apt-get install -y -qq bzip2 gcc g++ make python zlib1g-dev
 
 cd $INSTALL_DIR
 
+wget https://github.com/Illumina/strelka/releases/download/v2.9.10/strelka-2.9.10.centos6_x86_64.tar.bz2
+
+tar -xjf strelka-2.9.10.centos6_x86_64.tar.bz2
+
+export PATH=$INSTALL_DIR/strelka-2.9.10.centos6_x86_64/bin:$PATH
+
+echo export PATH=$INSTALL_DIR/strelka-2.9.10.centos6_x86_64/bin:$PATH >> ~/.bashrc
+
 wget https://github.com/Illumina/manta/releases/download/v1.6.0/manta-1.6.0.centos6_x86_64.tar.bz2
 
 tar -xjf manta-1.6.0.centos6_x86_64.tar.bz2
