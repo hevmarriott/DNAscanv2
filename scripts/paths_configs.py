@@ -47,6 +47,8 @@ path_annovar = ""
 
 path_annovar_db = ""
 
+path_intervar = ""
+
 #annovar_protocols and annovar_operations can be modified according to the wanted annovar databases. For instructions about
 #how to download the annovar databases and to modify annovar_protocols and annovar_operations please visit 
 #http://annovar.openbioinformatics.org/en/latest/ . 
