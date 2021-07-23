@@ -133,6 +133,14 @@ export PATH=$INSTALL_DIR/manta-1.6.0.centos6_x86_64/bin:$PATH
 
 echo export PATH=$INSTALL_DIR/manta-1.6.0.centos6_x86_64/bin:$PATH >> ~/.bashrc
 
+wget https://github.com/WGLab/InterVar/archive/refs/tags/V2.1.3.tar.gz
+
+tar -xvf V2.1.3.tar.gz
+
+export PATH=$INSTALL_DIR/InterVar-2.1.3/:$PATH
+
+echo export PATH=$INSTALL_DIR/InterVar-2.1.3/:$PATH >> ~/.bashrc
+
 cd $DNASCAN_DIR
 
 sed "s|path_reference = \"\"|path_reference = \"$DNASCAN_DIR\/hg38\/hg38.fa\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
