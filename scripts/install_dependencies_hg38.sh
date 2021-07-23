@@ -137,6 +137,12 @@ wget https://github.com/WGLab/InterVar/archive/refs/tags/V2.1.3.tar.gz
 
 tar -xvf V2.1.3.tar.gz
 
+cd InterVar-2.1.3/intervardb 
+
+wget https://www.omim.org/static/omim/data/mim2gene.txt
+
+cp $ANNOVAR_DIR/{annotate_variation.pl, table_annovar.pl, convert2annovar.pl} ..
+
 export PATH=$INSTALL_DIR/InterVar-2.1.3/:$PATH
 
 echo export PATH=$INSTALL_DIR/InterVar-2.1.3/:$PATH >> ~/.bashrc
