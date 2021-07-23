@@ -43,6 +43,8 @@ path_sambamba = ""
 
 path_freebayes = ""
 
+path_strelka = ""
+
 path_annovar = ""
 
 path_annovar_db = ""
