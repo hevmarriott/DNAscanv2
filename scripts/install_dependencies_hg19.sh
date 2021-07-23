@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#Usage: bash install_dependencies.sh $path_to_setup_dir $path_to_DNASCAN_dir $path_to_ANNOVAR $path_to_gatk_download
-#Example: bash install_dependencies.sh /home/local/ /home/DNAscan /home/annovar /home/gatk_download_dir
+#Usage: bash install_dependencies.sh $path_to_setup_dir $path_to_DNASCAN_dir $path_to_ANNOVAR 
+#Example: bash install_dependencies.sh /home/local/ /home/DNAscan /home/annovar 
 
 INSTALL_DIR=$1
 
@@ -9,9 +9,7 @@ DNASCAN_DIR=$2
 
 ANNOVAR_DIR=$3
 
-GATK_DOWNLOAD_DIR=$4
-
-NUM_CPUS=$5
+NUM_CPUS=$4
 
 sudo apt-get update
 
@@ -144,8 +142,6 @@ sed "s|path_bwa_index = \"\"|path_bwa_index = \"$DNASCAN_DIR\/hg19\/hg19.fa\"|" 
 sed "s|path_annovar = \"\"|path_annovar = \"$ANNOVAR_DIR\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
 sed "s|path_annovar_db = \"\"|path_annovar_db = \"$INSTALL_DIR\/humandb\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
-
-sed "s|path_gatk = \"\"|path_gatk = \"$GATK_DOWNLOAD_DIR\/\"|" scripts/paths_configs.py_temp >  scripts/paths_configs.py
 
 sed "s|dnascan_dir = \"\"|dnascan_dir = \"$DNASCAN_DIR\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
 
