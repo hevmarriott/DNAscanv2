@@ -20,8 +20,6 @@ tmp_dir = ""
 
 num_cpu = "1"
 
-RAM_GB = "16"
-
 
 #Paths
 
@@ -70,8 +68,6 @@ path_SURVIVOR = ""
 path_vcftools = ""
 
 path_scripts = "scripts/"
-
-path_gatk = ""
 
 path_bed = "data/test_data.bed"
 
