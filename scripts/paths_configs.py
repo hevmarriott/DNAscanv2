@@ -20,6 +20,8 @@ tmp_dir = ""
 
 num_cpu = "1"
 
+RAM_GB = ""
+
 
 #Paths
 
