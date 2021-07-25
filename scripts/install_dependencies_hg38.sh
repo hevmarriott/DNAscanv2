@@ -148,9 +148,14 @@ echo export PATH=$INSTALL_DIR/InterVar-2.1.3/:$PATH >> ~/.bashrc
 cd AnnotSV
 
 make PREFIX=. install
+
 make PREFIX=. install-human-annotation
 
 export ANNOTSV=$INSTALL_DIR/AnnotSV/
+
+cd $ANNOTSV/share/AnnotSV/Annotations_Human/Genes/GRCh38
+
+wget https://hgdownload.cse.ucsc.edu/goldenPath/hg38/database/refGene.txt.gz
 
 cd $DNASCAN_DIR
 
