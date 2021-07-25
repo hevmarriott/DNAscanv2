@@ -53,6 +53,8 @@ path_intervar = ""
 
 path_annotsv = ""
 
+path_knotannotsv = ""
+
 #annovar_protocols and annovar_operations can be modified according to the wanted annovar databases. For instructions about
 #how to download the annovar databases and to modify annovar_protocols and annovar_operations please visit 
 #http://annovar.openbioinformatics.org/en/latest/ . 
