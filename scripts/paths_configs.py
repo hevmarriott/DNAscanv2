@@ -130,3 +130,5 @@ bwa_custom_options = ""
 freebayes_custom_options = ""
 
 GATK_HC_custom_options = ""
+
+annotsv_custom_options = ""
