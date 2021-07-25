@@ -158,9 +158,14 @@ git clone https://github.com/lgmgeo/AnnotSV
 cd AnnotSV
 
 make PREFIX=. install
+
 make PREFIX=. install-human-annotation
 
 export ANNOTSV=$INSTALL_DIR/AnnotSV/
+
+cd $ANNOTSV/share/AnnotSV/Annotations_Human/Genes/GRCh37
+
+wget https://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/refGene.txt.gz
 
 cd $DNASCAN_DIR
 
