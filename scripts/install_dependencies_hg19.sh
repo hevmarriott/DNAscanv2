@@ -147,8 +147,6 @@ cd InterVar-2.1.3/intervardb
 
 wget https://www.omim.org/static/omim/data/mim2gene.txt
 
-cp $ANNOVAR_DIR/{annotate_variation.pl, table_annovar.pl, convert2annovar.pl} ..
-
 export PATH=$INSTALL_DIR/InterVar-2.1.3/:$PATH
 
 echo export PATH=$INSTALL_DIR/InterVar-2.1.3/:$PATH >> ~/.bashrc
