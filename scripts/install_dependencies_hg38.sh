@@ -19,7 +19,7 @@ sudo apt-get install -y perl
 
 sudo apt-get install -y ttf-dejavu
 
-sudo apt-get install -y wget bzip2 gzip
+sudo apt-get install -y wget bzip2 gzip make git tcl http json tar csv
 
 mkdir $INSTALL_DIR
 
@@ -144,6 +144,13 @@ wget https://www.omim.org/static/omim/data/mim2gene.txt
 export PATH=$INSTALL_DIR/InterVar-2.1.3/:$PATH
 
 echo export PATH=$INSTALL_DIR/InterVar-2.1.3/:$PATH >> ~/.bashrc
+
+cd AnnotSV
+
+make PREFIX=. install
+make PREFIX=. install-human-annotation
+
+export ANNOTSV=$INSTALL_DIR/AnnotSV/
 
 cd $DNASCAN_DIR
 
