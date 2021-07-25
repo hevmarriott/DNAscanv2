@@ -88,6 +88,10 @@ path_hisat_index = ""
 
 path_manta = ""
 
+path_delly = ""
+
+path_delly_bed_files = ""
+
 path_melt = ""
 
 path_bedtools = ""
