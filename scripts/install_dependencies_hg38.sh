@@ -95,6 +95,10 @@ conda install -y pysimplegui=4.40.0
 
 conda install -y survivor=1.0.7
 
+conda install -y perl=5.26.2=h470a237_0
+
+conda install -y perl-app-cpanminus
+
 cd $DNASCAN_DIR
 
 mkdir hg38
@@ -156,6 +160,18 @@ export ANNOTSV=$INSTALL_DIR/AnnotSV/
 cd $ANNOTSV/share/AnnotSV/Annotations_Human/Genes/GRCh38
 
 wget https://hgdownload.cse.ucsc.edu/goldenPath/hg38/database/refGene.txt.gz
+
+cd $INSTALL_DIR
+
+git clone https://github.com/mobidic/knotAnnotSV
+
+cpan YAML::XS
+
+cpan Sort::Key::Natural
+
+export PATH=$INSTALL_DIR/knotAnnotSV/:$PATH
+
+echo export PATH=$INSTALL_DIR/knotAnnotSV/:$PATH >> ~/.bashrc
 
 cd $DNASCAN_DIR
 
