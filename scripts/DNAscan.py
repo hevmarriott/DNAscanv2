@@ -53,7 +53,7 @@
 # 18. Sequencing data report generation ( fastqc )
 # 19. Snv and indel calling report generation ( bcftools stats )
 # 20. Html report generation ( Multiqc )
-# 21. Annotated variants report generation
+# 21. Annotated variants results report generation
 #   21.1 knotAnnotSV annotated structural variants report generation
 # 22. Starting iobio services
 #################################################################
