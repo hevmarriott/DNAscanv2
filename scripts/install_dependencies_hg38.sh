@@ -137,18 +137,6 @@ export PATH=$INSTALL_DIR/manta-1.6.0.centos6_x86_64/bin:$PATH
 
 echo export PATH=$INSTALL_DIR/manta-1.6.0.centos6_x86_64/bin:$PATH >> ~/.bashrc
 
-wget https://github.com/WGLab/InterVar/archive/refs/tags/V2.1.3.tar.gz
-
-tar -xvf V2.1.3.tar.gz
-
-cd InterVar-2.1.3/intervardb 
-
-wget https://www.omim.org/static/omim/data/mim2gene.txt
-
-export PATH=$INSTALL_DIR/InterVar-2.1.3/:$PATH
-
-echo export PATH=$INSTALL_DIR/InterVar-2.1.3/:$PATH >> ~/.bashrc
-
 cd AnnotSV
 
 make PREFIX=. install
