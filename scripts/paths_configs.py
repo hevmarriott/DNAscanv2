@@ -41,15 +41,11 @@ path_fastqc = ""
 
 path_sambamba = ""
 
-path_freebayes = ""
-
 path_strelka = ""
 
 path_annovar = ""
 
 path_annovar_db = ""
-
-path_intervar = ""
 
 path_annotsv = ""
 
@@ -126,9 +122,5 @@ path_bwa_index = ""
 hisat_custom_options = ""
 
 bwa_custom_options = ""
-
-freebayes_custom_options = ""
-
-GATK_HC_custom_options = ""
 
 annotsv_custom_options = ""
