@@ -90,7 +90,7 @@ path_manta = ""
 
 path_delly = ""
 
-path_delly_exclude_file = ""
+path_delly_exclude_regions = ""
 
 path_melt = ""
 
