@@ -39,9 +39,11 @@ $ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar exac0
 
 $ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar dbnsfp30a $INSTALL_DIR/humandb/
 
-$ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar clinvar_20210123 $INSTALL_DIR/humandb/
+$ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar clinvar_20210501 $INSTALL_DIR/humandb/
 
 $ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar avsnp147 $INSTALL_DIR/humandb/
+
+$ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar intervar_20180118 $INSTALL_DIR/humandb/
 
 cd $INSTALL_DIR
 
@@ -144,18 +146,6 @@ tar -xjf manta-1.6.0.centos6_x86_64.tar.bz2
 export PATH=$INSTALL_DIR/manta-1.6.0.centos6_x86_64/bin:$PATH
 
 echo export PATH=$INSTALL_DIR/manta-1.6.0.centos6_x86_64/bin:$PATH >> ~/.bashrc
-
-wget https://github.com/WGLab/InterVar/archive/refs/tags/V2.1.3.tar.gz
-
-tar -xvf V2.1.3.tar.gz
-
-cd InterVar-2.1.3/intervardb 
-
-wget https://www.omim.org/static/omim/data/mim2gene.txt
-
-export PATH=$INSTALL_DIR/InterVar-2.1.3/:$PATH
-
-echo export PATH=$INSTALL_DIR/InterVar-2.1.3/:$PATH >> ~/.bashrc
 
 git clone https://github.com/lgmgeo/AnnotSV
 
