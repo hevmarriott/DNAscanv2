@@ -37,7 +37,7 @@ $ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar refGe
 
 $ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar exac03 $INSTALL_DIR/humandb/
 
-$ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar dbnsfp30a $INSTALL_DIR/humandb/
+$ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar dbnsfp33a $INSTALL_DIR/humandb/
 
 $ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar clinvar_20210501 $INSTALL_DIR/humandb/
 
