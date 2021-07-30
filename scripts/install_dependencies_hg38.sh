@@ -41,6 +41,8 @@ $ANNOVAR_DIR/annotate_variation.pl -buildver hg38 -downdb -webfrom annovar clinv
 
 $ANNOVAR_DIR/annotate_variation.pl -buildver hg38 -downdb -webfrom annovar avsnp147 $INSTALL_DIR/humandb/
 
+$ANNOVAR_DIR/annotate_variation.pl -buildver hg38 -downdb -webfrom annovar intervar_20180118 $INSTALL_DIR/humandb/
+
 cd $INSTALL_DIR
 
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
