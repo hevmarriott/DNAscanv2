@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#Usage: bash install_dependencies.sh $path_to_setup_dir $path_to_DNASCAN_dir $path_to_ANNOVAR $path_to_gatk_download
-#Example: bash install_dependencies.sh /home/local/ /home/DNAscan /home/annovar /home/gatk_download_dir
+#Usage: bash install_dependencies.sh $path_to_setup_dir $path_to_DNASCAN_dir $path_to_ANNOVAR 
+#Example: bash install_dependencies.sh /home/local/ /home/DNAscan /home/annovar 
 
 apt-get install realpath
 
@@ -30,7 +30,7 @@ cd $DNASCAN_DIR
 chmod +x $ANNOVAR_DIR/*
 
 
-$ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar dbnsfp30a $INSTALL_DIR/humandb
+$ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar dbnsfp33a $INSTALL_DIR/humandb
 
 $ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar refGene $INSTALL_DIR/humandb
 
