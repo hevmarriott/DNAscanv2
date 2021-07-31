@@ -1457,7 +1457,7 @@ if results_report:
             out_file_all.close()
 
         #21.1 knotAnnotSV SV report generation
-             if SV:
+            if SV:
                 print("\nGenerating SV annotation HTML report...\n")
 
                 os.system("mkdir %s%s_SVanno" % (out, sample_name))
