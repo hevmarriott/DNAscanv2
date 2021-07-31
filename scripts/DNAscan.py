@@ -659,7 +659,6 @@ if variantcalling:
                 if paired == "1":
                     print("\nSNVs and indels are being called with Strelka...\n")
                     
-
                     if BED:
                         os.system("bgzip -c %s  > %s/temp.bed.gz" % (path_bed, out))
                         os.system(
@@ -670,7 +669,7 @@ if variantcalling:
                         os.system("mkdir %sstrelka &" % (out))
                         os.system(
                         "%sconfigureStrelkaGermlineWorkflow.py --bam %s --referenceFasta %s --runDir %sstrelka --callRegions %s/sorted.bed.gz"
-                        % (path_strelka, bam_file, path_reference, out))
+                        % (path_strelka, bam_file, path_reference, out, out))
 
                     if exome:
                         os.system("mkdir %sstrelka &" % (out))
