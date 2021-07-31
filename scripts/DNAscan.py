@@ -1010,11 +1010,11 @@ if MEI:
             melt_bed = "%sadd_bed_files/Hg38/Hg38.genes.bed" % (path_melt)
 
         if exome == "True":
-            os.system("%sjava -Xmx%sg -jar %sMELT.jar Single -bamfile %s -h %s -t %smelt/transposon.list -n %s -w %smelt -exome" % (
-                path_java, RAM_GB, path_melt, bam_file, path_reference, out, melt_bed, out))
+            os.system("%sjava -Xmx%sg -jar %sMELT.jar Single -bamfile %s -h %s -t %smelt/transposon.list -n %s -w %smelt -exome %s" % (
+                path_java, RAM_GB, path_melt, bam_file, path_reference, out, melt_bed, out, melt_custom_options))
         
-        os.system("%sjava -Xmx%sg -jar %sMELT.jar Single -bamfile %s -h %s -t %smelt/transposon.list -n %s -w %smelt" % (
-            path_java, RAM_GB, path_melt, bam_file, path_reference, out, melt_bed, out))
+        os.system("%sjava -Xmx%sg -jar %sMELT.jar Single -bamfile %s -h %s -t %smelt/transposon.list -n %s -w %smelt %s" % (
+            path_java, RAM_GB, path_melt, bam_file, path_reference, out, melt_bed, out, melt_custom_options))
 
         os.system("cat %smelt/SVA.final_comp.vcf | grep '^#' > %smelt/%s.header.txt" % (out, out, sample_name))
         os.system("cat %smelt/SVA.final_comp.vcf | grep -v '^#' > %smelt/%s.sva.vcf" % (out, out, sample_name))
