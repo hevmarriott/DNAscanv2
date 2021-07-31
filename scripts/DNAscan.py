@@ -751,8 +751,8 @@ if variantcalling:
                         )
 
                         os.system(
-                            "%svcftools  --gzvcf %s --minGQ 30 --minDP 2 --bed %smpileup_positions.bed --recode --recode-INFO-all --out %sindels_only"
-                            % (path_vcftools, variant_results_file, out, out))
+                            "%svcftools  --gzvcf %s/results/%s_strelka.vcf.gz --minGQ 30 --minDP 2 --bed %smpileup_positions.bed --recode --recode-INFO-all --out %sindels_only"
+                            % (path_vcftools, out, sample_name, out, out))
                         os.system("touch  %slogs/indels_only.log" % (out))
 
                         print(
@@ -765,8 +765,8 @@ if variantcalling:
                         # For the annotation step these two files are merged together.
 
                         os.system(
-                            "%svcftools  --gzvcf %s --minGQ 30 --minDP 2 --exclude-bed %smpileup_positions.bed  --recode --recode-INFO-all --out %sSNPs_only"
-                            % (path_vcftools, variant_results_file, out, out))
+                            "%svcftools  --gzvcf %s/results/%s_strelka.vcf.gz --minGQ 30 --minDP 2 --exclude-bed %smpileup_positions.bed  --recode --recode-INFO-all --out %sSNPs_only"
+                            % (path_vcftools, out, sample_name, out, out))
                         os.system("touch %slogs/SNPs_only.log" % (out))
 
                         print("\nCompleted SNV calling with Strelka.\n")
