@@ -385,7 +385,7 @@ else:
 # The output from HISAT2 and BWA is piped into $samblaster_cmq during the alignment
 if rm_dup == "True":
     print(
-        "\nDuplicates will be removed after alignment.\n"
+        "\nDuplicates will be removed.\n"
     )
     if exome == "True":
         samblaster_cmq = "%ssamblaster --ignoreUnmated |" % (path_samblaster)
@@ -1011,7 +1011,8 @@ if MEI:
 
             melt_bed = "%sadd_bed_files/Hg38/Hg38.genes.bed" % (path_melt)
 
-        os.system("%sjava -Xmx%sg -jar %sMELT.jar Single -bamfile %s -h %s -t %smelt/transposon.list -n %s -w %smelt" % (path_java, RAM_GB, path_melt, bam_file, path_reference, melt_bed, out))
+        os.system("%sjava -Xmx%sg -jar %sMELT.jar Single -bamfile %s -h %s -t %smelt/transposon.list -n %s -w %smelt" % (
+            path_java, RAM_GB, path_melt, bam_file, path_reference, out, melt_bed, out))
 
         os.system("cat %melt/SVA.final_comp.vcf | grep '^#' > %smelt/%s.header.txt" % (out, out, sample_name))
         os.system("cat %melt/SVA.final_comp.vcf | grep -v '^#' > %smelt/%s.sva.vcf" % (out, out, sample_name))
