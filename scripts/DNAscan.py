@@ -799,7 +799,7 @@ if variantcalling:
                         print("\nSuccessfully merged SNV and indel calls.\n")
                        
                     if not debug:
-                        os.system("rm -r %sstrelka %s%s_strelka.vcf.gz.tbi" % (out, out, sample_name))
+                        os.system("rm -r %sstrelka %s/results/%s_strelka.vcf.gz.tbi" % (out, out, sample_name))
                         
                 else:
                     print('\nSmall variant calling with Strelka requires alignment from paired-end reads.\n')
