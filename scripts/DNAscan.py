@@ -658,7 +658,7 @@ if variantcalling:
 
                 if paired == "1":
                     print("\nSNVs and indels are being called with Strelka...\n")
-                    os.system("mkdir %sstrelka" % (out))
+                    os.system("mkdir %sstrelka && cd %s" % (out, out))
 
                     if BED:
                         os.system("bgzip -c %s  > %s/temp.bed.gz" % (path_bed, out))
