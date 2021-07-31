@@ -123,4 +123,6 @@ hisat_custom_options = ""
 
 bwa_custom_options = ""
 
+melt_custom_options = ""
+
 annotsv_custom_options = ""
