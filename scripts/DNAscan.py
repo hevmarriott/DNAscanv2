@@ -199,8 +199,6 @@ def is_variant_file_OK(file, t, s):
                         else:
                             print("\nWARNING: %s only contains the header and no data.\n" % file)
                 f.close()
-        else:
-            sys.exit("WARNING: %s is empty - DNAscan will now terminate.\n" % file)
     else:
         sys.exit("WARNING: %s does not exist - DNAscan will now terminate.\n" % file)
 
@@ -1011,13 +1009,17 @@ if MEI:
 
             melt_bed = "%sadd_bed_files/Hg38/Hg38.genes.bed" % (path_melt)
 
+        if exome == "True":
+            os.system("%sjava -Xmx%sg -jar %sMELT.jar Single -bamfile %s -h %s -t %smelt/transposon.list -n %s -w %smelt -exome" % (
+                path_java, RAM_GB, path_melt, bam_file, path_reference, out, melt_bed, out))
+        
         os.system("%sjava -Xmx%sg -jar %sMELT.jar Single -bamfile %s -h %s -t %smelt/transposon.list -n %s -w %smelt" % (
             path_java, RAM_GB, path_melt, bam_file, path_reference, out, melt_bed, out))
 
-        os.system("cat %melt/SVA.final_comp.vcf | grep '^#' > %smelt/%s.header.txt" % (out, out, sample_name))
-        os.system("cat %melt/SVA.final_comp.vcf | grep -v '^#' > %smelt/%s.sva.vcf" % (out, out, sample_name))
-        os.system("cat %melt/LINE1.final_comp.vcf | grep -v '^#' > %smelt/%s.line1.vcf" % (out, out, sample_name))
-        os.system("cat %melt/ALU.final_comp.vcf | grep -v '^#' > %smelt/%s.alu.vcf" % (out, out, sample_name))
+        os.system("cat %smelt/SVA.final_comp.vcf | grep '^#' > %smelt/%s.header.txt" % (out, out, sample_name))
+        os.system("cat %smelt/SVA.final_comp.vcf | grep -v '^#' > %smelt/%s.sva.vcf" % (out, out, sample_name))
+        os.system("cat %smelt/LINE1.final_comp.vcf | grep -v '^#' > %smelt/%s.line1.vcf" % (out, out, sample_name))
+        os.system("cat %smelt/ALU.final_comp.vcf | grep -v '^#' > %smelt/%s.alu.vcf" % (out, out, sample_name))
         os.system("cat %smelt/%s.header.txt %smelt/%s.sva.vcf %smelt.%s.line1.vcf %smelt/%s.alu.vcf | perl %svcf-sort.pl -c | bgzip -c > %s/results/%s_MEI.vcf.gz" % (out, sample_name, out, sample_name, out, sample_name, out, sample_name, path_scripts, out, sample_name))
         os.system("tabix -p vcf %s/results/%s_MEI.vcf.gz" % (out, sample_name))
 
