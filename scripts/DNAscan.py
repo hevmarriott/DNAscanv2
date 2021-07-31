@@ -658,7 +658,7 @@ if variantcalling:
 
                 if paired == "1":
                     print("\nSNVs and indels are being called with Strelka...\n")
-                    os.system("mkdir %sstrelka" % (out))
+                    os.system("mkdir %sstrelka && cd %s" % (out, out))
 
                     if BED:
                         os.system("bgzip -c %s  > %s/temp.bed.gz" % (path_bed, out))
@@ -668,17 +668,17 @@ if variantcalling:
 
                         os.system("%stabix -p bed %s/sorted.bed.gz" % (path_tabix, out))
                         os.system(
-                        "%sconfigureStrelkaGermlineWorkflow.py --bam %s --referenceFasta %s --runDir %sstrelka --callRegions %s/sorted.bed.gz"
+                        "%sconfigureStrelkaGermlineWorkflow.py --bam %s --referenceFasta %s --runDir strelka --callRegions %s/sorted.bed.gz"
                         % (path_strelka, bam_file, path_reference, out, out))
 
                     if exome:
                         os.system("%sconfigureStrelkaGermlineWorkflow.py --bam %s --referenceFasta %s --runDir %sstrelka --exome" %
                         (path_strelka, bam_file, path_reference, out, out))
 
-                    else:
-                        os.system(
-                        "%sconfigureStrelkaGermlineWorkflow.py --bam %s --referenceFasta %s --runDir %sstrelka"
-                        % (path_strelka, bam_file, path_reference, out))
+                    
+                    os.system(
+                    "%sconfigureStrelkaGermlineWorkflow.py --bam %s --referenceFasta %s --runDir %sstrelka"
+                     % (path_strelka, bam_file, path_reference, out))
 
                     os.system("%sstrelka/runWorkflow.py -j %s -m local" % (out, num_cpu))
                     os.system(
@@ -697,7 +697,7 @@ if variantcalling:
 
                         is_variant_file_OK(variant_results_file, "Vcf", "variantcalling")
 
-                    os.system("touch  %slogs/VC_strelka.log" % (out))
+                    os.system("touch  %slogs/VC_strelka.log && cd .." % (out))
 
                     print('\nSNV and indel calling with Strelka is complete.\n')
 
