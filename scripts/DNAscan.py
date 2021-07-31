@@ -687,7 +687,7 @@ if variantcalling:
                     "mv %s/strelka/results/variants/genome.S1.vcf.gz.tbi  %s/results/%s_strelka.vcf.gz.tbi"
                     % (out, out, sample_name))
 
-                    if mode =! "intensive":
+                    if mode != "intensive":
 
                         os.system("mv %s/results/%s_strelka.vcf.gz %s%s_sorted.vcf.gz" % (out, sample_name, out, sample_name))
                         os.system ("tabix -p bcf %s%s_sorted.vcf.gz" % (out, sample_name))
@@ -810,20 +810,20 @@ if variantcalling:
 
 if filter_string and len(variant_results_file) != 0:
     print("\nHard filtering of SNV/indel variants is being performed...\n")
-        # filters for those variants which have passed all Strelka filters plus custom string (according to strelka vcf file parameters)FORMAT/FT PASS
-        print('%sbcftools filter -i "FORMAT/FT == 'PASS'" %s | bgzip -c > %s%s_sorted_passonly.vcf.gz ; %stabix -fp vcf %s%s_sorted_passonly.vcf.gz'
-        % (path_bcftools, variant_results_file, out, sample_name, path_tabix, out, sample_name))
-        os.system(
-            "%sbcftools filter -i 'FORMAT/FT == "PASS"' %s | bgzip -c > %s%s_sorted_passonly.vcf.gz ; %stabix -fp vcf %s%s_sorted_passonly.vcf.gz " % (
-            path_bcftools, variant_results_file, out, sample_name, path_tabix, out, sample_name))
+    # filters for those variants which have passed all Strelka filters plus custom string (according to strelka vcf file parameters)FORMAT/FT PASS
+    print('%sbcftools filter -i "FORMAT/FT == 'PASS'" %s | bgzip -c > %s%s_sorted_passonly.vcf.gz ; %stabix -fp vcf %s%s_sorted_passonly.vcf.gz'
+    % (path_bcftools, variant_results_file, out, sample_name, path_tabix, out, sample_name))
+    os.system(
+    "%sbcftools filter -i 'FORMAT/FT == "PASS"' %s | bgzip -c > %s%s_sorted_passonly.vcf.gz ; %stabix -fp vcf %s%s_sorted_passonly.vcf.gz " % (
+    path_bcftools, variant_results_file, out, sample_name, path_tabix, out, sample_name))
 
-        variant_passfilter_file = "%s%s_sorted_passonly.vcf.gz" % (out, sample_name)
+    variant_passfilter_file = "%s%s_sorted_passonly.vcf.gz" % (out, sample_name)
 
-        print('%sbcftools filter -i \" %s \" %s | bgzip -c > %s%s_sorted_filtered.vcf.gz ; %stabix -fp vcf %s%s_sorted_filtered.vcf.gz'
-        % (path_bcftools, filter_string, variant_passfilter_file, out, sample_name, path_tabix, out, sample_name))
-        os.system(
-            "%sbcftools filter -i \'%s\' %s | bgzip -c > %s%s_sorted_filtered.vcf.gz ; %stabix -fp vcf %s%s_sorted_filtered.vcf.gz " % (
-            path_bcftools, filter_string, variant_passfilter_file, out, sample_name, path_tabix, out, sample_name))
+    print('%sbcftools filter -i \" %s \" %s | bgzip -c > %s%s_sorted_filtered.vcf.gz ; %stabix -fp vcf %s%s_sorted_filtered.vcf.gz'
+    % (path_bcftools, filter_string, variant_passfilter_file, out, sample_name, path_tabix, out, sample_name))
+    os.system(
+    "%sbcftools filter -i \'%s\' %s | bgzip -c > %s%s_sorted_filtered.vcf.gz ; %stabix -fp vcf %s%s_sorted_filtered.vcf.gz " % (
+     path_bcftools, filter_string, variant_passfilter_file, out, sample_name, path_tabix, out, sample_name))
 
     variant_results_file = "%s%s_sorted_filtered.vcf.gz" % (out, sample_name)
     is_variant_file_OK(variant_results_file, "Vcf", "variantcalling")
