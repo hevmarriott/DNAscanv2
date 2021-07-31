@@ -811,10 +811,10 @@ if variantcalling:
 if filter_string and len(variant_results_file) != 0:
     print("\nHard filtering of SNV/indel variants is being performed...\n")
     # filters for those variants which have passed all Strelka filters plus custom string (according to strelka vcf file parameters)FORMAT/FT PASS
-    print('%sbcftools filter -i "FORMAT/FT == 'PASS'" %s | bgzip -c > %s%s_sorted_passonly.vcf.gz ; %stabix -fp vcf %s%s_sorted_passonly.vcf.gz'
+    print('%sbcftools filter -i \"FORMAT/FT == \'PASS\'\" %s | bgzip -c > %s%s_sorted_passonly.vcf.gz ; %stabix -fp vcf %s%s_sorted_passonly.vcf.gz'
     % (path_bcftools, variant_results_file, out, sample_name, path_tabix, out, sample_name))
     os.system(
-    "%sbcftools filter -i 'FORMAT/FT == "PASS"' %s | bgzip -c > %s%s_sorted_passonly.vcf.gz ; %stabix -fp vcf %s%s_sorted_passonly.vcf.gz " % (
+    "%sbcftools filter -i \'FORMAT/FT == \"PASS\"\' %s | bgzip -c > %s%s_sorted_passonly.vcf.gz ; %stabix -fp vcf %s%s_sorted_passonly.vcf.gz " % (
     path_bcftools, variant_results_file, out, sample_name, path_tabix, out, sample_name))
 
     variant_passfilter_file = "%s%s_sorted_passonly.vcf.gz" % (out, sample_name)
@@ -983,7 +983,7 @@ if SV:
                 if not debug:
                     os.system("rm -r %sdelly %s/results/survivor_sample_files" % (out, out))
 
-            os.system(touch "%slogs/SV.log" % (out))
+            os.system("touch %slogs/SV.log" % (out))
 
         else:
             print(
@@ -1399,7 +1399,7 @@ if results_report:
         else:
             print("\nGenerating report of annotated variant calls...\n")
 
-                        os.system("zcat %s > %stemp.vcf" % (variant_results_file, out))
+            os.system("zcat %s > %stemp.vcf" % (variant_results_file, out))
 
             #vcf = open('%stemp.vcf' % (out), 'r')
 
@@ -1457,19 +1457,19 @@ if results_report:
             out_file_all.close()
 
         #21.1 knotAnnotSV SV report generation
-                if SV:
-                    print("\nGenerating SV annotation HTML report...\n")
+             if SV:
+                print("\nGenerating SV annotation HTML report...\n")
 
-                    os.system("mkdir %s%s_SVanno" % (out, sample_name))
+                os.system("mkdir %s%s_SVanno" % (out, sample_name))
 
-                    os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_SVanno --genomeBuild %s " % (path_knotannotsv, path_knotannotsv, SV_annotation_file, out, reference))
+                os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_SVanno --genomeBuild %s " % (path_knotannotsv, path_knotannotsv, SV_annotation_file, out, reference))
 
-                    os.system("mv %s%s_SVanno/%s_SVanno.annotated.html %s/reports/%s_SVannotatedvariants.html" % (out, sample_name, sample_name, out))
+                os.system("mv %s%s_SVanno/%s_SVanno.annotated.html %s/reports/%s_SVannotatedvariants.html" % (out, sample_name, sample_name, out))
 
-                    if not debug:
-                        os.system("rm -r %s%s_SVanno" % (out, sample_name))
+                if not debug:
+                    os.system("rm -r %s%s_SVanno" % (out, sample_name))
 
-                    print("\nSV HTML report created.\n")
+                print("\nSV HTML report created.\n")
 
             os.system("touch  %slogs/results_report.log" % (out))
 
