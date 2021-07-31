@@ -806,7 +806,7 @@ if variantcalling:
 
             os.system("touch %slogs/VC.log" % (out))
 
-            os.system("\nCompleted SNV and indel calling.\n")
+            print("\nCompleted SNV and indel calling.\n")
 
 # 11. Perform variant hard filtering
 
