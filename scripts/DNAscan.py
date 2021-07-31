@@ -391,6 +391,7 @@ if rm_dup == "True":
         samblaster_cmq = "%ssamblaster --ignoreUnmated |" % (path_samblaster)
     else:
         samblaster_cmq = "%ssamblaster |" % (path_samblaster)
+        samblaster_bwa = "%ssamblaster --ignoreUnmated |" % (path_samblaster)
 
 else:
     samblaster_cmq = ""
@@ -478,12 +479,12 @@ if alignment:
                 print(
                     "%sbwa mem %s %s -t %s %s %sunaligned_reads.fq | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted_bwa.bam  /dev/stdin ; %ssamtools index -@ %s %ssorted_bwa.bam "
                     % (path_bwa, bwa_custom_options, rg_option_bwa, num_cpu, path_bwa_index, out,
-                       samblaster_cmq, path_samtools, num_cpu, path_sambamba,
+                       samblaster_bwa, path_samtools, num_cpu, path_sambamba,
                        num_cpu,tmp_dir, out, path_samtools, num_cpu, out))
                 os.system(
                     "%sbwa mem %s %s -t %s %s %sunaligned_reads.fq | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted_bwa.bam  /dev/stdin ; %ssamtools index -@ %s %ssorted_bwa.bam "
                     % (path_bwa, bwa_custom_options, rg_option_bwa, num_cpu, path_bwa_index, out,
-                       samblaster_cmq, path_samtools, num_cpu, path_sambamba,
+                       samblaster_bwa, path_samtools, num_cpu, path_sambamba,
                        num_cpu, tmp_dir, out, path_samtools, num_cpu, out))
                 os.system("%ssamtools view -H %ssorted.bam > %sheader.txt" %
                           (path_samtools, out, out))
