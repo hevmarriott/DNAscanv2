@@ -873,7 +873,7 @@ if SV:
 
     else:
         if paired == "1":
-            if BED:
+            if BED == "True":
                 print(
                     "\nStructural variants are being called with Manta...\n"
                 )
