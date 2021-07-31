@@ -571,7 +571,7 @@ if alignment:
                     "\nPerforming single-end read alignment of soft-clipped and unaligned HISAT2 reads with BWA-MEM in normal/intensive mode...\n"
                 )
                 os.system(
-                    "%sbwa mem %s %s -t %s %s %sunaligned_reads.fq| %s %ssamtools view -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted_bwa.bam /dev/stdin; %ssamtools index -@ %s %ssorted_bwa.bam "
+                    "%sbwa mem %s %s -t %s %s %sunaligned_reads.fq | %s %ssamtools view -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted_bwa.bam /dev/stdin; %ssamtools index -@ %s %ssorted_bwa.bam "
                     % (path_bwa, bwa_custom_options, rg_option_bwa, num_cpu, path_bwa_index, out,
                        samblaster_cmq, path_samtools, path_sambamba, num_cpu, tmp_dir,
                        out, path_samtools, num_cpu, out))
@@ -675,10 +675,10 @@ if variantcalling:
                         os.system("%sconfigureStrelkaGermlineWorkflow.py --bam %s --referenceFasta %s --runDir %sstrelka --exome" %
                         (path_strelka, bam_file, path_reference, out, out))
 
-                    else:
-                        os.system(
-                        "%sconfigureStrelkaGermlineWorkflow.py --bam %s --referenceFasta %s --runDir %sstrelka"
-                        % (path_strelka, bam_file, path_reference, out))
+                   
+                    os.system(
+                    "%sconfigureStrelkaGermlineWorkflow.py --bam %s --referenceFasta %s --runDir %sstrelka"
+                    % (path_strelka, bam_file, path_reference, out))
 
                     os.system("%sstrelka/runWorkflow.py -j %s -m local" % (out, num_cpu))
                     os.system(
@@ -696,9 +696,6 @@ if variantcalling:
                         variant_results_file = "%s%s_sorted.vcf.gz" % (out, sample_name)
 
                         is_variant_file_OK(variant_results_file, "Vcf", "variantcalling")
-
-                    if not debug:
-                        os.system("rm -r %sstrelka" % (out))
 
                     os.system("touch  %slogs/VC_strelka.log" % (out))
 
@@ -798,8 +795,12 @@ if variantcalling:
                             os.system(
                                 "rm %s%s.vcf* %slogs/SNPs_only.log %smpileup_positions* %slogs/indels_only.log"
                                 % (out, sample_name, out, out, out))
-
+                            
                         print("\nSuccessfully merged SNV and indel calls.\n")
+                       
+                    if not debug:
+                        os.system("rm -r %sstrelka" % (out))
+                        
                 else:
                     print('\nSmall variant calling with Strelka requires alignment from paired-end reads.\n')
 
