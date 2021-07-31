@@ -50,7 +50,7 @@ def create_parser():
       action="store",
       dest="filter_string",
       default='FORMAT/FT == "PASS"',
-      help='bcftools filter string for strelka, eg "GQ>20 & DP>10" (Default = 'FORMAT/FT == "PASS"')')
+      help='bcftools filter string for strelka, eg "GQ>20 & DP>10" (Default = \'FORMAT/FT == "PASS"\')')
 
   parser.add_argument(
       '-paired',
