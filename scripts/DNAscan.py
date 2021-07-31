@@ -795,8 +795,8 @@ if variantcalling:
 
                         if not debug:
                             os.system(
-                                "rm %s%s.vcf* %slogs/SNPs_only.log %smpileup_positions* %slogs/indels_only.log"
-                                % (out, sample_name, out, out, out))
+                                "rm %s%s.vcf* %slogs/SNPs_only.log %smpileup_positions* %slogs/indels_only.log %s/results/%s_strelka.vcf.gz"
+                                % (out, sample_name, out, out, out, out, sample_name))
                             
                         print("\nSuccessfully merged SNV and indel calls.\n")
                        
