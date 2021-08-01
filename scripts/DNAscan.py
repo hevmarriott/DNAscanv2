@@ -1387,10 +1387,10 @@ if alignment_report or calls_report or sequencing_report:
 # 21. Annotated variants report generation
 
 if results_report:
-    if "annovar.log" not in os.listdir(out + "logs") or not path_gene_list:
+    if "annovar.log" not in os.listdir(out + "logs"):
 
         print(
-            "WARNING: Either the annotation was not peformed or path_gene_list was not provided in paths_configs.py, please perform annotation using the -annotation flag and/or specify the a gene list in paths_configs.py if you wish to generate an annotation results report.\n"
+            "WARNING: Annotation was not peformed - please perform annotation using the -annotation flag if you wish to generate an annotation results report.\n"
         )
 
     else:
