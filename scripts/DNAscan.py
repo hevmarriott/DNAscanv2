@@ -668,6 +668,9 @@ if variantcalling:
                         os.system(
                         "%sconfigureStrelkaGermlineWorkflow.py --bam %s --referenceFasta %s --runDir %sstrelka --callRegions %s/sorted.bed.gz"
                         % (path_strelka, bam_file, path_reference, out, out))
+                        
+                        if not debug:
+                            os.system("rm %s/temp.bed.gz %s/sorted.bed.gz" % (out, out))
 
                     if exome:
                         os.system("mkdir %sstrelka" % (out))
@@ -885,6 +888,9 @@ if SV:
                 os.system(
                     "%sconfigManta.py --bam %s --referenceFasta %s --runDir %smanta --callRegions %s/sorted.bed.gz"
                     % (path_manta, bam_file, path_reference, out, out))
+                
+                if not debug:
+                    os.system("rm %s/temp.bed.gz %s/sorted.bed.gz" % (out,out))
 
             else:
                 print(
@@ -897,30 +903,27 @@ if SV:
 
             os.system("%smanta/runWorkflow.py -j %s -m local" % (out, num_cpu))
             os.system("gzip -d %s/manta/results/variants/diploidSV.vcf.gz" % (out))
-            os.system("%s/convertInversion.py %s/samtools %s %s/manta/results/variants/diploidSV.vcf | bgzip -c > %s/results/%s_manta_SV.vcf.gz" % (
+            os.system("%s/convertInversion.py %ssamtools %s %s/manta/results/variants/diploidSV.vcf.gz > %s/results/%s_manta_SV.vcf" % (
             path_scripts, path_samtools, path_reference, out, out, sample_name))
-            os.system(
-                "tabix -p vcf %s/results/%s_manta_SV.vcf.gz"
-                % (out, sample_name))
 
             if mode == "fast":
                 #13.1 Manta is used to call all SVs in fast mode
+                
+                os.system("bgzip %s/results/%s_manta_SV.vcf" % (out, sample_name))
                 os.system("tabix -p vcf %s/results/%s_manta_SV.vcf.gz" % (out, sample_name))
-
+                
                 SV_results_file = "%s/results/%s_manta_SV.vcf.gz" % (out, sample_name)
                 
                 is_variant_file_OK(SV_results_file, "Vcf", "SV")
 
             else:
-                os.system ("gzip -d %s/results/%s_manta_SV.vcf.gz" % (out, sample_name))
-
                 manta_SV_results_file = "%s/results/%s_manta_SV.vcf" % (out, sample_name)
                 
                 is_variant_file_OK(manta_SV_results_file, "Vcf", "SV")
 
             if not debug:
-                os.system("rm -r %stemp.bed.gz  %ssorted.bed.gz %smanta" %
-                          (out, out, out))
+                os.system("rm -r %smanta" %
+                          (out))
 
             print("\nStructural variant calling with Manta is complete.\n")
 
