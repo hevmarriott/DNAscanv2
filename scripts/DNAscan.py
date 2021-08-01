@@ -968,9 +968,9 @@ if SV:
                 print("\nStructural variants called with Manta and Delly are being merged with SURVIVOR to create a union callset...\n")
 
                 os.system("ls %s/results/*SV.vcf > %s/results/survivor_sample_files" % (out, out))
-                os.system("%sSURVIVOR merge %s/results/survivor_sample_files 1000 1 1 1 0 30 > %s/results/%s_SV_merged.vcf" % (
+                os.system("%sSURVIVOR merge %s/results/survivor_sample_files 1000 1 1 1 0 30 %s/results/%s_SV_merged.vcf" % (
                 path_SURVIVOR, out, out, sample_name))
-                os.system("bgzip %s/results/%s_SV_merged.vcf ; tabix -p vcf %s/results/%s_SV_merged.vcf.gz" % (out, sample_name, out_sample_name))
+                os.system("bgzip %s/results/%s_SV_merged.vcf ; tabix -p vcf %s/results/%s_SV_merged.vcf.gz" % (out, sample_name, out, sample_name))
 
                 SV_results_file = "%s/results/%s_SV_merged.vcf.gz"
 
