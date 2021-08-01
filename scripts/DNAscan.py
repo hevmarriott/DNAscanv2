@@ -1081,7 +1081,7 @@ if annotation:
         #15.1 Structural variant annotation and prioritisation is carried out using AnnotSV
             print("\nStructural variant annotation is being performed with AnnotSV...\n")
 
-            os.system("export ANNOTSV='%s'" % (path_annotsv))
+            os.environ["ANNOTSV"] = "%s" % (path_annotsv)
 
             if alsgenescanner or len(path_gene_list) != 0:
                 candidate_gene_cmd = "-candidateGenesFile %s" % (path_gene_list)
@@ -1468,7 +1468,8 @@ if results_report:
                 os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_SVanno --genomeBuild %s" % (
                     path_knotannotsv, path_knotannotsv, SV_annotation_file, out, sample_name, reference))
 
-                os.system("mv %s%s_SVanno/%s_SVanno.annotated.html %s/reports/%s_SVannotatedvariants.html" % (out, sample_name, sample_name, out))
+                os.system("mv %s%s_SVanno/%s_SVanno.annotated.html %s/reports/%s_SVannotatedvariants.html" % (
+                    out, sample_name, sample_name, out, sample_name))
 
                 if not debug:
                     os.system("rm -r %s%s_SVanno" % (out, sample_name))
