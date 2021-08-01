@@ -1081,7 +1081,7 @@ if annotation:
         #15.1 Structural variant annotation and prioritisation is carried out using AnnotSV
             print("\nStructural variant annotation is being performed with AnnotSV...\n")
 
-            os.system("export ANNOTSV=%s" % (path_annotsv))
+            os.system("export ANNOTSV='%s'" % (path_annotsv))
 
             if alsgenescanner or len(path_gene_list) != 0:
                 candidate_gene_cmd = "-candidateGenesFile %s" % (path_gene_list)
