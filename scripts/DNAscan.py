@@ -1030,7 +1030,7 @@ if MEI:
         is_variant_file_OK(MEI_results_file, "Vcf", "MEI")
 
         if not debug:
-            os.system("rm -r %smelt *bam.disc *bam.disc.bai *bam.fq" % (out))
+            os.system("rm -r %smelt %s/*bam.disc %s/*bam.disc.bai %s/*bam.fq" % (out, out, out, out))
 
         os.system("touch  %slogs/mei.log" % (out))
 
