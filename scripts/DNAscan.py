@@ -37,7 +37,7 @@
 #   13.3 SV calls are merged to create union callset (normal and intensive modes)
 # 14. Transposable element insertion detection with MELT
 # 15. Annotation with Annovar -  with optional missense variant prioritisation according to ACMG guidelines (intervar_20180118 database)
-#   15.1 AnnotSV for structural variant annotation and prioritisation
+#   15.1 AnnotSV for structural variant/transposable element annotation and prioritisation
 # 16. Microbes screening
 #   16.1 Extract non human reads
 #   16.2 Identifies present non-human microbes
@@ -1077,7 +1077,7 @@ if annotation:
 
         print("\nAnnotation with ANNOVAR is complete.\n")
 
-        if SV:
+        if SV or MEI:
         #15.1 Structural variant annotation and prioritisation is carried out using AnnotSV
             print("\nStructural variant annotation is being performed with AnnotSV...\n")
 
@@ -1091,16 +1091,27 @@ if annotation:
 
             else:
                 genome_build = "GRCh38"
+            
+            if SV:
+                print("\nStructural variant annotation is being performed with AnnotSV...\n")
+                os.system("%s/bin/AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/results/%s_annotated_SV -SVminSize 30 %s" % (
+                    path_annotsv, path_annotsv, path_bcftools, path_bedtools, SV_results_file, candidate_gene_cmd, genome_build, out, sample_name, annotsv_custom_options))
 
-            os.system("%s/bin/AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/results/%s_annotated_SV -SVminSize 30 %s" % (
-            path_annotsv, path_annotsv, path_bcftools, path_bedtools, SV_results_file, candidate_gene_cmd, genome_build, out, sample_name, annotsv_custom_options))
+                SV_annotation_file = "%s/results/%s_annotated_SV.tsv" % (out, sample_name)
+                
+                print("\nStructural variant annotation is complete.\n")
+                
+            if MEI:
+                print("\nTransposable element annotation is being performed with AnnotSV...\n")
+                os.system("%s/bin/AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/results/%s_annotated_MEI -SVminSize 30 %s" % (
+                    path_annotsv, path_annotsv, path_bcftools, path_bedtools, MEI_results_file, candidate_gene_cmd, genome_build, out, sample_name, annotsv_custom_options))
 
-            SV_annotation_file = "%s/results/%s_annotated_SV.tsv" % (out, sample_name)
-
+                MEI_annotation_file = "%s/results/%s_annotated_MEI.tsv" % (out, sample_name)
+                
+                print("\nTransposable element annotation is complete.\n")
+                
             if not debug:
                 os.system("rm %s/results/*sorted.bed %s/results/*breakpoints.bed" % (out, out))
-
-            print("\nStructural variant annotation is complete.\n")
 
         print("\nAnnotation and prioritisation is complete.\n")
 
@@ -1475,6 +1486,19 @@ if results_report:
                     os.system("rm -r %s%s_SVanno" % (out, sample_name))
 
                 print("\nSV HTML report created.\n")
+                
+            if MEI:
+                 print("\nGenerating transposable element annotation HTML report...\n")
+
+                os.system("mkdir %s%s_MEIanno" % (out, sample_name))
+
+                os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_MEIanno --genomeBuild %s" % (
+                    path_knotannotsv, path_knotannotsv, MEI_annotation_file, out, sample_name, reference))
+
+                os.system("mv %s%s_MEIanno/%s_MEIanno.annotated.html %s/reports/%s_MEIannotatedvariants.html" % (
+                    out, sample_name, sample_name, out, sample_name)) 
+                
+                print("\nTransposable element HTML report created.\n")
 
             os.system("touch  %slogs/results_report.log" % (out))
 
