@@ -141,6 +141,14 @@ export PATH=$INSTALL_DIR/manta-1.6.0.centos6_x86_64/bin:$PATH
 
 echo export PATH=$INSTALL_DIR/manta-1.6.0.centos6_x86_64/bin:$PATH >> ~/.bashrc
 
+wget https://github.com/Illumina/ExpansionHunterDenovo/releases/download/v0.9.0/ExpansionHunterDenovo-v0.9.0-linux_x86_64.tar.gz
+
+tar -xzf ExpansionHunterDenovo-v0.9.0-linux_x86_64.tar.gz
+
+export PATH=$INSTALL_DIR/ExpansionHunterDenovo-v0.9.0-linux_x86_64/bin:$PATH
+
+echo export PATH=$INSTALL_DIR/ExpansionHunterDenovo-v0.9.0-linux_x86_64/bin:$PATH >> ~/.bashrc
+
 cd AnnotSV
 
 make PREFIX=. install
@@ -192,6 +200,8 @@ sed "s|path_knotannotsv = \"\"|path_knotannotsv = \"$INSTALL_DIR\/knotAnnotSV\/\
 sed "s|path_strelka = \"\"|path_strelka = \"$INSTALL_DIR\/strelka-2.9.10.centos6_x86_64\/bin\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
 sed "s|path_delly_exclude_regions = \"\"|path_delly_exclude_regions = \"$DNASCAN_DIR\/db\delly_hg38.excl.tsv\"|"  scripts/paths_configs.py > scripts/paths_configs.py_temp
+
+sed "s|path_expansionHunterDenovo_dir = \"\"|path_expansionHunterDenovo_dir = \"$INSTALL_DIR\/ExpansionHunterDenovo-v0.9.0-linux_x86_64\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
 mv scripts/paths_configs.py_temp scripts/paths_configs.py
 
