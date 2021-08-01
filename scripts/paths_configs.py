@@ -63,6 +63,8 @@ path_expansionHunter = ""
 
 path_expansionHunter_jsons = ""
 
+path_expansionHunterDenovo_dir = ""
+
 path_samblaster = ""
 
 path_java = ""
