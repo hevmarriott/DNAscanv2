@@ -694,7 +694,7 @@ if variantcalling:
                     if mode != "intensive":
 
                         os.system("mv %s/results/%s_strelka.vcf.gz %s%s_sorted.vcf.gz" % (out, sample_name, out, sample_name))
-                        os.system ("tabix -p bcf %s%s_sorted.vcf.gz" % (out, sample_name))
+                        os.system ("%stabix -p bcf %s%s_sorted.vcf.gz" % (path_tabix, out, sample_name))
 
                         variant_results_file = "%s%s_sorted.vcf.gz" % (out, sample_name)
 
@@ -905,7 +905,7 @@ if SV:
             os.system("%s/convertInversion.py %ssamtools %s %s/manta/results/variants/diploidSV.vcf.gz > %s/results/%s_manta_SV.vcf" % (
             path_scripts, path_samtools, path_reference, out, out, sample_name))
             os.system("bgzip -c %s/results/%s_manta_SV.vcf > %s/results/%s_manta_SV.vcf.gz" % (out, sample_name, out, sample_name))
-            os.system("tabix -p vcf %s/results/%s_manta_SV.vcf.gz" % (out, sample_name))
+            os.system("%stabix -p vcf %s/results/%s_manta_SV.vcf.gz" % (path_tabix, out, sample_name))
 
             if mode == "fast":
                 #13.1 Manta is used to call all SVs in fast mode
@@ -955,7 +955,7 @@ if SV:
 
                 os.system("mv %sdelly/%s_delly_SV.vcf %s/results/" % (out, sample_name, out))
                 os.system("bgzip -c %s/results/%s_delly_SV.vcf > %s/results/%s_delly_SV.vcf.gz" % (out, sample_name, out, sample_name))
-                os.system("tabix -p vcf %s/results/%s_delly_SV.vcf.gz" % (out, sample_name))
+                os.system("%stabix -p vcf %s/results/%s_delly_SV.vcf.gz" % (path_tabix, out, sample_name))
                 
                 delly_SV_results_file = "%s/results/%s_delly_SV.vcf.gz" % (out, sample_name)
 
@@ -970,7 +970,7 @@ if SV:
                 os.system("ls %s/results/*SV.vcf > %s/results/survivor_sample_files" % (out, out))
                 os.system("%sSURVIVOR merge %s/results/survivor_sample_files 1000 1 1 1 0 30 %s/results/%s_SV_merged.vcf" % (
                 path_SURVIVOR, out, out, sample_name))
-                os.system("bgzip %s/results/%s_SV_merged.vcf ; tabix -p vcf %s/results/%s_SV_merged.vcf.gz" % (out, sample_name, out, sample_name))
+                os.system("bgzip %s/results/%s_SV_merged.vcf ; %stabix -p vcf %s/results/%s_SV_merged.vcf.gz" % (out, sample_name, path_tabix, out, sample_name))
 
                 SV_results_file = "%s/results/%s_SV_merged.vcf.gz" % (out, sample_name)
 
@@ -1023,7 +1023,7 @@ if MEI:
         os.system("cat %smelt/LINE1.final_comp.vcf | grep -v '^#' > %smelt/%s.line1.vcf" % (out, out, sample_name))
         os.system("cat %smelt/ALU.final_comp.vcf | grep -v '^#' > %smelt/%s.alu.vcf" % (out, out, sample_name))
         os.system("cat %smelt/%s.header.txt %smelt/%s.sva.vcf %smelt.%s.line1.vcf %smelt/%s.alu.vcf | perl %svcf-sort.pl -c | bgzip -c > %s/results/%s_MEI.vcf.gz" % (out, sample_name, out, sample_name, out, sample_name, out, sample_name, path_scripts, out, sample_name))
-        os.system("tabix -p vcf %s/results/%s_MEI.vcf.gz" % (out, sample_name))
+        os.system("%stabix -p vcf %s/results/%s_MEI.vcf.gz" % (path_tabix, out, sample_name))
 
         MEI_results_file = "%s/results/%s_MEI.vcf.gz" % (out, sample_name)
 
