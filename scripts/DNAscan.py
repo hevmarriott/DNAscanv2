@@ -1092,8 +1092,8 @@ if annotation:
             else:
                 genome_build = "GRCh38"
 
-            os.system("AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/results/%s_annotated_SV -SVminSize 30 %s" % (
-            path_annotsv, path_bcftools, path_bedtools, SV_results_file, candidate_gene_cmd, genome_build, out, sample_name, annotsv_custom_options))
+            os.system("%s/AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/results/%s_annotated_SV -SVminSize 30 %s" % (
+            path_annotsv, path_annotsv, path_bcftools, path_bedtools, SV_results_file, candidate_gene_cmd, genome_build, out, sample_name, annotsv_custom_options))
 
             SV_annotation_file = "%s/results/%s_annotated_SV.tsv" % (out, sample_name)
 
@@ -1465,7 +1465,8 @@ if results_report:
 
                 os.system("mkdir %s%s_SVanno" % (out, sample_name))
 
-                os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_SVanno --genomeBuild %s " % (path_knotannotsv, path_knotannotsv, SV_annotation_file, out, reference))
+                os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_SVanno --genomeBuild %s" % (
+                    path_knotannotsv, path_knotannotsv, SV_annotation_file, out, sample_name, reference))
 
                 os.system("mv %s%s_SVanno/%s_SVanno.annotated.html %s/reports/%s_SVannotatedvariants.html" % (out, sample_name, sample_name, out))
 
