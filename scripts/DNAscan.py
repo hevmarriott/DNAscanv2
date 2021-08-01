@@ -954,8 +954,10 @@ if SV:
                     path_bcftools, out, sample_name, out, sample_name))
 
                 os.system("mv %sdelly/%s_delly_SV.vcf %s/results/" % (out, sample_name, out))
-
-                delly_SV_results_file = "%s/results/%s_delly_SV.vcf" % (out, sample_name)
+                os.system("bgzip -c %s/results/%s_delly_SV.vcf > %s/results/%s_delly_SV.vcf.gz" % (out, sample_name, out, sample_name))
+                os.system("tabix -p vcf %s/results/%s_delly_SV.vcf.gz" % (out, sample_name))
+                
+                delly_SV_results_file = "%s/results/%s_delly_SV.vcf.gz" % (out, sample_name)
 
                 is_variant_file_OK(delly_SV_results_file, "Vcf", "SV")
 
