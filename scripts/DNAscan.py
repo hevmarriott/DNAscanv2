@@ -942,7 +942,7 @@ if SV:
                     path_bcftools, out, sample_name, out, sample_name))
                     os.system("%sbcftools view %sdelly/%s_delly_INV.bcf > %sdelly/%s_delly_INV.vcf" % (
                     path_bcftools, out, sample_name, out, sample_name))
-                    os.system("grep '^#' %sdelly/%s_delly_DEL.vcf > %sdelly/%s_delly.vcf ; grep -v '^#' %sdelly/%s_delly_DEL.vcf %sdelly/%s_delly_INV.vcf >> %sdelly/%s_delly.vcf" % (
+                    os.system("grep '^#' %sdelly/%s_delly_DEL.vcf > %sdelly/%s_delly_SV.vcf ; grep -v '^#' %sdelly/%s_delly_DEL.vcf %sdelly/%s_delly_INV.vcf >> %sdelly/%s_delly_SV.vcf" % (
                     out, sample_name, out, sample_name, out, sample_name, out, sample_name, out, sample_name))
 
                 else:
@@ -950,7 +950,7 @@ if SV:
 
                     os.system("%sdelly call -g %s -o %sdelly/%s_delly.bcf -x %s %s" % (
                     path_delly, path_reference, out, sample_name, path_delly_exclude_regions, bam_file))
-                    os.system("%sbcftools view %sdelly/%s_delly.bcf > %sdelly/%s_delly.vcf" % (
+                    os.system("%sbcftools view %sdelly/%s_delly.bcf > %sdelly/%s_delly_SV.vcf" % (
                     path_bcftools, out, sample_name, out, sample_name))
 
                 os.system("mv %sdelly/%s_delly_SV.vcf %s/results/" % (out, sample_name, out))
