@@ -11,7 +11,7 @@
 # 3. Define options from command line
 # 4. Parse options from command line
 # 5. Run DNAscan for each line in the input sample list
-#   5.1 Create create DNAscan input file option string per line in the input list
+#   5.1 Create DNAscan input file option string per line in the input list
 #   5.2 Create working dir tree
 #   5.3 Run DNAscan for one sample
 #   5.4 Create multisample results files
@@ -68,7 +68,7 @@ list_file_lines = list_file.readlines()
 
 for sample in list_file_lines:
 
-    # 5.1 Create create DNAscan input file option string per line in the input list
+    # 5.1 Create DNAscan input file option string per line in the input list
 
     if paired == "1" and format == "fastq" :
 
@@ -90,7 +90,7 @@ for sample in list_file_lines:
 
     os.system( "python3 %sDNAscan.py %s -sample_name %s %s -out %s/%s/ " %( dnascan_dir , option_string , sample_name , input_file_string , out_dir , sample_name) )
 
-#5.4 Create multisample results files
+#5.4 Create multisample results files #need to do this so comes with a list of samples, one per line - this is not right
 sample_name_list = sample.split('.')[0]
 sample_name_list_lines = sample_name_list.readlines()
 
@@ -130,7 +130,7 @@ if "-variantcalling" in option_string:
                         )
 
                     else:
-                        print("\nGenerating report of annotated variant calls...\n")
+                        print("\nGenerating multisample report of annotated variant calls...\n")
 
                         os.system("zcat %s > %stemp.vcf" % (multisample_results_file, out_dir))
 
@@ -307,6 +307,6 @@ if "-expansion" in option_string:
     if "-annotation" in option_string:
         print("\nAnnotating Expansion Hunter Denovo outlier locus results...\n")
         os.system("%s/scripts/annotate_ehdn.sh --ehdn-results %s/multisample.outlier_locus.tsv --ehdn-annotated-results %s/multisample.outlier_locus_annotated.tsv --annovar-annotate-variation %s/annotate_variation.pl --annovar-humandb %s --annovar-buildver %s" %
-        (path_expansionHunterDenovo_dir, out_dir, out_dir, path_annovar, path_annovardb, reference))
+        (path_expansionHunterDenovo_dir, out_dir, out_dir, path_annovar, path_annovar_db, reference))
 
         print("\nRepeat expansion annotation is complete.\n")
