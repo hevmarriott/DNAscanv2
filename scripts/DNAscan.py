@@ -972,7 +972,7 @@ if SV:
                 path_SURVIVOR, out, out, sample_name))
                 os.system("bgzip %s/results/%s_SV_merged.vcf ; tabix -p vcf %s/results/%s_SV_merged.vcf.gz" % (out, sample_name, out, sample_name))
 
-                SV_results_file = "%s/results/%s_SV_merged.vcf.gz"
+                SV_results_file = "%s/results/%s_SV_merged.vcf.gz" % (out, sample_name)
 
                 is_variant_file_OK(SV_results_file, "Vcf", "SV")
 
