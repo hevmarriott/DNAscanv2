@@ -979,7 +979,7 @@ if SV:
                 print("\nMerging of structural variant calls is complete.\n")
 
                 if not debug:
-                    os.system("rm -r %sdelly %s/results/survivor_sample_files" % (out, out))
+                    os.system("rm -r %sdelly %s/results/survivor_sample_files %s/results/*.vcf %s/results/*SV.vcf.gz*" % (out, out, out, out))
 
             os.system("touch %slogs/SV.log" % (out))
 
