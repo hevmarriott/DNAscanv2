@@ -902,7 +902,6 @@ if SV:
                     % (path_manta, bam_file, path_reference, out))
 
             os.system("%smanta/runWorkflow.py -j %s -m local" % (out, num_cpu))
-            os.system("gzip -d %s/manta/results/variants/diploidSV.vcf.gz" % (out))
             os.system("%s/convertInversion.py %ssamtools %s %s/manta/results/variants/diploidSV.vcf.gz > %s/results/%s_manta_SV.vcf" % (
             path_scripts, path_samtools, path_reference, out, out, sample_name))
 
@@ -918,8 +917,6 @@ if SV:
 
             else:
                 manta_SV_results_file = "%s/results/%s_manta_SV.vcf" % (out, sample_name)
-                
-                is_variant_file_OK(manta_SV_results_file, "Vcf", "SV")
 
             if not debug:
                 os.system("rm -r %smanta" %
