@@ -904,17 +904,17 @@ if SV:
             os.system("%smanta/runWorkflow.py -j %s -m local" % (out, num_cpu))
             os.system("%s/convertInversion.py %ssamtools %s %s/manta/results/variants/diploidSV.vcf.gz > %s/results/%s_manta_SV.vcf" % (
             path_scripts, path_samtools, path_reference, out, out, sample_name))
+            os.system("bgzip -c %s/results/%s_manta_SV.vcf > %s/results/%s_manta_SV.vcf.gz" % (out, sample_name, out, sample_name))
+            os.system("tabix -p vcf %s/results/%s_manta_SV.vcf.gz" % (out, sample_name))
 
             if mode == "fast":
                 #13.1 Manta is used to call all SVs in fast mode
-                
-                os.system("bgzip %s/results/%s_manta_SV.vcf" % (out, sample_name))
-                os.system("tabix -p vcf %s/results/%s_manta_SV.vcf.gz" % (out, sample_name))
-                
                 SV_results_file = "%s/results/%s_manta_SV.vcf.gz" % (out, sample_name)
                 
                 is_variant_file_OK(SV_results_file, "Vcf", "SV")
-
+                
+                if not debug:
+                    os.system("rm %s/results/%s_manta_SV.vcf" % (out, sample_name))
             else:
                 manta_SV_results_file = "%s/results/%s_manta_SV.vcf" % (out, sample_name)
 
@@ -1028,7 +1028,7 @@ if MEI:
         is_variant_file_OK(MEI_results_file, "Vcf", "MEI")
 
         if not debug:
-            os.system("rm -r %smelt" % (out))
+            os.system("rm -r %smelt *bam.disc *bam.disc.bai *bam.fq" % (out))
 
         os.system("touch  %slogs/mei.log" % (out))
 
