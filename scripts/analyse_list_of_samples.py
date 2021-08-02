@@ -193,10 +193,13 @@ if "-variantcalling" in option_string:
                                             j.split('\t')[-1].split(':')[0], replaced))
 
                         out_file_all.close()
+                        
+                        print("\nMultisample report of annotated variant calls is now available.\n")
 
 
 if "-SV" or "-MEI" in option_string:
     if "-SV" in option_string:
+        print("\nMerging structural variant files to create multisample SV file...\n")
         for sample in samples_lines:
             if "-mode fast" in option_string:
                 os.system("cp %s/%s/results/%s_manta_SV.vcf.gz %s" % (out_dir, sample_name, sample_name, out_dir))
@@ -212,8 +215,11 @@ if "-SV" or "-MEI" in option_string:
         os.system("bgzip %s/multisample_SV_merged.vcf ; %stabix -p vcf %s/multisample_SV_merged.vcf.gz" % (out_dir, path_tabix, out_dir))
 
         multisample_SV_results_file = "%s/multisample_SV_merged.vcf.gz" % (out_dir)
+        
+        print("\nMultisample SV file has been created.\n")
 
     if "-MEI" in option_string:
+        print("\nMerging transposable element files to create multisample MEI file...\n")
         for sample in samples_lines:
             os.system("cp %s/%s/results/%s_MEI.vcf.gz %s" % (out_dir, sample_name, sample_name, out_dir))
             os.system("gzip -d %s/%s_MEI.vcf.gz" % (out_dir, sample_name))
@@ -224,6 +230,8 @@ if "-SV" or "-MEI" in option_string:
         os.system("bgzip %s/multisample_MEI_merged.vcf ; %stabix -p vcf %s/multisample_MEI_merged.vcf.gz" % (out_dir, path_tabix, out_dir))
 
         multisample_MEI_results_file = "%s/multisample_MEI_merged.vcf.gz" % (out_dir)
+        
+        print("\nMultisample MEI file has been created.\n")
 
     if "-annotation" in option_string:
         os.environ["ANNOTSV"] = "%s" % (path_annotsv)
@@ -238,50 +246,51 @@ if "-SV" or "-MEI" in option_string:
             genome_build = "GRCh38"
 
         if "-SV" in option_string:
-            print("\nStructural variant annotation is being performed with AnnotSV...\n")
+            print("\nMultisample structural variant annotation is being performed with AnnotSV...\n")
             os.system("%s/bin/AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/multisample_annotated_SV -SVminSize 30 %s" % (
                 path_annotsv, path_annotsv, path_bcftools, path_bedtools, multisample_SV_results_file, candidate_gene_cmd, genome_build, out_dir, annotsv_custom_options))
 
             SV_annotation_file = "%s/multisample_annotated_SV.tsv" % (out_dir)
 
-            print("\nStructural variant annotation is complete.\n")
+            print("\nMultisample structural variant annotation is complete.\n")
 
         if "-MEI" in option_string:
-            print("\nTransposable element annotation is being performed with AnnotSV...\n")
+            print("\nMultisample transposable element annotation is being performed with AnnotSV...\n")
             os.system("%s/bin/AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/multisample_annotated_MEI -SVminSize 30 %s" % (
                 path_annotsv, path_annotsv, path_bcftools, path_bedtools, multisample_MEI_results_file, candidate_gene_cmd, genome_build, out_dir, annotsv_custom_options))
 
             MEI_annotation_file = "%s/multisample_annotated_MEI.tsv" % (out_dir)
 
-            print("\nTransposable element annotation is complete.\n")
+            print("\nMultisample transposable element annotation is complete.\n")
 
         if not debug:
             os.system("rm %s/*sorted.bed %s/*breakpoints.bed" % (out_dir, out_dir))
 
         if "-results_report" in option_string:
+            print("\nCreating multisample HTML annotation report...\n")
             if "-SV" in option_string:
                 os.system("mkdir %smultisample_SVannoreport" % (out_dir))
 
                 annotation_dir = "%smultisample_SVannoreport" % (out_dir)
-
-                annotation_file = SV_annotation_file
+                            
+                os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s --genomeBuild %s" % (
+                    path_knotannotsv, path_knotannotsv, SV_annotation_file, annotation_dir, reference))
+                            
+                os.system("mv %s/multisample_SVannoreport.annotated.html %s/reports/multisample_SVannotatedvariants.html" % (
+                    annotation_dir, out_dir))
 
             if "-MEI" in option_string:
                 os.system("mkdir %smultisample_MEIannoreport" % (out_dir))
 
                 annotation_dir = "%smultisample_MEIannoreport" % (out_dir)
-
-                annotation_file = MEI_annotation_file
-
-            os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s --genomeBuild %s" % (
-            path_knotannotsv, path_knotannotsv, annotation_file, annotation_dir, reference))
-
-            os.system("mv %s/multisample_MEIannoreport.annotated.html %s/reports/multisample_MEIannotatedvariants.html" % (
-            annotation_dir, out_dir))
-
-            os.system("mv %s/multisample_SVannoreport.annotated.html %s/reports/multisample_SVannotatedvariants.html" % (
-            annotation_dir, out_dir))
-
+                            
+                os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s --genomeBuild %s" % (
+                    path_knotannotsv, path_knotannotsv, MEI_annotation_file, annotation_dir, reference))
+                
+                os.system("mv %s/multisample_MEIannoreport.annotated.html %s/reports/multisample_MEIannotatedvariants.html" % (
+                    annotation_dir, out_dir))
+                            
+             print("\nMultisample HTML annotation report is now available.\n")
 
 # 5.5 Run ExpansionHunterDenovo to detect unknown/non-reference repeat expansions
 if "-expansion" in option_string:
