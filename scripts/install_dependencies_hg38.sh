@@ -203,7 +203,7 @@ sed "s|path_delly_exclude_regions = \"\"|path_delly_exclude_regions = \"$DNASCAN
 
 sed "s|path_expansionHunterDenovo_dir = \"\"|path_expansionHunterDenovo_dir = \"$INSTALL_DIR\/ExpansionHunterDenovo-v0.9.0-linux_x86_64\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
-mv scripts/paths_configs.py_temp scripts/paths_configs.py
+rm scripts/paths_configs.py_temp
 
 chmod +x scripts/*
 
