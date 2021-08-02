@@ -89,13 +89,19 @@ for sample in list_file_lines:
     # 5.3 Run DNAscan for one sample
 
     os.system( "python3 %sDNAscan.py %s -sample_name %s %s -out %s/%s/ " %( dnascan_dir , option_string , sample_name , input_file_string , out_dir , sample_name) )
+                           
+    sample_name_list = open("%s/multisample_list.txt" % (out_dir)
+    sample_name_list.write('%s\n' % (sample.split('.')[0]))
+
+sample_name_list.close()
 
 #5.4 Create multisample results files #need to do this so comes with a list of samples, one per line - this is not right
-sample_name_list = sample.split('.')[0]
-sample_name_list_lines = sample_name_list.readlines()
+
+samples = open("%s" % (sample_name_list) , 'r' )
+samples_lines = sample_name_list.readlines()
 
 if "-variantcalling" in option_string:
-    for sample_name in sample_name_list_lines:
+    for sample in samples_lines:
         os.system("cp %s/%s/results/%s_sorted_filtered.vcf.gz %s" % (out_dir, sample_name, sample_name, out_dir))
 
     os.system("%sbcftools merge --merge all --force-samples %s/*filtered.vcf.gz -O v -o %smultisample_filtered.vcf" % (path_bcftools, out_dir, out_dir))
@@ -191,7 +197,7 @@ if "-variantcalling" in option_string:
 
 if "-SV" or "-MEI" in option_string:
     if "-SV" in option_string:
-        for sample_name in sample_name_list_lines:
+        for sample in samples_lines:
             if "-mode fast" in option_string:
                 os.system("cp %s/%s/results/%s_manta_SV.vcf.gz %s" % (out_dir, sample_name, sample_name, out_dir))
                 os.system("gzip -d %s/%s_manta_SV.vcf.gz" % (out_dir, sample_name))
@@ -208,7 +214,7 @@ if "-SV" or "-MEI" in option_string:
         multisample_SV_results_file = "%s/multisample_SV_merged.vcf.gz" % (out_dir)
 
     if "-MEI" in option_string:
-        for sample_name in sample_name_list_lines:
+        for sample in samples_lines:
             os.system("cp %s/%s/results/%s_MEI.vcf.gz %s" % (out_dir, sample_name, sample_name, out_dir))
             os.system("gzip -d %s/%s_MEI.vcf.gz" % (out_dir, sample_name))
 
@@ -282,7 +288,7 @@ if "-expansion" in option_string:
     print("\nPerforming unknown and non-reference repeat expansion analysis (motif and locus outlier modes) for all analysed samples using ExpansionHunter Denovo...\n")
     manifest_file = open("%s/multisample_manifest.txt" % (out_dir), 'w')
 
-    for sample_name in sample_name_list_lines:
+    for sample in samples_lines:
         if "-mode fast" in option_string:
             os.system("%s/bin/ExpansionHunterDenovo profile --reads %s/%s/sorted.bam --reference %s --output-prefix %s/%s --min-anchor-mapq 50 --max-irr-mapq 40" %
             (path_expansionHunterDenovo_dir, out_dir, sample_name, path_reference, out_dir, sample_name))
