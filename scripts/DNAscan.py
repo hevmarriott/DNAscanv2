@@ -202,11 +202,10 @@ def is_variant_file_OK(file, t, s):
     else:
         sys.exit("WARNING: %s does not exist - DNAscan will now terminate.\n" % file)
 
-# 6. Bed splitting: splitting the analysis region into subsets of equal length to distribute the work across the available threads.
+# 6. Bed splitting: splitting the analysis region into subsets of equal length.
 # To do this DNAscan uses a bed file.
 # If bed file is not provided, it generates one starting from the
-# reference genome index. The pipeline uses a bed file to split the
-# analyses in several subprocesses
+# reference genome index. The pipeline uses a bed file to identify the positions from which reads have at least one insertion or deletion detected from alignment for intensive mode.
 
 if alsgenescanner:
 
@@ -251,8 +250,6 @@ if reference == "grch37" or  reference == "grch38" :
 
 if BED or path_gene_list:
     if len(path_bed) != 0:
-        # splitting the analysis region into subsets of equal length to
-        # distribute the work across the available threads.
         if len(path_gene_list) != 0:
             print(
                 "\n\nWARNING: Both a bed file and a list of genes were provided. DNAscan will ignore the list of genes.\n\n"
@@ -335,16 +332,13 @@ if BED or path_gene_list:
 #        (path_bedtools, num_cpu, path_bed, out))
 else:
     # If bed file is not provided, it generates one starting from the
-    # reference genome index or the default exome bed. The pipeline uses a bed file to split the
-    # analyses in several subprocesses
+    # reference genome index or the default exome bed. 
     if exome == "True":
         os.system("zcat %sdb/exome_%s.bed.gz > %stmp/exome_%s.bed" %
                   (dnascan_dir, reference, out, reference))
         path_bed = "%stmp/exome_%s.bed" % (out, reference)
 
         if len(path_bed) != 0:
-            # splitting the analysis region into subsets of equal length to
-            # distribute the work across the available threads.
             os.system(
                 "awk \'{i=$2; while (i < $3) {print $1\"\t\"i\"\t\"i+1 ;  i++}}\' %s > %stmp/tmp.bed"
                 % (path_bed, out))
@@ -1079,40 +1073,52 @@ if annotation:
 
         if SV or MEI:
         #15.1 Structural variant annotation and prioritisation is carried out using AnnotSV
-            print("\nStructural variant annotation is being performed with AnnotSV...\n")
-
-            os.environ["ANNOTSV"] = "%s" % (path_annotsv)
-
-            if alsgenescanner or len(path_gene_list) != 0:
-                candidate_gene_cmd = "-candidateGenesFile %s" % (path_gene_list)
-
-            if reference == "hg19":
-                genome_build = "GRCh37"
-
+            if "annotsv.log" in os.listdir(out + "logs"):
+                print(
+                    "WARNING: The presence of annotsv.log in logs is telling you that SV annotation was already peformed, please remove annotsv.log if you wish to perform this stage anyway\n"
+                )
+                if SV:
+                    SV_annotation_file = "%s/results/%s_annotated_SV.tsv" % (out, sample_name)
+                if MEI:
+                    MEI_annotation_file = "%s/results/%s_annotated_MEI.tsv" % (out, sample_name)
             else:
-                genome_build = "GRCh38"
-            
-            if SV:
                 print("\nStructural variant annotation is being performed with AnnotSV...\n")
-                os.system("%s/bin/AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/results/%s_annotated_SV -SVminSize 30 %s" % (
-                    path_annotsv, path_annotsv, path_bcftools, path_bedtools, SV_results_file, candidate_gene_cmd, genome_build, out, sample_name, annotsv_custom_options))
 
-                SV_annotation_file = "%s/results/%s_annotated_SV.tsv" % (out, sample_name)
-                
-                print("\nStructural variant annotation is complete.\n")
-                
-            if MEI:
-                print("\nTransposable element annotation is being performed with AnnotSV...\n")
-                os.system("%s/bin/AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/results/%s_annotated_MEI -SVminSize 30 %s" % (
-                    path_annotsv, path_annotsv, path_bcftools, path_bedtools, MEI_results_file, candidate_gene_cmd, genome_build, out, sample_name, annotsv_custom_options))
+                os.environ["ANNOTSV"] = "%s" % (path_annotsv)
 
-                MEI_annotation_file = "%s/results/%s_annotated_MEI.tsv" % (out, sample_name)
-                
-                print("\nTransposable element annotation is complete.\n")
-                
-            if not debug:
-                os.system("rm %s/results/*sorted.bed %s/results/*breakpoints.bed" % (out, out))
+                if alsgenescanner or len(path_gene_list) != 0:
+                    candidate_gene_cmd = "-candidateGenesFile %s" % (path_gene_list)
 
+                if reference == "hg19":
+                    genome_build = "GRCh37"
+
+                else:
+                    genome_build = "GRCh38"
+            
+                if SV:
+                
+                    print("\nStructural variant annotation is being performed with AnnotSV...\n")
+                    os.system("%s/bin/AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/results/%s_annotated_SV -SVminSize 30 %s" % (
+                        path_annotsv, path_annotsv, path_bcftools, path_bedtools, SV_results_file, candidate_gene_cmd, genome_build, out, sample_name, annotsv_custom_options))
+
+                    SV_annotation_file = "%s/results/%s_annotated_SV.tsv" % (out, sample_name)
+                
+                    print("\nStructural variant annotation is complete.\n")
+                
+                if MEI:
+                    print("\nTransposable element annotation is being performed with AnnotSV...\n")
+                    os.system("%s/bin/AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/results/%s_annotated_MEI -SVminSize 30 %s" % (
+                        path_annotsv, path_annotsv, path_bcftools, path_bedtools, MEI_results_file, candidate_gene_cmd, genome_build, out, sample_name, annotsv_custom_options))
+
+                    MEI_annotation_file = "%s/results/%s_annotated_MEI.tsv" % (out, sample_name)
+                
+                    print("\nTransposable element annotation is complete.\n")
+                
+                if not debug:
+                    os.system("rm %s/results/*sorted.bed %s/results/*breakpoints.bed" % (out, out))
+            
+                os.system("touch  %slogs/annotsv.log" % (out))
+                
         print("\nAnnotation and prioritisation is complete.\n")
 
 else:
