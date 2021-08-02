@@ -7,6 +7,12 @@ sg.theme('Reddit')
 command_to_run = r"python3 scripts/DNAscan.py"
 
 def runCommand(cmd, timeout=None, window=None):
+    """ run shell command
+	@param cmd: command to execute
+	@param timeout: timeout for command execution
+	@param window: the PySimpleGUI window that the output is going to (needed to do refresh on)
+	@return: (return code from command, command output)
+	"""
     p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     output = ''
     for line in p.stdout:
