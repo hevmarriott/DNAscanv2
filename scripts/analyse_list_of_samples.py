@@ -90,7 +90,7 @@ for sample in list_file_lines:
 
     os.system( "python3 %sDNAscan.py %s -sample_name %s %s -out %s/%s/ " %( dnascan_dir , option_string , sample_name , input_file_string , out_dir , sample_name) )
                            
-    sample_name_list = open("%s/multisample_list.txt" % (out_dir)
+    sample_name_list = open("%s/multisample_list.txt" % (out_dir))
     sample_name_list.write('%s\n' % (sample.split('.')[0]))
 
 sample_name_list.close()
@@ -290,7 +290,7 @@ if "-SV" or "-MEI" in option_string:
                 os.system("mv %s/multisample_annotated_MEI.html %s/reports/multisample_MEIannotatedvariants.html" % (
                     annotation_dir, out_dir))
                             
-             print("\nMultisample HTML annotation report is now available.\n")
+            print("\nMultisample HTML annotation report is now available.\n")
 
 # 5.5 Run ExpansionHunterDenovo to detect unknown/non-reference repeat expansions
 if "-expansion" in option_string:
