@@ -82,7 +82,7 @@ for sample in list_file_lines:
 
     # 5.2 Create working dir tree
 
-    os.system( "mkdir %s ; mkdir %s/%s" %( out_dir , out_dir , sample_name, out_dir ) )
+    os.system( "mkdir %s ; mkdir %s/%s" %( out_dir , out_dir , sample_name ) )
 
     # 5.3 Run DNAscan for one sample
 
