@@ -292,7 +292,9 @@ if "-SV" or "-MEI" in option_string:
 if "-expansion" in option_string:
     print("\nPerforming unknown and non-reference repeat expansion analysis (motif and locus outlier modes) for all analysed samples using ExpansionHunter Denovo...\n")
     manifest_file = open("%s/multisample_manifest.txt" % (out_dir), 'w')
-
+    
+with open("%s/multisample_list.txt" % (out_dir) , 'r' ) as f:
+    samples_lines = f.read().splitlines()
     for sample in samples_lines:
         if "-format fastq" in option_string:
             if "-mode fast" in option_string:
@@ -307,10 +309,8 @@ if "-expansion" in option_string:
         (path_expansionHunterDenovo_dir, bam, path_reference, out_dir, sample))
 
         STR_profile = "%s/%s.str_profile.json" % (out_dir, sample)
-        
-        case = "case"
 
-        manifest_file.write("%s\t%s\t%s\n" % (sample, case, STR_profile))
+        manifest_file.write("%s\tcase\t%s\n" % (sample, STR_profile))
 
     manifest_file.close()
 
@@ -328,3 +328,5 @@ if "-expansion" in option_string:
         (path_expansionHunterDenovo_dir, out_dir, out_dir, path_annovar, path_annovar_db, reference))
 
         print("\nRepeat expansion annotation is complete.\n")
+        
+f.close()
