@@ -854,7 +854,7 @@ if expansion:
         print("\nRepeat expansion scanning is complete.\n")
 
         if not debug:
-            os.system("rm %stemp_EH.json*  %stemp_EH.log" % (out, out))
+            os.system("rm %stemp_EH.json* %stemp_EH_realigned.bam" % (out, out))
 
 # 13. Structural Variant calling
 
@@ -1056,9 +1056,9 @@ if annotation:
                 (out, reference, out))
 
         os.system(
-            "mv %s/annovar.vcf.%s_multianno.vcf %sresults/%s_annotated.vcf ; bgzip -f %sresults/%s_annotated.vcf ; %stabix -fp vcf %sresults/%s_annotated.vcf.gz"
-            % (out, reference, out, sample_name, out, sample_name, path_tabix, out,
-               sample_name))
+            "mv %s/annovar.vcf.%s_multianno.vcf %sresults/%s_annotated.vcf" % (out, reference, out, sample_name)) 
+        os.system("bgzip -f %sresults/%s_annotated.vcf ; %stabix -fp vcf %sresults/%s_annotated.vcf.gz" % (
+            out, sample_name, path_tabix, out, sample_name))
 
         os.system("mv %s %sresults/" % (variant_results_file, out))
         os.system("mv %s.tbi %sresults/" % (variant_results_file, out))
@@ -1113,6 +1113,9 @@ if annotation:
                     MEI_annotation_file = "%s/results/%s_annotated_MEI.tsv" % (out, sample_name)
                 
                     print("\nTransposable element annotation is complete.\n")
+                    
+                if not debug:
+                    os.system("%s/results/%s_unannotated*" % (out, sample_name))
             
                 os.system("touch  %slogs/annotsv.log" % (out))
                 
@@ -1414,64 +1417,68 @@ if results_report:
             )
 
         else:
-            print("\nGenerating report of annotated variant calls...\n")
+            if variantcalling:
+                print("\nGenerating report of annotated variant calls...\n")
 
-            os.system("zcat %s > %stemp.vcf" % (variant_results_file, out))
+                os.system("zcat %s > %stemp.vcf" % (variant_results_file, out))
 
-            #vcf = open('%stemp.vcf' % (out), 'r')
+                #vcf = open('%stemp.vcf' % (out), 'r')
 
-            #vcf_lines = vcf.readlines()
+                #vcf_lines = vcf.readlines()
 
-            gene_list_file = open(path_gene_list)
+                gene_list_file = open(path_gene_list)
 
-            gene_list_lines = gene_list_file.readlines()
+                gene_list_lines = gene_list_file.readlines()
 
-            gene_list = gene_list_lines
+                gene_list = gene_list_lines
 
-            out_file_all = open(
-                '%sreports/%s_all_variants.txt' % (out, sample_name), 'w')
+                out_file_all = open(
+                    '%sreports/%s_all_variants.txt' % (out, sample_name), 'w')
 
-            counter = 0
+                counter = 0
 
-            for i in gene_list:
+                for i in gene_list:
 
-                with open('%stemp.vcf' % (out)) as vcf:
+                    with open('%stemp.vcf' % (out)) as vcf:
 
-                    for j in vcf:
+                        for j in vcf:
 
-                        check1 = re.search(
-                            r'(^chr)|(^[0-9,X,Y,M]+\t)', j, flags=0)
+                            check1 = re.search(
+                                r'(^chr)|(^[0-9,X,Y,M]+\t)', j, flags=0)
 
-                        check = re.search(
-                            "=%s;" % (i.strip().upper()), j, flags=0)
+                            check = re.search(
+                                "=%s;" % (i.strip().upper()), j, flags=0)
 
-                        if check and check1:
+                            if check and check1:
 
-                            infos = j.split('ANNOVAR_DATE')[1][12:].split(
-                                'ALLELE_END')[0].replace(";", "\t")
+                                infos = j.split('ANNOVAR_DATE')[1][12:].split(
+                                    'ALLELE_END')[0].replace(";", "\t")
 
-                            if counter == 0:
+                                if counter == 0:
 
-                                replaced_1 = re.sub(
-                                    '=[a-z,A-Z,0-9,\.,\_,\-,:,>,<]+', '',
-                                    infos)
+                                    replaced_1 = re.sub(
+                                        '=[a-z,A-Z,0-9,\.,\_,\-,:,>,<]+', '',
+                                        infos)
+
+                                    out_file_all.write(
+                                        'CHR\tPosition\tRef\tAlt\tGenotype\t%s\n' %
+                                        (replaced_1))
+
+                                    counter = 1
+
+                                replaced = re.sub('[a-z,A-Z,0-9,\.,\_,\-,:,>,<]+=',
+                                                  '', infos)
 
                                 out_file_all.write(
-                                    'CHR\tPosition\tRef\tAlt\tGenotype\t%s\n' %
-                                    (replaced_1))
+                                    '%s\t%s\t%s\t%s\t%s\t%s\n' %
+                                    (j.split('\t')[0], j.split('\t')[1],
+                                     j.split('\t')[3], j.split('\t')[4],
+                                     j.split('\t')[-1].split(':')[0], replaced))
 
-                                counter = 1
-
-                            replaced = re.sub('[a-z,A-Z,0-9,\.,\_,\-,:,>,<]+=',
-                                              '', infos)
-
-                            out_file_all.write(
-                                '%s\t%s\t%s\t%s\t%s\t%s\n' %
-                                (j.split('\t')[0], j.split('\t')[1],
-                                 j.split('\t')[3], j.split('\t')[4],
-                                 j.split('\t')[-1].split(':')[0], replaced))
-
-            out_file_all.close()
+                out_file_all.close()
+            
+                if not debug:
+                    os.system("rm %stemp.vcf" % (out))
 
         #21.1 knotAnnotSV SV report generation
             if SV:
