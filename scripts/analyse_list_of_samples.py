@@ -89,10 +89,10 @@ for sample in list_file_lines:
     # 5.3 Run DNAscan for one sample
 
     os.system( "python3 %s/scripts/DNAscan.py %s -sample_name %s %s -out %s/%s/ " %( dnascan_dir , option_string , sample_name , input_file_string , out_dir , sample_name) )
-                           
-    sample_name_list = open("%s/multisample_list.txt" % (out_dir))
+       
+    sample_name_list = open("%s/multisample_list.txt" % (out_dir), "w")
     sample_name_list.write('%s\n' % (sample.split('.')[0]))
-
+    
 sample_name_list.close()
 
 #5.4 Create multisample results files #need to do this so comes with a list of samples, one per line - this is not right
