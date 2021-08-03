@@ -301,7 +301,7 @@ if "-expansion" in option_string:
                 bam = "%s/%s/sorted_merged.bam" (out_dir, sample)
         
         if "-format bam" in option_string:
-            bam = #path to the bam file specified
+            bam = "%s.bam" % (sample)
      
         os.system("%s/bin/ExpansionHunterDenovo profile --reads %s--reference %s --output-prefix %s/%s --min-anchor-mapq 50 --max-irr-mapq 40" %
         (path_expansionHunterDenovo_dir, bam, path_reference, out_dir, sample))
