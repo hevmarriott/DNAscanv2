@@ -62,11 +62,12 @@ list_file = open( "%s" %(sample_list) , 'r' )
 
 list_file_lines = list_file.readlines()
 
-#need to get the programs from paths_configs.py
-
 # 5. Run DNAscan for each line in the input sample list
 
 for sample in list_file_lines:
+    
+    sample_name_list = open("%s/multisample_list.txt" % (out_dir), "w")
+    sample_name_list.write('%s\n' % (sample.split('.')[0]))
 
     # 5.1 Create DNAscan input file option string per line in the input list
 
@@ -90,7 +91,6 @@ for sample in list_file_lines:
 
     os.system( "python3 %s/scripts/DNAscan.py %s -sample_name %s %s -out %s/%s/ " %( dnascan_dir , option_string , sample_name , input_file_string , out_dir , sample_name) )
        
-    sample_name_list = open("%s/multisample_list.txt" % (out_dir), "w")
     sample_name_list.write('%s\n' % (sample.split('.')[0]))
     
 sample_name_list.close()
