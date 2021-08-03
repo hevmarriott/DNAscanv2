@@ -1,13 +1,15 @@
-#Usage: bash install_dependencies_hg38.sh $path_to_setup_dir $path_to_DNASCAN_dir $path_to_ANNOVAR 
-#Example: bash install_dependencies_hg38.sh /home/local/ /home/DNAscan /home/annovar 
+#Usage: bash install_dependencies_hg38.sh $path_to_setup_dir $path_to_DNASCAN_dir $path_to_ANNOVAR $path_to_MELT $num_cpu 
+#Example: bash install_dependencies_hg38.sh /home/local/ /home/DNAscan /home/annovar.tar.gz /home/MELTv2.2.2.tar.gz 4
 
 INSTALL_DIR=$1
 
 DNASCAN_DIR=$2
 
-ANNOVAR_DIR=$3
+ANNOVAR_EXEC=$3
 
-NUM_CPUS=$4
+MELT_EXEC=$4
+
+NUM_CPUS=$5
 
 sudo apt-get update
 
@@ -24,6 +26,10 @@ sudo apt-get install -y wget bzip2 gzip make git tcl http json tar csv
 mkdir $INSTALL_DIR
 
 mkdir $INSTALL_DIR/humandb
+
+tar -zxf $ANNOVAR_EXEC --directory $INSTALL_DIR
+
+$ANNOVAR_DIR=$INSTALL_DIR/annovar
 
 cd $DNASCAN_DIR
 
@@ -44,6 +50,10 @@ $ANNOVAR_DIR/annotate_variation.pl -buildver hg38 -downdb -webfrom annovar avsnp
 $ANNOVAR_DIR/annotate_variation.pl -buildver hg38 -downdb -webfrom annovar intervar_20180118 $INSTALL_DIR/humandb/
 
 cd $INSTALL_DIR
+
+tar -zxf $MELT_EXEC --directory $INSTALL_DIR
+
+$MELT_DIR=$INSTALL_DIR/MELTv2.2.2
 
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 
@@ -203,7 +213,9 @@ sed "s|path_delly_exclude_regions = \"\"|path_delly_exclude_regions = \"$DNASCAN
 
 sed "s|path_expansionHunterDenovo_dir = \"\"|path_expansionHunterDenovo_dir = \"$INSTALL_DIR\/ExpansionHunterDenovo-v0.9.0-linux_x86_64\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
-rm scripts/paths_configs.py_temp
+sed "s|path_melt = \"\"|path_melt = \"$INSTALL_DIR\/MELTv2.2.2\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
+
+mv scripts/paths_configs.py_temp scripts/paths_configs.py
 
 chmod +x scripts/*
 
