@@ -94,7 +94,7 @@ for sample in list_file_lines:
 #5.4 Create multisample results files #need to do this so comes with a list of samples, one per line - this is not right
 
 samples = open("%s/multisample_list.txt" % (out_dir) , 'r' )
-samples_lines = sample_names.readlines()
+samples_lines = samples.readlines()
 
 if "-variantcalling" in option_string:
     for sample in samples_lines:
