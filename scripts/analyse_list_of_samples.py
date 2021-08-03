@@ -276,7 +276,7 @@ if "-SV" or "-MEI" in option_string:
                 os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s --genomeBuild %s" % (
                     path_knotannotsv, path_knotannotsv, SV_annotation_file, annotation_dir, reference))
                             
-                os.system("mv %s/multisample_SVannoreport.annotated.html %s/reports/multisample_SVannotatedvariants.html" % (
+                os.system("mv %s/multisample_annotated_SV.html %s/reports/multisample_SVannotatedvariants.html" % (
                     annotation_dir, out_dir))
 
             if "-MEI" in option_string:
@@ -287,7 +287,7 @@ if "-SV" or "-MEI" in option_string:
                 os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s --genomeBuild %s" % (
                     path_knotannotsv, path_knotannotsv, MEI_annotation_file, annotation_dir, reference))
                 
-                os.system("mv %s/multisample_MEIannoreport.annotated.html %s/reports/multisample_MEIannotatedvariants.html" % (
+                os.system("mv %s/multisample_annotated_MEI.html %s/reports/multisample_MEIannotatedvariants.html" % (
                     annotation_dir, out_dir))
                             
              print("\nMultisample HTML annotation report is now available.\n")
