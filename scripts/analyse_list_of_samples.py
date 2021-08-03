@@ -264,7 +264,7 @@ if "-SV" or "-MEI" in option_string:
             print("\nMultisample transposable element annotation is complete.\n")
 
         if not debug:
-            os.system("rm %s/*sorted.bed %s/*breakpoints.bed" % (out_dir, out_dir))
+            os.system("rm %s/results/multisample_unannotated*" % (out))
 
         if "-results_report" in option_string:
             print("\nCreating multisample HTML annotation report...\n")
