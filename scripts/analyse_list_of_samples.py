@@ -322,4 +322,4 @@ if "-expansion" in option_string:
 
         print("\nRepeat expansion annotation is complete.\n")
         
-    samples_lines.close()
+    sample_lines.close()
