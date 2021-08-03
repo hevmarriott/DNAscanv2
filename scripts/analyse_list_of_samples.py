@@ -307,8 +307,10 @@ if "-expansion" in option_string:
         (path_expansionHunterDenovo_dir, bam, path_reference, out_dir, sample))
 
         STR_profile = "%s/%s.str_profile.json" % (out_dir, sample)
+        
+        case = "case"
 
-        manifest_file.write("%s\tcase\t%s\n" % (sample, STR_profile))
+        manifest_file.write("%s\t%s\t%s\n" % (sample, case, STR_profile))
 
     manifest_file.close()
 
