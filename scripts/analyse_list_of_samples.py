@@ -62,8 +62,6 @@ list_file = open( "%s" %(sample_list) , 'r' )
 
 list_file_lines = list_file.readlines()
 
-sample_name_list = open("%s/multisample_list.txt" % (out_dir), "x")
-
 # 5. Run DNAscan for each line in the input sample list
 
 for sample in list_file_lines:
@@ -84,7 +82,7 @@ for sample in list_file_lines:
 
     # 5.2 Create working dir tree
 
-    os.system( "mkdir %s ; mkdir %s/%s" %( out_dir , out_dir , sample_name ) )
+    os.system( "mkdir %s ; mkdir %s/%s ; touch %s/multisample.txt" %( out_dir , out_dir , sample_name, out_dir ) )
 
     # 5.3 Run DNAscan for one sample
 
