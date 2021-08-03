@@ -62,12 +62,11 @@ list_file = open( "%s" %(sample_list) , 'r' )
 
 list_file_lines = list_file.readlines()
 
+sample_name_list = open("%s/multisample_list.txt" % (out_dir), "x")
+
 # 5. Run DNAscan for each line in the input sample list
 
 for sample in list_file_lines:
-    
-    sample_name_list = open("%s/multisample_list.txt" % (out_dir), "w")
-    sample_name_list.write('%s\n' % (sample.split('.')[0]))
 
     # 5.1 Create DNAscan input file option string per line in the input list
 
@@ -90,15 +89,15 @@ for sample in list_file_lines:
     # 5.3 Run DNAscan for one sample
 
     os.system( "python3 %s/scripts/DNAscan.py %s -sample_name %s %s -out %s/%s/ " %( dnascan_dir , option_string , sample_name , input_file_string , out_dir , sample_name) )
-       
-    sample_name_list.write('%s\n' % (sample.split('.')[0]))
     
-sample_name_list.close()
-
+    sample_names = open("%s/multisample_list.txt" % (out_dir), "a")
+    sample_names.write('%s\n' % (sample.split('.')[0]))
+    sample_names.close()
+    
 #5.4 Create multisample results files #need to do this so comes with a list of samples, one per line - this is not right
 
-samples = open("%s" % (sample_name_list) , 'r' )
-samples_lines = sample_name_list.readlines()
+samples = open("%s/multisample_list.txt" % (out_dir) , 'r' )
+samples_lines = sample_names.readlines()
 
 if "-variantcalling" in option_string:
     for sample in samples_lines:
