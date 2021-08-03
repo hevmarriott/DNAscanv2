@@ -1016,7 +1016,7 @@ if MEI:
         os.system("cat %smelt/SVA.final_comp.vcf | grep -v '^#' > %smelt/%s.sva.vcf" % (out, out, sample_name))
         os.system("cat %smelt/LINE1.final_comp.vcf | grep -v '^#' > %smelt/%s.line1.vcf" % (out, out, sample_name))
         os.system("cat %smelt/ALU.final_comp.vcf | grep -v '^#' > %smelt/%s.alu.vcf" % (out, out, sample_name))
-        os.system("cat %smelt/%s.header.txt %smelt/%s.sva.vcf %smelt.%s.line1.vcf %smelt/%s.alu.vcf | perl %svcf-sort.pl -c | bgzip -c > %s/results/%s_MEI.vcf.gz" % (out, sample_name, out, sample_name, out, sample_name, out, sample_name, path_scripts, out, sample_name))
+        os.system("cat %smelt/%s.header.txt %smelt/%s.sva.vcf %smelt/%s.line1.vcf %smelt/%s.alu.vcf | perl %svcf-sort.pl -c | bgzip -c > %s/results/%s_MEI.vcf.gz" % (out, sample_name, out, sample_name, out, sample_name, out, sample_name, path_scripts, out, sample_name))
         os.system("%stabix -p vcf %s/results/%s_MEI.vcf.gz" % (path_tabix, out, sample_name))
 
         MEI_results_file = "%s/results/%s_MEI.vcf.gz" % (out, sample_name)
@@ -1024,7 +1024,10 @@ if MEI:
         is_variant_file_OK(MEI_results_file, "Vcf", "MEI")
 
         if not debug:
-            os.system("rm -r %smelt %s/*bam.disc %s/*bam.disc.bai %s/*bam.fq" % (out, out, out, out))
+            os.system("rm -r %smelt" % (out))
+            
+            if variantcalling:
+                os.system("rm %s/*bam.disc %s/*bam.disc.bai %s/*bam.fq" % (out, out, out))
 
         os.system("touch  %slogs/mei.log" % (out))
 
