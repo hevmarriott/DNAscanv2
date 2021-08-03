@@ -294,16 +294,21 @@ if "-expansion" in option_string:
     manifest_file = open("%s/multisample_manifest.txt" % (out_dir), 'w')
 
     for sample in samples_lines:
-        if "-mode fast" in option_string:
-            os.system("%s/bin/ExpansionHunterDenovo profile --reads %s/%s/sorted.bam --reference %s --output-prefix %s/%s --min-anchor-mapq 50 --max-irr-mapq 40" %
-            (path_expansionHunterDenovo_dir, out_dir, sample_name, path_reference, out_dir, sample_name))
+        if "-format fastq" in option_string:
+            if "-mode fast" in option_string:
+                bam = "%s/%s/sorted.bam" % (out_dir, sample)
+            if "-mode fast" not in option_string:
+                bam = "%s/%s/sorted_merged.bam" (out_dir, sample)
+        
+        if "-format bam" in option_string:
+            bam = #path to the bam file specified
+     
+        os.system("%s/bin/ExpansionHunterDenovo profile --reads %s--reference %s --output-prefix %s/%s --min-anchor-mapq 50 --max-irr-mapq 40" %
+        (path_expansionHunterDenovo_dir, bam, path_reference, out_dir, sample))
 
-        os.system("%s/bin/ExpansionHunterDenovo profile --reads %s/%s/sorted_merged.bam --reference %s --output-prefix %s/%s --min-anchor-mapq 50 --max-irr-mapq 40" %
-        (path_expansionHunterDenovo_dir, out_dir, sample_name, path_reference, out_dir, sample_name))
+        STR_profile = "%s/%s.str_profile.json" % (out_dir, sample)
 
-        STR_profile = "%s/%s.str_profile.json" % (out_dir, sample_name)
-
-        manifest_file.write("%s\tcase\t%s\n" % (sample_name, STR_profile))
+        manifest_file.write("%s\tcase\t%s\n" % (sample, STR_profile))
 
     manifest_file.close()
 
