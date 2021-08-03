@@ -92,7 +92,7 @@ for sample in list_file_lines:
     sample_names.write('%s\n' % (sample.split('.')[0]))
     
 #5.4 Create multisample results files #need to do this so comes with a list of samples, one per line - this is not right
-
+sample_names.close()
 samples = open("%s/multisample_list.txt" % (out_dir) , 'r' )
 samples_lines = samples.readlines()
 
@@ -321,5 +321,3 @@ if "-expansion" in option_string:
         (path_expansionHunterDenovo_dir, out_dir, out_dir, path_annovar, path_annovar_db, reference))
 
         print("\nRepeat expansion annotation is complete.\n")
-        
-    sample_lines.close()
