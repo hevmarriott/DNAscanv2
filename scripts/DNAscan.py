@@ -1113,9 +1113,6 @@ if annotation:
                     MEI_annotation_file = "%s/results/%s_annotated_MEI.tsv" % (out, sample_name)
                 
                     print("\nTransposable element annotation is complete.\n")
-                
-                if not debug:
-                    os.system("rm %s/results/*sorted.bed %s/results/*breakpoints.bed" % (out, out))
             
                 os.system("touch  %slogs/annotsv.log" % (out))
                 
@@ -1485,7 +1482,7 @@ if results_report:
                 os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_SVanno --genomeBuild %s" % (
                     path_knotannotsv, path_knotannotsv, SV_annotation_file, out, sample_name, reference))
 
-                os.system("mv %s%s_SVanno/%s_SVanno.annotated.html %s/reports/%s_SVannotatedvariants.html" % (
+                os.system("mv %s%s_SVanno/%s_annotated_SV.html %s/reports/%s_SVannotatedvariants.html" % (
                     out, sample_name, sample_name, out, sample_name))
 
                 if not debug:
@@ -1501,7 +1498,7 @@ if results_report:
                  os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_MEIanno --genomeBuild %s" % (
                     path_knotannotsv, path_knotannotsv, MEI_annotation_file, out, sample_name, reference))
 
-                 os.system("mv %s%s_MEIanno/%s_MEIanno.annotated.html %s/reports/%s_MEIannotatedvariants.html" % (
+                 os.system("mv %s%s_MEIanno/%s_annotated_MEI.html %s/reports/%s_MEIannotatedvariants.html" % (
                     out, sample_name, sample_name, out, sample_name)) 
                 
                  print("\nTransposable element HTML report created.\n")
