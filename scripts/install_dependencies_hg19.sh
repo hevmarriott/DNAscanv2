@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Usage: bash install_dependencies.sh $path_to_setup_dir $path_to_DNASCAN_dir $path_to_ANNOVAR $path_to_MELT $num_cpu
-#Example: bash install_dependencies.sh /home/local/ /home/DNAscan /home/annovar.tar.gz /home/MELTv2.2.2.tar.gz $num_cpu
+#Example: bash install_dependencies.sh /home/local/ /home/DNAscan /home/annovar.tar.gz /home/MELTv2.2.2.tar.gz 4
 
 INSTALL_DIR=$1
 
