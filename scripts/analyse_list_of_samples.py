@@ -298,12 +298,12 @@ if "-expansion" in option_string:
             if "-mode fast" in option_string:
                 bam = "%s/%s/sorted.bam" % (out_dir, sample)
             if "-mode fast" not in option_string:
-                bam = "%s/%s/sorted_merged.bam" (out_dir, sample)
+                bam = "%s/%s/sorted_merged.bam" % (out_dir, sample)
         
         if "-format bam" in option_string:
             bam = "%s.bam" % (sample)
      
-        os.system("%s/bin/ExpansionHunterDenovo profile --reads %s--reference %s --output-prefix %s/%s --min-anchor-mapq 50 --max-irr-mapq 40" %
+        os.system("%s/bin/ExpansionHunterDenovo profile --reads %s --reference %s --output-prefix %s/%s --min-anchor-mapq 50 --max-irr-mapq 40" %
         (path_expansionHunterDenovo_dir, bam, path_reference, out_dir, sample))
 
         STR_profile = "%s/%s.str_profile.json" % (out_dir, sample)
@@ -314,7 +314,7 @@ if "-expansion" in option_string:
 
     os.system("%s/bin/ExpansionHunterDenovo merge --reference %s --manifest %s/multisample_manifest.txt --output-prefix %s/multisample" % (path_expansionHunterDenovo_dir, path_reference, out_dir, out_dir))
 
-    os.system("%s/scripts/outlier.py locus --manifest %s/multisample_manifest.txt--multisample-profile %s/multisample.multisample_profile.json --output %s/multisample.outlier_locus.tsv" % (path_expansionHunterDenovo_dir, out_dir, out_dir, out_dir))
+    os.system("%s/scripts/outlier.py locus --manifest %s/multisample_manifest.txt --multisample-profile %s/multisample.multisample_profile.json --output %s/multisample.outlier_locus.tsv" % (path_expansionHunterDenovo_dir, out_dir, out_dir, out_dir))
 
     os.system("%s/scripts/outlier.py motif --manifest %s/multisample_manifest.txt --multisample_profile %s/multisample.multisample_profile.json --output %s/multisample.outlier_motif.tsv" % (path_expansionHunterDenovo_dir, out_dir, out_dir, out_dir))
 
