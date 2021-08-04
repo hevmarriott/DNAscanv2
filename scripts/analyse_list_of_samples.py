@@ -109,7 +109,7 @@ with open("%s/multisample_list.txt" % (out_dir) , 'r' ) as f:
         if "-format bam" in option_string:
             bam = "%s.bam" % (sample)
      
-        os.system("%s/bin/ExpansionHunterDenovo profile --reads %s --reference %s --output-prefix %s/%s --min-anchor-mapq 50 --max-irr-mapq 40" %
+        os.system("%s/bin/ExpansionHunterDenovo profile --reads %s --reference %s --output-prefix %s/%s --min-anchor-mapq 50 --max-irr-mapq 40 --log-reads" %
         (path_expansionHunterDenovo_dir, bam, path_reference, out_dir, sample))
 
         STR_profile = "%s/%s.str_profile.json" % (out_dir, sample)
@@ -126,11 +126,13 @@ with open("%s/multisample_list.txt" % (out_dir) , 'r' ) as f:
 
     print("\nRepeat expansion analysis with ExpansionHunter Denovo is complete\n")
 
-    if "-annotation" in option_string:
-        print("\nAnnotating Expansion Hunter Denovo outlier locus results...\n")
-        os.system("%s/scripts/annotate_ehdn.sh --ehdn-results %s/multisample.outlier_locus.tsv --ehdn-annotated-results %s/multisample.outlier_locus_annotated.tsv --annovar-annotate-variation %s/annotate_variation.pl --annovar-humandb %s --annovar-buildver %s" %
-        (path_expansionHunterDenovo_dir, out_dir, out_dir, path_annovar, path_annovar_db, reference))
+    print("\nAnnotating Expansion Hunter Denovo outlier locus results...\n")
+    os.system("%s/scripts/annotate_ehdn.sh --ehdn-results %s/multisample.outlier_locus.tsv --ehdn-annotated-results %s/multisample.outlier_locus_annotated.tsv --annovar-annotate-variation %s/annotate_variation.pl --annovar-humandb %s --annovar-buildver %s" %
+    (path_expansionHunterDenovo_dir, out_dir, out_dir, path_annovar, path_annovar_db, reference))
+    
+    if "-debug" in option_string:
+        os.system("rm %s/*.locus.tsv %s/*.motif.tsv %s/*.reads.tsv %s/*.str_profile.json" % (out_dir, out_dir, out_dir, out_dir))
 
-        print("\nRepeat expansion annotation is complete.\n")
+    print("\nRepeat expansion annotation is complete.\n")
         
 f.close()
