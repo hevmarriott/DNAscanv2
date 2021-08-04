@@ -92,7 +92,7 @@ for sample in list_file_lines:
     
 sample_names.close()
 
-# 5.5 Run ExpansionHunterDenovo to detect unknown/non-reference repeat expansions
+# 5.4 Run ExpansionHunterDenovo to detect unknown/non-reference repeat expansions
 if "-expansion" in option_string:
     print("\nPerforming unknown and non-reference repeat expansion analysis (motif and locus outlier modes) for all analysed samples using ExpansionHunter Denovo...\n")
     manifest_file = open("%s/multisample_manifest.txt" % (out_dir), 'w')
