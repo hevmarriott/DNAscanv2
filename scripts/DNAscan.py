@@ -938,7 +938,7 @@ if SV:
                     path_bcftools, out, sample_name, out, sample_name))
                     
                     os.system("mv %sdelly/%s_delly_DEL_SV.vcf %s/results/" % (out, sample_name, out))
-                    os.system("mv %delly/%s_delly_INV_SV.vcf %s/results/" % (out, sample_name, out))
+                    os.system("mv %sdelly/%s_delly_INV_SV.vcf %s/results/" % (out, sample_name, out))
                     os.system("bgzip -c %s/results/%s_delly_DEL_SV.vcf > %s/results/%s_delly_DEL_SV.vcf.gz" % (out, sample_name, out, sample_name))
                     os.system("bgzip -c %s/results/%s_delly_INV_SV.vcf > %s/results/%s_delly_INV_SV.vcf.gz" % (out, sample_name, out, sample_name))
                     os.system("%stabix -p vcf %s/results/%s_delly_DEL_SV.vcf.gz" % (path_tabix, out, sample_name))
