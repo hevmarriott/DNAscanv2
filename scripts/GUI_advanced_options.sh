@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#Usage: bash add_dependencies.sh $path_to_gene_list $path_to_bed_file $hisat_options $bwa_options $annotsv_options $melt_options
+#Usage: bash add_dependencies.sh $path_to_gene_list $path_to_bed_file $hisat_options $bwa_options $annotsv_options $melt_options $RG_ID $RG_LB $RG_SM $RG_PU $RG_PL
 
 path_gene_list=$1
 
