@@ -1053,34 +1053,34 @@ if annotation:
         variant_results_file = "%sresults/%s_annotated.vcf.gz" % (out,
                                                                   sample_name)
     else:
+        if variantcalling:
+            print("\nAnnotation is being performed using Annovar, with the databases and respective operations defined in paths_configs.py...\n")
 
-        print("\nAnnotation is being performed using Annovar, with the databases and respective operations defined in paths_configs.py...\n")
-
-        os.system(
-            "perl %stable_annovar.pl  --thread %s --vcfinput %s %s -buildver %s -remove -protocol %s -operation %s -nastring . --outfile %s/annovar.vcf"
-            % (path_annovar, num_cpu, variant_results_file, path_annovar_db,
-               reference, annovar_protocols, annovar_operations, out))
-
-        if not debug and not alsgenescanner:
             os.system(
-                "rm %sannovar.vcf.%s_multianno.txt %sannovar.vcf.avinput" %
-                (out, reference, out))
+                "perl %stable_annovar.pl  --thread %s --vcfinput %s %s -buildver %s -remove -protocol %s -operation %s -nastring . --outfile %s/annovar.vcf"
+                % (path_annovar, num_cpu, variant_results_file, path_annovar_db,
+                   reference, annovar_protocols, annovar_operations, out))
 
-        os.system(
-            "mv %s/annovar.vcf.%s_multianno.vcf %sresults/%s_annotated.vcf" % (out, reference, out, sample_name)) 
-        os.system("bgzip -f %sresults/%s_annotated.vcf ; %stabix -fp vcf %sresults/%s_annotated.vcf.gz" % (
-            out, sample_name, path_tabix, out, sample_name))
+            if not debug and not alsgenescanner:
+                os.system(
+                    "rm %sannovar.vcf.%s_multianno.txt %sannovar.vcf.avinput" %
+                    (out, reference, out))
 
-        os.system("mv %s %sresults/" % (variant_results_file, out))
-        os.system("mv %s.tbi %sresults/" % (variant_results_file, out))
+            os.system(
+                "mv %s/annovar.vcf.%s_multianno.vcf %sresults/%s_annotated.vcf" % (out, reference, out, sample_name)) 
+            os.system("bgzip -f %sresults/%s_annotated.vcf ; %stabix -fp vcf %sresults/%s_annotated.vcf.gz" % (
+                out, sample_name, path_tabix, out, sample_name))
 
-        variant_results_file = "%sresults/%s_annotated.vcf.gz" % (out,
+            os.system("mv %s %sresults/" % (variant_results_file, out))
+            os.system("mv %s.tbi %sresults/" % (variant_results_file, out))
+
+            variant_results_file = "%sresults/%s_annotated.vcf.gz" % (out,
                                                                   sample_name)
-        is_variant_file_OK(variant_results_file, "Vcf", "annotation")
+            is_variant_file_OK(variant_results_file, "Vcf", "annotation")
 
-        os.system("touch  %slogs/annovar.log" % (out))
+            os.system("touch  %slogs/annovar.log" % (out))
 
-        print("\nAnnotation with ANNOVAR is complete.\n")
+            print("\nAnnotation with ANNOVAR is complete.\n")
 
         if SV or MEI:
         #15.1 Structural variant annotation and prioritisation is carried out using AnnotSV
