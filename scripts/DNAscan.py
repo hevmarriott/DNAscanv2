@@ -1499,7 +1499,7 @@ if results_report:
                     os.system("rm %stemp.vcf" % (out))
 
         #21.1 knotAnnotSV SV report generation
-            elif SV:
+            if SV:
                 print("\nGenerating SV annotation HTML report...\n")
 
                 os.system("mkdir %s%s_SVanno" % (out, sample_name))
