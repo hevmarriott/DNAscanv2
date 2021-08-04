@@ -1116,10 +1116,7 @@ if annotation:
                         path_annotsv, path_annotsv, path_bcftools, path_bedtools, SV_results_file, candidate_gene_cmd, genome_build, out, sample_name, annotsv_custom_options))
 
                     SV_annotation_file = "%s/results/%s_annotated_SV.tsv" % (out, sample_name)
-                    
-                    if not debug:
-                        os.system("rm %s/results/%s_unannotated_SV.tsv" (out, sample_name))
-                
+               
                     print("\nStructural variant annotation is complete.\n")
                 
                 if MEI:
@@ -1128,10 +1125,7 @@ if annotation:
                         path_annotsv, path_annotsv, path_bcftools, path_bedtools, MEI_results_file, candidate_gene_cmd, genome_build, out, sample_name, annotsv_custom_options))
 
                     MEI_annotation_file = "%s/results/%s_annotated_MEI.tsv" % (out, sample_name)
-                    
-                    if not debug:
-                        os.system("rm %s/results/%s_unannotated_MEI.tsv" % (out, sample_name))
-            
+                
                     print("\nTransposable element annotation is complete.\n")
 
                 os.system("touch  %slogs/annotsv.log" % (out))
