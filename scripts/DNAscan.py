@@ -1093,8 +1093,6 @@ if annotation:
                 if MEI:
                     MEI_annotation_file = "%s/results/%s_annotated_MEI.tsv" % (out, sample_name)
             else:
-                print("\nStructural variant annotation is being performed with AnnotSV...\n")
-
                 os.environ["ANNOTSV"] = "%s" % (path_annotsv)
 
                 if alsgenescanner or len(path_gene_list) != 0:
@@ -1501,7 +1499,7 @@ if results_report:
                     os.system("rm %stemp.vcf" % (out))
 
         #21.1 knotAnnotSV SV report generation
-            if SV:
+            elif SV:
                 print("\nGenerating SV annotation HTML report...\n")
 
                 os.system("mkdir %s%s_SVanno" % (out, sample_name))
@@ -1517,22 +1515,23 @@ if results_report:
 
                 print("\nSV HTML report created.\n")
                 
-            if MEI:
-                print("\nGenerating transposable element annotation HTML report...\n")
+            else:
+                if MEI:
+                    print("\nGenerating transposable element annotation HTML report...\n")
 
-                os.system("mkdir %s%s_MEIanno" % (out, sample_name))
+                    os.system("mkdir %s%s_MEIanno" % (out, sample_name))
 
-                os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_MEIanno --genomeBuild %s" % (
-                    path_knotannotsv, path_knotannotsv, MEI_annotation_file, out, sample_name, reference))
+                    os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_MEIanno --genomeBuild %s" % (
+                        path_knotannotsv, path_knotannotsv, MEI_annotation_file, out, sample_name, reference))
 
-                os.system("mv %s%s_MEIanno/%s_annotated_MEI.html %s/reports/%s_MEIannotatedvariants.html" % (
-                    out, sample_name, sample_name, out, sample_name)) 
+                    os.system("mv %s%s_MEIanno/%s_annotated_MEI.html %s/reports/%s_MEIannotatedvariants.html" % (
+                        out, sample_name, sample_name, out, sample_name)) 
                 
-                print("\nTransposable element HTML report created.\n")
+                    print("\nTransposable element HTML report created.\n")
 
             os.system("touch  %slogs/results_report.log" % (out))
 
-            print("\nCalls report for annotated variants is now available.\n")
+            print("\nResults report for annotated variants is now available.\n")
 
 
 # 22. Starting iobio services
