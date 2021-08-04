@@ -932,18 +932,23 @@ if SV:
                     path_delly, path_reference, out, sample_name, path_delly_exclude_regions, bam_file))
                     os.system("%sdelly call -t INV -g %s -o %sdelly/%s_delly_INV.bcf -x %s %s" % (
                     path_delly, path_reference, out, sample_name, path_delly_exclude_regions, bam_file))
-                    os.system("%sbcftools view %sdelly/%s_delly_DEL.bcf > %sdelly/%s_delly_DEL.vcf" % (
+                    os.system("%sbcftools view %sdelly/%s_delly_DEL.bcf > %sdelly/%s_delly_DEL_SV.vcf" % (
                     path_bcftools, out, sample_name, out, sample_name))
-                    os.system("%sbcftools view %sdelly/%s_delly_INV.bcf > %sdelly/%s_delly_INV.vcf" % (
+                    os.system("%sbcftools view %sdelly/%s_delly_INV.bcf > %sdelly/%s_delly_INV_SV.vcf" % (
                     path_bcftools, out, sample_name, out, sample_name))
-                    os.system("grep '^#' %sdelly/%s_delly_DEL.vcf > %sdelly/%s_delly_SV.vcf ; grep -v '^#' %sdelly/%s_delly_DEL.vcf %sdelly/%s_delly_INV.vcf >> %sdelly/%s_delly_unsorted_SV.vcf" % (
-                    out, sample_name, out, sample_name, out, sample_name, out, sample_name, out, sample_name))
-                    os.system("perl %svcf-sort.pl %sdelly/%s_delly_unsorted_SV.vcf > %sdelly/%s_delly_SV.vcf" % (
-                        path_scripts, out, sample_name, out, sample_name))
-                              
-                    if not debug:
-                        os.system("rm %sdelly/%s_delly_unsorted_SV.vcf" % (out, sample_name))
-                              
+                    
+                    os.system("mv %sdelly/%s_delly_DEL_SV.vcf %s/results/" % (out, sample_name, out))
+                    os.system("mv %delly/%s_delly_INV_SV.vcf %s/results/" % (out, sample_name, out))
+                    os.system("bgzip -c %s/results/%s_delly_DEL_SV.vcf > %s/results/%s_delly_DEL_SV.vcf.gz" % (out, sample_name, out, sample_name))
+                    os.system("bgzip -c %s/results/%s_delly_INV_SV.vcf > %s/results/%s_delly_INV_SV.vcf.gz" % (out, sample_name, out, sample_name))
+                    os.system("%stabix -p vcf %s/results/%s_delly_DEL_SV.vcf.gz" % (path_tabix, out, sample_name))
+                    os.system("%stabix -p vcf %s/results/%s_delly_INV_SV.vcf.gz" % (path_tabix, out, sample_name))
+                    
+                    delly_SV_DEL_results_file = "%s/results/%s_delly_DEL_SV.vcf.gz" % (out, sample_name)
+                    delly_SV_INV_results_file = "%s/results/%s_delly_INV_SV.vcf.gz" % (out, sample_name)
+                    
+                    is_variant_file_OK(delly_SV_DEL_results_file, "Vcf", "SV")
+                    is_variant_file_OK(delly_SV_INV_results_file, "Vcf", "SV")
 
                 else:
                     print("\nStructural variants are being called with Delly...\n")
@@ -953,13 +958,13 @@ if SV:
                     os.system("%sbcftools view %sdelly/%s_delly.bcf > %sdelly/%s_delly_SV.vcf" % (
                     path_bcftools, out, sample_name, out, sample_name))
 
-                os.system("mv %sdelly/%s_delly_SV.vcf %s/results/" % (out, sample_name, out))
-                os.system("bgzip -c %s/results/%s_delly_SV.vcf > %s/results/%s_delly_SV.vcf.gz" % (out, sample_name, out, sample_name))
-                os.system("%stabix -p vcf %s/results/%s_delly_SV.vcf.gz" % (path_tabix, out, sample_name))
+                    os.system("mv %sdelly/%s_delly_SV.vcf %s/results/" % (out, sample_name, out))
+                    os.system("bgzip -c %s/results/%s_delly_SV.vcf > %s/results/%s_delly_SV.vcf.gz" % (out, sample_name, out, sample_name))
+                    os.system("%stabix -p vcf %s/results/%s_delly_SV.vcf.gz" % (path_tabix, out, sample_name))
                 
-                delly_SV_results_file = "%s/results/%s_delly_SV.vcf.gz" % (out, sample_name)
+                    delly_SV_results_file = "%s/results/%s_delly_SV.vcf.gz" % (out, sample_name)
 
-                is_variant_file_OK(delly_SV_results_file, "Vcf", "SV")
+                    is_variant_file_OK(delly_SV_results_file, "Vcf", "SV")
 
                 print("\nStructural variant calling with Delly is complete.\n")
 
