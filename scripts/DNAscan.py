@@ -1125,7 +1125,7 @@ if annotation:
                     MEI_annotation_file = "%s/results/%s_annotated_MEI.tsv" % (out, sample_name)
                     
                     if not debug:
-                        os.system("rm %s/results/unannotated_MEI.tsv" % (out, sample_name))
+                        os.system("rm %s/results/%s_unannotated_MEI.tsv" % (out, sample_name))
             
                     print("\nTransposable element annotation is complete.\n")
 
