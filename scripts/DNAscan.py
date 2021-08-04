@@ -936,8 +936,14 @@ if SV:
                     path_bcftools, out, sample_name, out, sample_name))
                     os.system("%sbcftools view %sdelly/%s_delly_INV.bcf > %sdelly/%s_delly_INV.vcf" % (
                     path_bcftools, out, sample_name, out, sample_name))
-                    os.system("grep '^#' %sdelly/%s_delly_DEL.vcf > %sdelly/%s_delly_SV.vcf ; grep -v '^#' %sdelly/%s_delly_DEL.vcf %sdelly/%s_delly_INV.vcf >> %sdelly/%s_delly_SV.vcf" % (
+                    os.system("grep '^#' %sdelly/%s_delly_DEL.vcf > %sdelly/%s_delly_SV.vcf ; grep -v '^#' %sdelly/%s_delly_DEL.vcf %sdelly/%s_delly_INV.vcf >> %sdelly/%s_delly_unsorted_SV.vcf" % (
                     out, sample_name, out, sample_name, out, sample_name, out, sample_name, out, sample_name))
+                    os.system("perl %svcf-sort.pl %sdelly/%s_delly_unsorted_SV.vcf > %sdelly/%s_delly_SV.vcf" % (
+                        path_scripts, out, sample_name, out, sample_name)
+                              
+                    if not debug:
+                        os.system("rm %sdelly/%s_delly_unsorted_SV.vcf" % (out, sample_name))
+                              
 
                 else:
                     print("\nStructural variants are being called with Delly...\n")
@@ -964,7 +970,9 @@ if SV:
                 os.system("ls %s/results/*SV.vcf > %s/results/survivor_sample_files" % (out, out))
                 os.system("%sSURVIVOR merge %s/results/survivor_sample_files 1000 1 1 1 0 30 %s/results/%s_SV_merged.vcf" % (
                 path_SURVIVOR, out, out, sample_name))
-                os.system("bgzip %s/results/%s_SV_merged.vcf ; %stabix -p vcf %s/results/%s_SV_merged.vcf.gz" % (out, sample_name, path_tabix, out, sample_name))
+                os.system("perl %svcf-sort.pl %s/results/%s_SV_merged.vcf | bgzip -c > %s/results/%s_SV_merged.vcf.gz" % (
+                path_scripts, out, sample_name, out, sample_name)
+                os.system("%stabix -p vcf %s/results/%s_SV_merged.vcf.gz" % (path_tabix, out, sample_name))
 
                 SV_results_file = "%s/results/%s_SV_merged.vcf.gz" % (out, sample_name)
 
