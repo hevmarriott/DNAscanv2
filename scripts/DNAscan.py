@@ -1421,7 +1421,13 @@ if results_report:
     if "annovar.log" not in os.listdir(out + "logs"):
 
         print(
-            "WARNING: Annotation was not peformed - please perform annotation using the -annotation flag if you wish to generate an annotation results report.\n"
+            "WARNING: SNP and Indel variant annotation was not peformed - please perform variant calling and annotation using the -variantcalling and -annotation flags if you wish to generate a SNP and indel Annovar results report.\n"
+        )
+        
+    if "annotsv.log" not in os.listdir(out + "logs"):
+
+        print(
+            "WARNING: Structural variant and/or mobile element insertion annotation was not peformed - please perform structural variant calling and/or mobile element insertion calling and annotation using the -SV and/or -MEI and -annotation flags if you wish to generate an AnnotSV results report.\n"
         )
 
     else:
@@ -1512,17 +1518,17 @@ if results_report:
                 print("\nSV HTML report created.\n")
                 
             if MEI:
-                 print("\nGenerating transposable element annotation HTML report...\n")
+                print("\nGenerating transposable element annotation HTML report...\n")
 
-                 os.system("mkdir %s%s_MEIanno" % (out, sample_name))
+                os.system("mkdir %s%s_MEIanno" % (out, sample_name))
 
-                 os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_MEIanno --genomeBuild %s" % (
+                os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_MEIanno --genomeBuild %s" % (
                     path_knotannotsv, path_knotannotsv, MEI_annotation_file, out, sample_name, reference))
 
-                 os.system("mv %s%s_MEIanno/%s_annotated_MEI.html %s/reports/%s_MEIannotatedvariants.html" % (
+                os.system("mv %s%s_MEIanno/%s_annotated_MEI.html %s/reports/%s_MEIannotatedvariants.html" % (
                     out, sample_name, sample_name, out, sample_name)) 
                 
-                 print("\nTransposable element HTML report created.\n")
+                print("\nTransposable element HTML report created.\n")
 
             os.system("touch  %slogs/results_report.log" % (out))
 
