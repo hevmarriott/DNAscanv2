@@ -318,7 +318,7 @@ with open("%s/multisample_list.txt" % (out_dir) , 'r' ) as f:
 
     os.system("%s/scripts/outlier.py locus --manifest %s/multisample_manifest.txt --multisample-profile %s/multisample.multisample_profile.json --output %s/multisample.outlier_locus.tsv" % (path_expansionHunterDenovo_dir, out_dir, out_dir, out_dir))
 
-    os.system("%s/scripts/outlier.py motif --manifest %s/multisample_manifest.txt --multisample_profile %s/multisample.multisample_profile.json --output %s/multisample.outlier_motif.tsv" % (path_expansionHunterDenovo_dir, out_dir, out_dir, out_dir))
+    os.system("%s/scripts/outlier.py motif --manifest %s/multisample_manifest.txt --multisample-profile %s/multisample.multisample_profile.json --output %s/multisample.outlier_motif.tsv" % (path_expansionHunterDenovo_dir, out_dir, out_dir, out_dir))
 
     print("\nRepeat expansion analysis with ExpansionHunter Denovo is complete\n")
 
