@@ -1514,19 +1514,19 @@ if results_report:
 
                 print("\nSV HTML report created.\n")
                 
-            else:
-                if MEI:
-                    print("\nGenerating transposable element annotation HTML report...\n")
+            
+            if MEI:
+                print("\nGenerating transposable element annotation HTML report...\n")
 
-                    os.system("mkdir %s%s_MEIanno" % (out, sample_name))
+                os.system("mkdir %s%s_MEIanno" % (out, sample_name))
 
-                    os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_MEIanno --genomeBuild %s" % (
-                        path_knotannotsv, path_knotannotsv, MEI_annotation_file, out, sample_name, reference))
+                os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_MEIanno --genomeBuild %s" % (
+                    path_knotannotsv, path_knotannotsv, MEI_annotation_file, out, sample_name, reference))
 
-                    os.system("mv %s%s_MEIanno/%s_annotated_MEI.html %s/reports/%s_MEIannotatedvariants.html" % (
-                        out, sample_name, sample_name, out, sample_name)) 
+                os.system("mv %s%s_MEIanno/%s_annotated_MEI.html %s/reports/%s_MEIannotatedvariants.html" % (
+                    out, sample_name, sample_name, out, sample_name)) 
                 
-                    print("\nTransposable element HTML report created.\n")
+                print("\nTransposable element HTML report created.\n")
 
             os.system("touch  %slogs/results_report.log" % (out))
 
