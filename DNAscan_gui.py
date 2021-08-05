@@ -34,9 +34,9 @@ col1 = sg.Column([
 [sg.Text('DNAscan Directory', size=(16,1), tooltip='Path to the downloaded DNAscan directory'), sg.InputText('', size=(25,1), key='-DNASCAN_dir'), sg.FolderBrowse()],
 [sg.Text('Annovar Location', size=(16,1), tooltip='Path to the downloaded Annovar tar.gz file'),sg.InputText('', size=(25,1), key='-annovar_dir'), sg.FileBrowse()],
 [sg.Text('MELT Location', size=(16,1), tooltip='Path to the downloaded MELT tar.gz file'),sg.InputText('', size=(25,1), key='-melt_dir'), sg.FileBrowse()],
-[sg.Text('Reference Version', size=(16,1)), sg.Combo(['hg19', 'hg38'], size=(5,1), key='-reference'), sg.Text('No. of CPUs', size=(8,1)), sg.InputText('4', size=(5,1), key='-num_cpu')],], title='Dependency Installation')],
+[sg.Text('Reference Version', size=(16,1)), sg.Combo(['hg19', 'hg38'], size=(5,1), key='-reference_version'), sg.Text('No. of CPUs', size=(8,1)), sg.InputText('4', size=(5,1), key='-num_cpu')],], title='Dependency Installation')],
 [sg.Frame(layout=[
-[sg.Text('Input Format', size=(9,1)), sg.Combo(['fastq', 'sam', 'bam', 'vcf'], size=(7,1), key='-format', default_value='fastq'), sg.Text('Reference', size=(8,1)), sg.Combo(['hg19', 'hg38', 'grch37', 'grch38'], size=(7,1), key='-reference_version', default_value='hg19')],
+[sg.Text('Input Format', size=(9,1)), sg.Combo(['fastq', 'sam', 'bam', 'vcf'], size=(7,1), key='-format', default_value='fastq'), sg.Text('Reference', size=(8,1)), sg.Combo(['hg19', 'hg38', 'grch37', 'grch38'], size=(7,1), key='-reference', default_value='hg19')],
 [sg.Text('Mode', size=(9,1)), sg.Combo(['fast', 'normal', 'intensive'], size=(7,1), key='-mode', default_value='fast'), sg.Text('Read Type', size=(8,1), tooltip='options are 1 for paired end reads and 0 for single end reads'), sg.Combo(['0', '1'], size=(7,1), key='-paired', default_value='1')],
 [sg.Text('Input File 1', size=(16,1)), sg.InputText('data/test_data.1.fq.gz', size=(25,1), key='-in'), sg.FileBrowse()],
 [sg.Text('Input File 2', size=(16,1), tooltip='Only required for paired end reads in fastq format'), sg.InputText('data/test_data.2.fq.gz', key='-in2', size=(25,1)), sg.FileBrowse()],
@@ -87,7 +87,7 @@ layout_usage = [[col1,col2]]
 
 install_keys =  '-install_dir', '-DNASCAN_dir', '-annovar_dir', '-melt_dir', '-num_cpu'
 
-defined_keys = '-format', '-reference_version', '-mode', '-in', '-in2', '-ref_file', '-dnascan_dir', '-out', '-paired', '-sample_name', '-filter_string'
+defined_keys = '-format', '-reference', '-mode', '-in', '-in2', '-ref_file', '-dnascan_dir', '-out', '-paired', '-sample_name', '-filter_string'
 
 advanced_keys = '-path_bed', '-path_gene_list', '-hisat_custom_options', '-bwa_custom_options', '-annotsv_custom_options', '-melt_custom_options', '-RG_ID', '-RG_LB', '-RG_PL', '-RG_PU', '-RG_SM'
 
