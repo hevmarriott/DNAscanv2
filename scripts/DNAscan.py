@@ -1498,40 +1498,39 @@ if results_report:
                     os.system("rm %stemp.vcf" % (out))
 
         #21.1 knotAnnotSV SV report generation
-            if SV:
-                print("\nGenerating SV annotation HTML report...\n")
+            if SV or MEI:
+                if SV:
+                    print("\nGenerating SV annotation HTML report...\n")
 
-                os.system("mkdir %s%s_SVanno" % (out, sample_name))
+                    os.system("mkdir %s%s_SVanno" % (out, sample_name))
 
-                os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_SVanno --genomeBuild %s" % (
-                    path_knotannotsv, path_knotannotsv, SV_annotation_file, out, sample_name, reference))
+                    os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_SVanno --genomeBuild %s" % (
+                        path_knotannotsv, path_knotannotsv, SV_annotation_file, out, sample_name, reference))
 
-                os.system("mv %s%s_SVanno/%s_annotated_SV.html %s/reports/%s_SVannotatedvariants.html" % (
-                    out, sample_name, sample_name, out, sample_name))
+                    os.system("mv %s%s_SVanno/%s_annotated_SV.html %s/reports/%s_SVannotatedvariants.html" % (
+                        out, sample_name, sample_name, out, sample_name))
 
-                if not debug:
-                    os.system("rm -r %s%s_SVanno" % (out, sample_name))
+                    if not debug:
+                        os.system("rm -r %s%s_SVanno" % (out, sample_name))
 
-                print("\nSV HTML report created.\n")
+                    print("\nSV HTML report created.\n")
                 
-            
-            if MEI:
-                print("\nGenerating transposable element annotation HTML report...\n")
+                if MEI:
+                    print("\nGenerating transposable element annotation HTML report...\n")
 
-                os.system("mkdir %s%s_MEIanno" % (out, sample_name))
+                    os.system("mkdir %s%s_MEIanno" % (out, sample_name))
 
-                os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_MEIanno --genomeBuild %s" % (
-                    path_knotannotsv, path_knotannotsv, MEI_annotation_file, out, sample_name, reference))
+                    os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_MEIanno --genomeBuild %s" % (
+                        path_knotannotsv, path_knotannotsv, MEI_annotation_file, out, sample_name, reference))
 
-                os.system("mv %s%s_MEIanno/%s_annotated_MEI.html %s/reports/%s_MEIannotatedvariants.html" % (
-                    out, sample_name, sample_name, out, sample_name)) 
+                    os.system("mv %s%s_MEIanno/%s_annotated_MEI.html %s/reports/%s_MEIannotatedvariants.html" % (
+                        out, sample_name, sample_name, out, sample_name)) 
                 
-                print("\nTransposable element HTML report created.\n")
+                    print("\nTransposable element HTML report created.\n")
 
             os.system("touch  %slogs/results_report.log" % (out))
 
             print("\nResults report for annotated variants is now available.\n")
-
 
 # 22. Starting iobio services
 
