@@ -91,7 +91,7 @@ defined_keys = '-format', '-reference', '-mode', '-in', '-in2', '-ref_file', '-d
 
 advanced_keys = '-path_bed', '-path_gene_list', '-hisat_custom_options', '-bwa_custom_options', '-annotsv_custom_options', '-melt_custom_options', '-RG_ID', '-RG_LB', '-RG_PL', '-RG_PU', '-RG_SM'
 
-window = sg.Window("DNAscan v2.0", layout_usage, size=(1600,800), return_keyboard_events=True, grab_anywhere=True, enable_close_attempted_event=True)
+window = sg.Window("DNAscan v2.0", layout_usage, size=(1600,800), resizable=True, return_keyboard_events=True, grab_anywhere=True, enable_close_attempted_event=True)
 while True:
     event, values = window.read()
     if event == 'Run DNAscan':
