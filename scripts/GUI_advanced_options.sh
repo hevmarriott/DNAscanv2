@@ -47,3 +47,5 @@ sed "s|RG_PU = \"\"|RG_PU = \"$RG_PU\"|" scripts/paths_configs.py_temp > scripts
 sed "s|RG_PL = \"\"|RG_PL = \"$RG_PL\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
 
 mv scripts/paths_configs.py_temp scripts/paths_configs.py
+
+chmod +x scripts/*
