@@ -28,7 +28,7 @@ locals().update(var)
 
 # 3. Define options from command line
 
-parser = argparse.ArgumentParser(prog='python3 analyse_list_of_samples.py ', usage='%(prog)s -format "string" -paired "string" -sample_list "string" -out_dir "string" -reference "string" -option_string "string"', description = '############Help Message############ \n\nThis is a script to run DNAscan on a list of samples. Each line of the list must contain the path to one sample. If samples are in paired reads in fastq format and you have two files per sample, these will have to be on the same line spaced bt a tab.\n\n E.g. sample.1.fq.gz  sample.2.fq.gz\n\nDNAscan uses the file paths.py to locate the needed tools and files. Please make sure your paths.py file is properly filled \n\nUsage example: \n\npython analyse_list_of_samples.py -option_string "-format fastq -mode intensive -reference hg19 -alignment -variantcalling -annotation" -out_dir /path/to/dir -sample_list list.txt -format bam\n\nPlease check the following list of required options\n\n################################################', formatter_class=RawTextHelpFormatter)
+parser = argparse.ArgumentParser(prog='python3 analyse_list_of_samples.py ', usage='%(prog)s -format "string" -paired "string" -sample_list "string" -out_dir "string" -reference "string" -option_string "string"', description = '############Help Message############ \n\nThis is a script to run DNAscan on a list of samples. Each line of the list must contain the path to one sample. If samples are in paired reads in fastq format and you have two files per sample, these will have to be on the same line spaced bt a tab.\n\n E.g. sample.1.fq.gz  sample.2.fq.gz\n\nDNAscan uses the file paths.py to locate the needed tools and files. Please make sure your paths.py file is properly filled \n\nUsage example: \n\npython analyse_list_of_samples.py -option_string "-format fastq -mode intensive -alignment -variantcalling -annotation" -out_dir /path/to/dir -sample_list list.txt -format bam\n\nPlease check the following list of required options\n\n################################################', formatter_class=RawTextHelpFormatter)
 
 requiredNamed = parser.add_argument_group('required named arguments')
 
@@ -41,9 +41,6 @@ requiredNamed.add_argument( '-sample_list' , required=True , action = "store" , 
 requiredNamed.add_argument( '-format' , required=True , action = "store" , dest = "format" , help = 'options are bam, sam, fastq, vcf [string]' )
 
 requiredNamed.add_argument( '-paired' , required=True , action = "store" , dest = "paired" , default = "1" , help = 'options are 1 for paired end reads and 0 for single end reads [string]' )
-
-requiredNamed.add_argument( '-reference' , required=True, action= "store", dest = "reference" , default = "hg19" , help = 'options are hg19, hg38, grch37 and grch38 the path to the reference fasta file must be specified in paths_configs.py [string]' )
-
 
 # 4. Parse options from command line
 
@@ -133,11 +130,6 @@ with open("%s/multisample_list.txt" % (out_dir) , 'r' ) as f:
     os.system("%s/scripts/outlier.py motif --manifest %s/multisample_manifest.txt --multisample-profile %s/multisample.multisample_profile.json --output %s/multisample.outlier_motif.tsv" % (path_expansionHunterDenovo_dir, out_dir, out_dir, out_dir))
 
     print("\nRepeat expansion analysis with ExpansionHunter Denovo is complete\n")
-
-    print("\nAnnotating Expansion Hunter Denovo outlier locus results...\n")
-     
-    os.system("%s/scripts/annotate_ehdn.sh --ehdn-results %s/multisample.outlier_locus.tsv --ehdn-annotated-results %s/multisample.outlier_locus_annotated.tsv --annovar-annotate-variation %s/annotate_variation.pl --annovar-humandb %s --annovar-buildver %s" %
-    (path_expansionHunterDenovo_dir, out_dir, out_dir, path_annovar, path_annovar_db, ref))
     
     if "-debug" in option_string:
         os.system("rm %s/*.locus.tsv %s/*.motif.tsv %s/*.reads.tsv %s/*.str_profile.json" % (out_dir, out_dir, out_dir, out_dir))
