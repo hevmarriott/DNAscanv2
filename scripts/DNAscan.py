@@ -1558,7 +1558,20 @@ if results_report:
                         out, sample_name, sample_name, out, sample_name)) 
                 
                     print("\nTransposable element HTML report created.\n")
+                    
+                if SV and MEI:
+                    print("\nGenerating structural variant and transposable element annotation HTML report...\n")
 
+                    os.system("mkdir %s%s_SVMEIanno" % (out, sample_name))
+
+                    os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_SVMEIanno --genomeBuild %s" % (
+                        path_knotannotsv, path_knotannotsv, SV_MEI_annotation_file, out, sample_name, reference))
+
+                    os.system("mv %s%s_SVMEIanno/%s_annotated_SVMEI.html %s/reports/%s_SVMEIannotatedvariants.html" % (
+                        out, sample_name, sample_name, out, sample_name)) 
+                
+                    print("\nStructural element and transposable element HTML report created.\n")
+                    
             os.system("touch  %slogs/results_report.log" % (out))
 
             print("\nResults report for annotated variants is now available.\n")
