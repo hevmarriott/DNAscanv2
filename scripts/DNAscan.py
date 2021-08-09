@@ -1045,6 +1045,26 @@ if MEI:
         os.system("touch  %slogs/mei.log" % (out))
 
         print("\nTransposable element insertion scanning with MELT is complete.\n")
+        
+if len(SV_results_file) != 0 and len(MEI_results_file) != 0:
+    print("\nMerging SV and MEI callsets together with SURVIVOR to create a union callset...\n")
+    os.system("bgzip -d %s" (SV_results_file))
+    os.system("bgzip -d %s" (MEI_results_file))
+    os.system("ls %s/results/*.vcf > %s/results/survivor_sample_files" % (out, out))
+    os.system("%sSURVIVOR merge %s/results/survivor_sample_files 1000 1 1 1 0 30 %s/results/%s_SV_MEI_merged.vcf" % (
+    path_SURVIVOR, out, out, sample_name))
+    os.system("perl %svcf-sort.pl %s/results/%s_SV_MEI_merged.vcf | bgzip -c > %s/results/%s_SV_MEI_merged.vcf.gz" % (
+    path_scripts, out, sample_name, out, sample_name))
+    os.system("%stabix -p vcf %s/results/%s_SV_MEI_merged.vcf.gz" % (path_tabix, out, sample_name))
+
+    SV_MEI_results_file = "%s/results/%s_SV_MEI_merged.vcf.gz" % (out, sample_name)
+
+    is_variant_file_OK(SV_MEI_results_file, "Vcf", "SVMEI")
+
+    print("\nMerging of SV and MEI variant calls is complete.\n")
+
+    if not debug:
+        os.system("rm %s/results/survivor_sample_files %s/results/*.vcf" % (out, out))
 
 # 15. Annotation with Annovar with optional missense variant prioritisation according to ACMG guidelines (intervar_20180118 database)
 
