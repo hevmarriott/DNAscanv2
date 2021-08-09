@@ -1117,6 +1117,8 @@ if annotation:
                     SV_annotation_file = "%s/results/%s_annotated_SV.tsv" % (out, sample_name)
                 if MEI:
                     MEI_annotation_file = "%s/results/%s_annotated_MEI.tsv" % (out, sample_name)
+                if SV and MEI:
+                    SV_MEI_annotation_file = "%s/results/%s_annotated_SV_MEI.tsv" % (out, sample_name)
             else:
                 os.environ["ANNOTSV"] = "%s" % (path_annotsv)
 
@@ -1147,7 +1149,16 @@ if annotation:
                     MEI_annotation_file = "%s/results/%s_annotated_MEI.tsv" % (out, sample_name)
                 
                     print("\nTransposable element annotation is complete.\n")
+                    
+                if SV and MEI:
+                    print("\nStructural variant and transposable element annotation is being performed with AnnotSV...\n")
+                    os.system("%s/bin/AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/results/%s_annotated_MEI -SVminSize 30 %s" % (
+                        path_annotsv, path_annotsv, path_bcftools, path_bedtools, SV_MEI_results_file, candidate_gene_cmd, genome_build, out, sample_name, annotsv_custom_options))
 
+                    SV_MEI_annotation_file = "%s/results/%s_annotated_SV_MEI.tsv" % (out, sample_name)
+                
+                    print("\nStructural variant and transposable element annotation is complete.\n")
+                    
                 os.system("touch  %slogs/annotsv.log" % (out))
                 
         print("\nAnnotation and prioritisation is complete.\n")
