@@ -49,6 +49,10 @@ $ANNOVAR_DIR/annotate_variation.pl -buildver hg38 -downdb -webfrom annovar avsnp
 
 $ANNOVAR_DIR/annotate_variation.pl -buildver hg38 -downdb -webfrom annovar intervar_20180118 $INSTALL_DIR/humandb/
 
+$ANNOVAR_DIR/annotate_variation.pl -buildver hg38 -downdb -webfrom annovar 1000g2015aug $INSTALL_DIR/humandb/
+
+$ANNOVAR_DIR/annotate_variation.pl -buildver hg38 -downdb -webfrom annovar gnomad211_genome $INSTALL_DIR/humandb/
+
 cd $INSTALL_DIR
 
 tar -zxf $MELT_EXEC --directory $INSTALL_DIR
