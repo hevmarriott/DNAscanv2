@@ -1468,12 +1468,6 @@ if results_report:
             "WARNING: SNP and Indel variant annotation was not peformed - please perform variant calling and annotation using the -variantcalling and -annotation flags if you wish to generate a SNP and indel Annovar results report.\n"
         )
         
-    if "annotsv.log" not in os.listdir(out + "logs"):
-
-        print(
-            "WARNING: Structural variant and/or mobile element insertion annotation was not peformed - please perform structural variant calling and/or mobile element insertion calling and annotation using the -SV and/or -MEI and -annotation flags if you wish to generate an AnnotSV results report.\n"
-        )
-
     else:
         if "results_report.log" in os.listdir(out + "logs"):
             print(
@@ -1545,47 +1539,51 @@ if results_report:
 
         #22.1 knotAnnotSV SV report generation
             if SV or MEI:
-                if SV:
-                    print("\nGenerating SV annotation HTML report...\n")
+                    if "annotsv.log" not in os.listdir(out + "logs"):
+                        print("WARNING: Structural variant and/or mobile element insertion annotation was not peformed - please perform structural variant calling and/or mobile element insertion calling and annotation using the -SV and/or -MEI and -annotation flags if you wish to generate an AnnotSV results report.\n")
+                     
+                    else:
+                        if SV:
+                            print("\nGenerating SV annotation HTML report...\n")
 
-                    os.system("mkdir %s%s_SVanno" % (out, sample_name))
+                            os.system("mkdir %s%s_SVanno" % (out, sample_name))
 
-                    os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_SVanno --genomeBuild %s" % (
-                        path_knotannotsv, path_knotannotsv, SV_annotation_file, out, sample_name, reference))
+                            os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_SVanno --genomeBuild %s" % (
+                                path_knotannotsv, path_knotannotsv, SV_annotation_file, out, sample_name, reference))
 
-                    os.system("mv %s%s_SVanno/%s_annotated_SV.html %s/reports/%s_SVannotatedvariants.html" % (
-                        out, sample_name, sample_name, out, sample_name))
+                            os.system("mv %s%s_SVanno/%s_annotated_SV.html %s/reports/%s_SVannotatedvariants.html" % (
+                                out, sample_name, sample_name, out, sample_name))
 
-                    if not debug:
-                        os.system("rm -r %s%s_SVanno" % (out, sample_name))
+                            if not debug:
+                                os.system("rm -r %s%s_SVanno" % (out, sample_name))
 
-                    print("\nSV HTML report created.\n")
+                            print("\nSV HTML report created.\n")
                 
-                if MEI:
-                    print("\nGenerating transposable element annotation HTML report...\n")
+                        if MEI:
+                            print("\nGenerating transposable element annotation HTML report...\n")
 
-                    os.system("mkdir %s%s_MEIanno" % (out, sample_name))
+                            os.system("mkdir %s%s_MEIanno" % (out, sample_name))
 
-                    os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_MEIanno --genomeBuild %s" % (
-                        path_knotannotsv, path_knotannotsv, MEI_annotation_file, out, sample_name, reference))
+                            os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_MEIanno --genomeBuild %s" % (
+                                path_knotannotsv, path_knotannotsv, MEI_annotation_file, out, sample_name, reference))
 
-                    os.system("mv %s%s_MEIanno/%s_annotated_MEI.html %s/reports/%s_MEIannotatedvariants.html" % (
-                        out, sample_name, sample_name, out, sample_name)) 
+                            os.system("mv %s%s_MEIanno/%s_annotated_MEI.html %s/reports/%s_MEIannotatedvariants.html" % (
+                                out, sample_name, sample_name, out, sample_name)) 
                 
-                    print("\nTransposable element HTML report created.\n")
+                            print("\nTransposable element HTML report created.\n")
                     
-                if SV and MEI:
-                    print("\nGenerating structural variant and transposable element annotation HTML report...\n")
+            if SV and MEI:
+                print("\nGenerating structural variant and transposable element annotation HTML report...\n")
 
-                    os.system("mkdir %s%s_SVMEIanno" % (out, sample_name))
+                os.system("mkdir %s%s_SVMEIanno" % (out, sample_name))
 
-                    os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_SVMEIanno --genomeBuild %s" % (
-                        path_knotannotsv, path_knotannotsv, SV_MEI_annotation_file, out, sample_name, reference))
+                os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_SVMEIanno --genomeBuild %s" % (
+                    path_knotannotsv, path_knotannotsv, SV_MEI_annotation_file, out, sample_name, reference))
 
-                    os.system("mv %s%s_SVMEIanno/%s_annotated_SVMEI.html %s/reports/%s_SVMEIannotatedvariants.html" % (
-                        out, sample_name, sample_name, out, sample_name)) 
+                os.system("mv %s%s_SVMEIanno/%s_annotated_SVMEI.html %s/reports/%s_SVMEIannotatedvariants.html" % (
+                    out, sample_name, sample_name, out, sample_name)) 
                 
-                    print("\nStructural element and transposable element HTML report created.\n")
+                print("\nStructural element and transposable element HTML report created.\n")
                     
             os.system("touch  %slogs/results_report.log" % (out))
 
