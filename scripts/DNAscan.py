@@ -872,214 +872,213 @@ if expansion:
             print("\nWARNING: %s is empty, please run again and make sure all paths are correct if you want to perform genome-wide short tandem repeat profiling.\n" % STR_profile)
     
 # 14. Structural Variant calling
+if SV or MEI:
+    if SV:
 
-if SV:
+        if "SV.log" in os.listdir(out + "logs"):
 
-    if "SV.log" in os.listdir(out + "logs"):
-
-        print(
-            "WARNING: The presence of SV.log in logs is telling you that structural variant calling was already peformed, please remove SV.log if you wish to perform this stage anyway\n"
-        )
-
-    else:
-        if paired == "1":
-            if BED == "True":
-                print(
-                    "\nStructural variants are being called with Manta...\n"
-                )
-                os.system("bgzip -c %s  > %s/temp.bed.gz" % (path_bed, out))
-                os.system(
-                    "%ssortBed -i %s/temp.bed.gz | bgzip -c > %s/sorted.bed.gz" %
-                    (path_bedtools, out, out))
-
-                os.system("%stabix -p bed %s/sorted.bed.gz" % (path_tabix, out))
-                os.system("mkdir %smanta" % (out))
-                os.system(
-                    "%sconfigManta.py --bam %s --referenceFasta %s --runDir %smanta --callRegions %s/sorted.bed.gz"
-                    % (path_manta, bam_file, path_reference, out, out))
-                
-                if not debug:
-                    os.system("rm %s/temp.bed.gz %s/sorted.bed.gz" % (out,out))
-
-            else:
-                print(
-                    "\nStructural variants are being called with Manta...\n")
-
-                os.system("mkdir %smanta" % (out))
-                os.system(
-                    "%sconfigManta.py --bam %s --referenceFasta %s --runDir %smanta"
-                    % (path_manta, bam_file, path_reference, out))
-
-            os.system("%smanta/runWorkflow.py -j %s -m local" % (out, num_cpu))
-            os.system("%s/convertInversion.py %ssamtools %s %s/manta/results/variants/diploidSV.vcf.gz > %s/results/%s_manta_SV.vcf" % (
-            path_scripts, path_samtools, path_reference, out, out, sample_name))
-            os.system("bgzip -c %s/results/%s_manta_SV.vcf > %s/results/%s_manta_SV.vcf.gz" % (out, sample_name, out, sample_name))
-            os.system("%stabix -p vcf %s/results/%s_manta_SV.vcf.gz" % (path_tabix, out, sample_name))
-
-            if mode == "fast":
-                #14.1 Manta is used to call all SVs in fast mode
-                SV_results_file = "%s/results/%s_manta_SV.vcf.gz" % (out, sample_name)
-                
-                is_variant_file_OK(SV_results_file, "Vcf", "SV")
-                
-                if not debug:
-                    os.system("rm %s/results/%s_manta_SV.vcf" % (out, sample_name))
-            else:
-                manta_SV_results_file = "%s/results/%s_manta_SV.vcf" % (out, sample_name)
-
-            if not debug:
-                os.system("rm -r %smanta" %
-                          (out))
-
-            print("\nStructural variant calling with Manta is complete.\n")
-
-            if mode == "normal" or mode == "intensive":
-                # 14.2 In normal mode, Delly is used to call inversions and deletions and Manta calls all SV types.
-                # In intensive mode, both Delly and Manta call all SV events
-
-                os.system("mkdir %sdelly" % (out))
-
-                if mode == "normal":
-
-                    print("\nDelly will additionally call inversion and deletion structural variants...\n")
-
-                    os.system("%sdelly call -t DEL -g %s -o %sdelly/%s_delly_DEL.bcf -x %s %s" % (
-                    path_delly, path_reference, out, sample_name, path_delly_exclude_regions, bam_file))
-                    os.system("%sdelly call -t INV -g %s -o %sdelly/%s_delly_INV.bcf -x %s %s" % (
-                    path_delly, path_reference, out, sample_name, path_delly_exclude_regions, bam_file))
-                    os.system("%sbcftools view %sdelly/%s_delly_DEL.bcf > %sdelly/%s_delly_DEL_SV.vcf" % (
-                    path_bcftools, out, sample_name, out, sample_name))
-                    os.system("%sbcftools view %sdelly/%s_delly_INV.bcf > %sdelly/%s_delly_INV_SV.vcf" % (
-                    path_bcftools, out, sample_name, out, sample_name))
-                    
-                    os.system("mv %sdelly/%s_delly_DEL_SV.vcf %s/results/" % (out, sample_name, out))
-                    os.system("mv %sdelly/%s_delly_INV_SV.vcf %s/results/" % (out, sample_name, out))
-                    os.system("bgzip -c %s/results/%s_delly_DEL_SV.vcf > %s/results/%s_delly_DEL_SV.vcf.gz" % (out, sample_name, out, sample_name))
-                    os.system("bgzip -c %s/results/%s_delly_INV_SV.vcf > %s/results/%s_delly_INV_SV.vcf.gz" % (out, sample_name, out, sample_name))
-                    os.system("%stabix -p vcf %s/results/%s_delly_DEL_SV.vcf.gz" % (path_tabix, out, sample_name))
-                    os.system("%stabix -p vcf %s/results/%s_delly_INV_SV.vcf.gz" % (path_tabix, out, sample_name))
-                    
-                    delly_SV_DEL_results_file = "%s/results/%s_delly_DEL_SV.vcf.gz" % (out, sample_name)
-                    delly_SV_INV_results_file = "%s/results/%s_delly_INV_SV.vcf.gz" % (out, sample_name)
-                    
-                    is_variant_file_OK(delly_SV_DEL_results_file, "Vcf", "SV")
-                    is_variant_file_OK(delly_SV_INV_results_file, "Vcf", "SV")
-
-                else:
-                    print("\nStructural variants are being called with Delly...\n")
-
-                    os.system("%sdelly call -g %s -o %sdelly/%s_delly.bcf -x %s %s" % (
-                    path_delly, path_reference, out, sample_name, path_delly_exclude_regions, bam_file))
-                    os.system("%sbcftools view %sdelly/%s_delly.bcf > %sdelly/%s_delly_SV.vcf" % (
-                    path_bcftools, out, sample_name, out, sample_name))
-
-                    os.system("mv %sdelly/%s_delly_SV.vcf %s/results/" % (out, sample_name, out))
-                    os.system("bgzip -c %s/results/%s_delly_SV.vcf > %s/results/%s_delly_SV.vcf.gz" % (out, sample_name, out, sample_name))
-                    os.system("%stabix -p vcf %s/results/%s_delly_SV.vcf.gz" % (path_tabix, out, sample_name))
-                
-                    delly_SV_results_file = "%s/results/%s_delly_SV.vcf.gz" % (out, sample_name)
-
-                    is_variant_file_OK(delly_SV_results_file, "Vcf", "SV")
-
-                print("\nStructural variant calling with Delly is complete.\n")
-
-                # 14.3 In normal and intensive modes, SV calls with Manta and Delly are merged together using SURVIVOR to create a union set of structural variants.
-
-                print("\nStructural variants called with Manta and Delly are being merged with SURVIVOR to create a union callset...\n")
-
-                os.system("ls %s/results/*SV.vcf > %s/results/survivor_sample_files" % (out, out))
-                os.system("%sSURVIVOR merge %s/results/survivor_sample_files 1000 1 1 1 0 30 %s/results/%s_SV_merged.vcf" % (
-                path_SURVIVOR, out, out, sample_name))
-                os.system("perl %svcf-sort.pl %s/results/%s_SV_merged.vcf | bgzip -c > %s/results/%s_SV_merged.vcf.gz" % (
-                path_scripts, out, sample_name, out, sample_name))
-                os.system("%stabix -p vcf %s/results/%s_SV_merged.vcf.gz" % (path_tabix, out, sample_name))
-
-                SV_results_file = "%s/results/%s_SV_merged.vcf.gz" % (out, sample_name)
-
-                is_variant_file_OK(SV_results_file, "Vcf", "SV")
-
-                print("\nMerging of structural variant calls is complete.\n")
-
-                if not debug:
-                    os.system("rm -r %sdelly %s/results/survivor_sample_files %s/results/*.vcf %s/results/*SV.vcf.gz*" % (out, out, out, out))
-
-            os.system("touch %slogs/SV.log" % (out))
-
-        else:
             print(
-                "\n\nWARNING: Structural variant calling cannot be performed with single end reads. If you want this to be performed, please provide paired-end aligned reads to DNAscan.\n\n"
+                "WARNING: The presence of SV.log in logs is telling you that structural variant calling was already peformed, please remove SV.log if you wish to perform this stage anyway\n"
             )
 
-# 15. Transposable element insertion detection with MELT
-if MEI:
-    if "mei.log" in os.listdir(out + "logs"):
-
-        print(
-            "WARNING: The presence of MEI.log in logs is telling you that transposable element calling was already peformed, please remove MEI.log if you wish to perform this stage anyway\n"
-        )
-    else:
-
-        print("\nTransposable element insertions are being scanned for with MELT...\n")
-
-        os.system("mkdir %smelt" % (out))
-
-        if reference == "hg19":
-            os.system("ls %sme_refs/1KGP_Hg19/*zip | sed 's/\*//g' > %smelt/transposon.list" % (path_melt, out))
-
-            melt_bed = "%sadd_bed_files/1KGP_Hg19/hg19.genes.bed" % (path_melt)
-
         else:
-            os.system("ls %sme_refs/Hg38/*zip | sed 's/\*//g' > %smelt/transposon.list" % (path_melt, out))
+            if paired == "1":
+                if BED == "True":
+                    print(
+                        "\nStructural variants are being called with Manta...\n"
+                    )
+                    os.system("bgzip -c %s  > %s/temp.bed.gz" % (path_bed, out))
+                    os.system(
+                        "%ssortBed -i %s/temp.bed.gz | bgzip -c > %s/sorted.bed.gz" %
+                        (path_bedtools, out, out))
 
-            melt_bed = "%sadd_bed_files/Hg38/Hg38.genes.bed" % (path_melt)
+                    os.system("%stabix -p bed %s/sorted.bed.gz" % (path_tabix, out))
+                    os.system("mkdir %smanta" % (out))
+                    os.system(
+                        "%sconfigManta.py --bam %s --referenceFasta %s --runDir %smanta --callRegions %s/sorted.bed.gz"
+                        % (path_manta, bam_file, path_reference, out, out))
+                
+                    if not debug:
+                        os.system("rm %s/temp.bed.gz %s/sorted.bed.gz" % (out,out))
 
-        if exome == "True":
-            os.system("%sjava -Xmx%sg -jar %sMELT.jar Single -bamfile %s -h %s -t %smelt/transposon.list -n %s -w %smelt -exome %s" % (
-                path_java, RAM_GB, path_melt, bam_file, path_reference, out, melt_bed, out, melt_custom_options))
+                else:
+                    print(
+                        "\nStructural variants are being called with Manta...\n")
+
+                    os.system("mkdir %smanta" % (out))
+                    os.system(
+                        "%sconfigManta.py --bam %s --referenceFasta %s --runDir %smanta"
+                        % (path_manta, bam_file, path_reference, out))
+
+                os.system("%smanta/runWorkflow.py -j %s -m local" % (out, num_cpu))
+                os.system("%s/convertInversion.py %ssamtools %s %s/manta/results/variants/diploidSV.vcf.gz > %s/results/%s_manta_SV.vcf" % (
+                path_scripts, path_samtools, path_reference, out, out, sample_name))
+                os.system("bgzip -c %s/results/%s_manta_SV.vcf > %s/results/%s_manta_SV.vcf.gz" % (out, sample_name, out, sample_name))
+                os.system("%stabix -p vcf %s/results/%s_manta_SV.vcf.gz" % (path_tabix, out, sample_name))
+
+                if mode == "fast":
+                    #14.1 Manta is used to call all SVs in fast mode
+                    SV_results_file = "%s/results/%s_manta_SV.vcf.gz" % (out, sample_name)
+                
+                    is_variant_file_OK(SV_results_file, "Vcf", "SV")
+                
+                    if not debug:
+                        os.system("rm %s/results/%s_manta_SV.vcf" % (out, sample_name))
+                else:
+                    manta_SV_results_file = "%s/results/%s_manta_SV.vcf" % (out, sample_name)
+
+                if not debug:
+                    os.system("rm -r %smanta" % (out))
+
+                print("\nStructural variant calling with Manta is complete.\n")
+
+                if mode == "normal" or mode == "intensive":
+                    # 14.2 In normal mode, Delly is used to call inversions and deletions and Manta calls all SV types.
+                    # In intensive mode, both Delly and Manta call all SV events
+
+                    os.system("mkdir %sdelly" % (out))
+
+                    if mode == "normal":
+
+                        print("\nDelly will additionally call inversion and deletion structural variants...\n")
+
+                        os.system("%sdelly call -t DEL -g %s -o %sdelly/%s_delly_DEL.bcf -x %s %s" % (
+                        path_delly, path_reference, out, sample_name, path_delly_exclude_regions, bam_file))
+                        os.system("%sdelly call -t INV -g %s -o %sdelly/%s_delly_INV.bcf -x %s %s" % (
+                        path_delly, path_reference, out, sample_name, path_delly_exclude_regions, bam_file))
+                        os.system("%sbcftools view %sdelly/%s_delly_DEL.bcf > %sdelly/%s_delly_DEL_SV.vcf" % (
+                        path_bcftools, out, sample_name, out, sample_name))
+                        os.system("%sbcftools view %sdelly/%s_delly_INV.bcf > %sdelly/%s_delly_INV_SV.vcf" % (
+                        path_bcftools, out, sample_name, out, sample_name))
+                    
+                        os.system("mv %sdelly/%s_delly_DEL_SV.vcf %s/results/" % (out, sample_name, out))
+                        os.system("mv %sdelly/%s_delly_INV_SV.vcf %s/results/" % (out, sample_name, out))
+                        os.system("bgzip -c %s/results/%s_delly_DEL_SV.vcf > %s/results/%s_delly_DEL_SV.vcf.gz" % (out, sample_name, out, sample_name))
+                        os.system("bgzip -c %s/results/%s_delly_INV_SV.vcf > %s/results/%s_delly_INV_SV.vcf.gz" % (out, sample_name, out, sample_name))
+                        os.system("%stabix -p vcf %s/results/%s_delly_DEL_SV.vcf.gz" % (path_tabix, out, sample_name))
+                        os.system("%stabix -p vcf %s/results/%s_delly_INV_SV.vcf.gz" % (path_tabix, out, sample_name))
+                    
+                        delly_SV_DEL_results_file = "%s/results/%s_delly_DEL_SV.vcf.gz" % (out, sample_name)
+                        delly_SV_INV_results_file = "%s/results/%s_delly_INV_SV.vcf.gz" % (out, sample_name)
+                    
+                        is_variant_file_OK(delly_SV_DEL_results_file, "Vcf", "SV")
+                        is_variant_file_OK(delly_SV_INV_results_file, "Vcf", "SV")
+
+                else:
+                        print("\nStructural variants are being called with Delly...\n")
+
+                        os.system("%sdelly call -g %s -o %sdelly/%s_delly.bcf -x %s %s" % (
+                        path_delly, path_reference, out, sample_name, path_delly_exclude_regions, bam_file))
+                        os.system("%sbcftools view %sdelly/%s_delly.bcf > %sdelly/%s_delly_SV.vcf" % (
+                        path_bcftools, out, sample_name, out, sample_name))
+
+                        os.system("mv %sdelly/%s_delly_SV.vcf %s/results/" % (out, sample_name, out))
+                        os.system("bgzip -c %s/results/%s_delly_SV.vcf > %s/results/%s_delly_SV.vcf.gz" % (out, sample_name, out, sample_name))
+                        os.system("%stabix -p vcf %s/results/%s_delly_SV.vcf.gz" % (path_tabix, out, sample_name))
+                
+                        delly_SV_results_file = "%s/results/%s_delly_SV.vcf.gz" % (out, sample_name)
+
+                        is_variant_file_OK(delly_SV_results_file, "Vcf", "SV")
+
+                    print("\nStructural variant calling with Delly is complete.\n")
+
+                    # 14.3 In normal and intensive modes, SV calls with Manta and Delly are merged together using SURVIVOR to create a union set of structural variants.
+
+                    print("\nStructural variants called with Manta and Delly are being merged with SURVIVOR to create a union callset...\n")
+
+                    os.system("ls %s/results/*SV.vcf > %s/results/survivor_sample_files" % (out, out))
+                    os.system("%sSURVIVOR merge %s/results/survivor_sample_files 1000 1 1 1 0 30 %s/results/%s_SV_merged.vcf" % (
+                    path_SURVIVOR, out, out, sample_name))
+                    os.system("perl %svcf-sort.pl %s/results/%s_SV_merged.vcf | bgzip -c > %s/results/%s_SV_merged.vcf.gz" % (
+                    path_scripts, out, sample_name, out, sample_name))
+                    os.system("%stabix -p vcf %s/results/%s_SV_merged.vcf.gz" % (path_tabix, out, sample_name))
+
+                    SV_results_file = "%s/results/%s_SV_merged.vcf.gz" % (out, sample_name)
+
+                    is_variant_file_OK(SV_results_file, "Vcf", "SV")
+
+                    print("\nMerging of structural variant calls is complete.\n")
+
+                    if not debug:
+                        os.system("rm -r %sdelly %s/results/survivor_sample_files %s/results/*.vcf %s/results/*SV.vcf.gz*" % (out, out, out, out))
+
+                os.system("touch %slogs/SV.log" % (out))
+
+            else:
+                print(
+                    "\n\nWARNING: Structural variant calling cannot be performed with single end reads. If you want this to be performed, please provide paired-end aligned reads to DNAscan.\n\n"
+                )
+
+    # 15. Transposable element insertion detection with MELT
+    if MEI:
+        if "mei.log" in os.listdir(out + "logs"):
+
+            print(
+                "WARNING: The presence of MEI.log in logs is telling you that transposable element calling was already peformed, please remove MEI.log if you wish to perform this stage anyway\n"
+            )
+        else:
+
+            print("\nTransposable element insertions are being scanned for with MELT...\n")
+
+            os.system("mkdir %smelt" % (out))
+
+            if reference == "hg19":
+                os.system("ls %sme_refs/1KGP_Hg19/*zip | sed 's/\*//g' > %smelt/transposon.list" % (path_melt, out))
+
+                melt_bed = "%sadd_bed_files/1KGP_Hg19/hg19.genes.bed" % (path_melt)
+
+            else:
+                os.system("ls %sme_refs/Hg38/*zip | sed 's/\*//g' > %smelt/transposon.list" % (path_melt, out))
+
+                melt_bed = "%sadd_bed_files/Hg38/Hg38.genes.bed" % (path_melt)
+
+            if exome == "True":
+                os.system("%sjava -Xmx%sg -jar %sMELT.jar Single -bamfile %s -h %s -t %smelt/transposon.list -n %s -w %smelt -exome %s" % (
+                    path_java, RAM_GB, path_melt, bam_file, path_reference, out, melt_bed, out, melt_custom_options))
         
-        os.system("%sjava -Xmx%sg -jar %sMELT.jar Single -bamfile %s -h %s -t %smelt/transposon.list -n %s -w %smelt %s" % (
-            path_java, RAM_GB, path_melt, bam_file, path_reference, out, melt_bed, out, melt_custom_options))
+            os.system("%sjava -Xmx%sg -jar %sMELT.jar Single -bamfile %s -h %s -t %smelt/transposon.list -n %s -w %smelt %s" % (
+                path_java, RAM_GB, path_melt, bam_file, path_reference, out, melt_bed, out, melt_custom_options))
 
-        os.system("cat %smelt/SVA.final_comp.vcf | grep '^#' > %smelt/%s.header.txt" % (out, out, sample_name))
-        os.system("cat %smelt/SVA.final_comp.vcf | grep -v '^#' > %smelt/%s.sva.vcf" % (out, out, sample_name))
-        os.system("cat %smelt/LINE1.final_comp.vcf | grep -v '^#' > %smelt/%s.line1.vcf" % (out, out, sample_name))
-        os.system("cat %smelt/ALU.final_comp.vcf | grep -v '^#' > %smelt/%s.alu.vcf" % (out, out, sample_name))
-        os.system("cat %smelt/%s.header.txt %smelt/%s.sva.vcf %smelt/%s.line1.vcf %smelt/%s.alu.vcf | perl %svcf-sort.pl -c | bgzip -c > %s/results/%s_MEI.vcf.gz" % (out, sample_name, out, sample_name, out, sample_name, out, sample_name, path_scripts, out, sample_name))
-        os.system("%stabix -p vcf %s/results/%s_MEI.vcf.gz" % (path_tabix, out, sample_name))
+            os.system("cat %smelt/SVA.final_comp.vcf | grep '^#' > %smelt/%s.header.txt" % (out, out, sample_name))
+            os.system("cat %smelt/SVA.final_comp.vcf | grep -v '^#' > %smelt/%s.sva.vcf" % (out, out, sample_name))
+            os.system("cat %smelt/LINE1.final_comp.vcf | grep -v '^#' > %smelt/%s.line1.vcf" % (out, out, sample_name))
+            os.system("cat %smelt/ALU.final_comp.vcf | grep -v '^#' > %smelt/%s.alu.vcf" % (out, out, sample_name))
+            os.system("cat %smelt/%s.header.txt %smelt/%s.sva.vcf %smelt/%s.line1.vcf %smelt/%s.alu.vcf | perl %svcf-sort.pl -c | bgzip -c > %s/results/%s_MEI.vcf.gz" % (out, sample_name, out, sample_name, out, sample_name, out, sample_name, path_scripts, out, sample_name))
+            os.system("%stabix -p vcf %s/results/%s_MEI.vcf.gz" % (path_tabix, out, sample_name))
 
-        MEI_results_file = "%s/results/%s_MEI.vcf.gz" % (out, sample_name)
+            MEI_results_file = "%s/results/%s_MEI.vcf.gz" % (out, sample_name)
 
-        is_variant_file_OK(MEI_results_file, "Vcf", "MEI")
+            is_variant_file_OK(MEI_results_file, "Vcf", "MEI")
+
+            if not debug:
+                os.system("rm -r %smelt" % (out))
+            
+                if variantcalling:
+                    os.system("rm %s/*bam.disc %s/*bam.disc.bai %s/*bam.fq" % (out, out, out))
+
+            os.system("touch  %slogs/mei.log" % (out))
+
+            print("\nTransposable element insertion scanning with MELT is complete.\n")
+        
+    if os.path.isfile(SV_results_file) == True and os.path.isfile(MEI_results_file) == True:
+        print("\nMerging SV and MEI callsets together with SURVIVOR to create a union callset...\n")
+        os.system("bgzip -d %s" (SV_results_file))
+        os.system("bgzip -d %s" (MEI_results_file))
+        os.system("ls %s/results/*.vcf > %s/results/survivor_sample_files" % (out, out))
+        os.system("%sSURVIVOR merge %s/results/survivor_sample_files 1000 1 1 1 0 30 %s/results/%s_SV_MEI_merged.vcf" % (
+        path_SURVIVOR, out, out, sample_name))
+        os.system("perl %svcf-sort.pl %s/results/%s_SV_MEI_merged.vcf | bgzip -c > %s/results/%s_SV_MEI_merged.vcf.gz" % (
+        path_scripts, out, sample_name, out, sample_name))
+        os.system("%stabix -p vcf %s/results/%s_SV_MEI_merged.vcf.gz" % (path_tabix, out, sample_name))
+
+        SV_MEI_results_file = "%s/results/%s_SV_MEI_merged.vcf.gz" % (out, sample_name)
+
+        is_variant_file_OK(SV_MEI_results_file, "Vcf", "SVMEI")
+
+        print("\nMerging of SV and MEI variant calls is complete.\n")
 
         if not debug:
-            os.system("rm -r %smelt" % (out))
-            
-            if variantcalling:
-                os.system("rm %s/*bam.disc %s/*bam.disc.bai %s/*bam.fq" % (out, out, out))
-
-        os.system("touch  %slogs/mei.log" % (out))
-
-        print("\nTransposable element insertion scanning with MELT is complete.\n")
-        
-if len(SV_results_file) != 0 and len(MEI_results_file) != 0:
-    print("\nMerging SV and MEI callsets together with SURVIVOR to create a union callset...\n")
-    os.system("bgzip -d %s" (SV_results_file))
-    os.system("bgzip -d %s" (MEI_results_file))
-    os.system("ls %s/results/*.vcf > %s/results/survivor_sample_files" % (out, out))
-    os.system("%sSURVIVOR merge %s/results/survivor_sample_files 1000 1 1 1 0 30 %s/results/%s_SV_MEI_merged.vcf" % (
-    path_SURVIVOR, out, out, sample_name))
-    os.system("perl %svcf-sort.pl %s/results/%s_SV_MEI_merged.vcf | bgzip -c > %s/results/%s_SV_MEI_merged.vcf.gz" % (
-    path_scripts, out, sample_name, out, sample_name))
-    os.system("%stabix -p vcf %s/results/%s_SV_MEI_merged.vcf.gz" % (path_tabix, out, sample_name))
-
-    SV_MEI_results_file = "%s/results/%s_SV_MEI_merged.vcf.gz" % (out, sample_name)
-
-    is_variant_file_OK(SV_MEI_results_file, "Vcf", "SVMEI")
-
-    print("\nMerging of SV and MEI variant calls is complete.\n")
-
-    if not debug:
-        os.system("rm %s/results/survivor_sample_files %s/results/*.vcf" % (out, out))
+            os.system("rm %s/results/survivor_sample_files %s/results/*.vcf" % (out, out))
 
 # 16. Annotation with Annovar with optional missense variant prioritisation according to ACMG guidelines (intervar_20180118 database)
 
