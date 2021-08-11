@@ -133,7 +133,5 @@ with open("%s/multisample_list.txt" % (out_dir) , 'r' ) as f:
     
     if "-debug" in option_string:
         os.system("rm %s/*.locus.tsv %s/*.motif.tsv %s/*.reads.tsv %s/*.str_profile.json" % (out_dir, out_dir, out_dir, out_dir))
-
-    print("\nRepeat expansion annotation is complete.\n")
         
 f.close()
