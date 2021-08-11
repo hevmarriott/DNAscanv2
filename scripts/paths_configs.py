@@ -55,9 +55,9 @@ path_knotannotsv = ""
 #how to download the annovar databases and to modify annovar_protocols and annovar_operations please visit 
 #http://annovar.openbioinformatics.org/en/latest/ . 
 
-annovar_protocols = "refGene,dbnsfp33a,clinvar_20210501,avsnp147,exac03,intervar_20180118"
+annovar_protocols = "refGene,dbnsfp33a,clinvar_20210501,avsnp147,exac03,intervar_20180118,1000g2015aug,gnomad211_genome,gnomad_211exome"
 
-annovar_operations = "g,f,f,f,f,f"
+annovar_operations = "g,f,f,f,f,f,f,f,f"
 
 path_expansionHunter = ""
 
