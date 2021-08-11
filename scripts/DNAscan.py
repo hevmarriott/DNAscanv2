@@ -31,29 +31,30 @@
 #       10.2.3 Merging of snv and indel files
 # 11. Perform variant hard filtering
 # 12. Perform known expansions search with ExpansionHunter
-# 13. Structural Variant calling with Manta (normal and intensive mode)
-#   13.1 Manta only (fast mode)
-#   13.2 Delly additionally calls inversion and deletion variants (in normal mode) and general structural variant classes (intensive mode)
-#   13.3 SV calls are merged to create union callset (normal and intensive modes)
-# 14. Transposable element insertion detection with MELT
-# 15. Annotation with Annovar -  with optional missense variant prioritisation according to ACMG guidelines (intervar_20180118 database)
-#   15.1 AnnotSV for structural variant/transposable element annotation and prioritisation
-# 16. Microbes screening
-#   16.1 Extract non human reads
-#   16.2 Identifies present non-human microbes
-#       16.2.1 Identifies present viruses
-#       16.2.2 Generates virus report
-#       16.2.3 Identifies present bacteria
-#       16.2.4 Generates bacteria report
-#       16.2.5 Identifies present user-selected microbes
-#       16.2.6 Generates user-selected microbes report
-# 17. Alignment report generation ( samtools flagstat and stats )
-# 18. Sequencing data report generation ( fastqc )
-# 19. Snv and indel calling report generation ( bcftools stats )
-# 20. Html report generation ( Multiqc )
-# 21. Annotated variants results report generation
-#   21.1 knotAnnotSV annotated structural variants report generation
-# 22. Starting iobio services
+# 13. Compute genome-wide short tandem repeat profiles with ExpansionHunter Denovo
+# 14. Structural Variant calling with Manta (normal and intensive mode)
+#   14.1 Manta only (fast mode)
+#   14.2 Delly additionally calls inversion and deletion variants (in normal mode) and general structural variant classes (intensive mode)
+#   14.3 SV calls are merged to create union callset (normal and intensive modes)
+# 15. Transposable element insertion detection with MELT
+# 16. Annotation with Annovar -  with optional missense variant prioritisation according to ACMG guidelines (intervar_20180118 database)
+#   16.1 AnnotSV for structural variant/transposable element annotation and prioritisation
+# 17. Microbes screening
+#   17.1 Extract non human reads
+#   17.2 Identifies present non-human microbes
+#       17.2.1 Identifies present viruses
+#       17.2.2 Generates virus report
+#       17.2.3 Identifies present bacteria
+#       17.2.4 Generates bacteria report
+#       17.2.5 Identifies present user-selected microbes
+#       17.2.6 Generates user-selected microbes report
+# 18. Alignment report generation ( samtools flagstat and stats )
+# 19. Sequencing data report generation ( fastqc )
+# 20. Snv and indel calling report generation ( bcftools stats )
+# 21. Html report generation ( Multiqc )
+# 22. Annotated variants results report generation
+#   22.1 knotAnnotSV annotated structural variants report generation
+# 23. Starting iobio services
 #################################################################
 
 # 1. Import necessary python modules
@@ -855,8 +856,22 @@ if expansion:
 
         if not debug:
             os.system("rm %stemp_EH.json* %stemp_EH_realigned.bam" % (out, out))
-
-# 13. Structural Variant calling
+            
+# 13. Compute genome-wide short tandem repeat profiles with ExpansionHunter Denovo
+        print("\nExpansionHunter Denovo is scanning the genome to construct a catalog-free short tandem repeat profile...\n")
+    
+        os.system("%s/bin/ExpansionHunterDenovo profile --reads %s --reference %s --output-prefix %s/results/%s --min-anchor-mapq 50 --max-irr-mapq 40 --log-reads" % (
+            path_expansionHunterDenovo_dir, bam_file, path_reference, out, sample_name))
+        
+        STR_profile = "%s/%s.str_profile.json" % (out, sample_name)
+        
+        if len(STR_profile) != 0:
+            print("\nShort tandem repeat profiling is complete.\n")
+            
+        else:
+            print("\nWARNING: %s is empty, please run again and make sure all paths are correct if you want to perform genome-wide short tandem repeat profiling.\n" % STR_profile)
+    
+# 14. Structural Variant calling
 
 if SV:
 
@@ -902,7 +917,7 @@ if SV:
             os.system("%stabix -p vcf %s/results/%s_manta_SV.vcf.gz" % (path_tabix, out, sample_name))
 
             if mode == "fast":
-                #13.1 Manta is used to call all SVs in fast mode
+                #14.1 Manta is used to call all SVs in fast mode
                 SV_results_file = "%s/results/%s_manta_SV.vcf.gz" % (out, sample_name)
                 
                 is_variant_file_OK(SV_results_file, "Vcf", "SV")
@@ -919,7 +934,7 @@ if SV:
             print("\nStructural variant calling with Manta is complete.\n")
 
             if mode == "normal" or mode == "intensive":
-                # 13.2 In normal mode, Delly is used to call inversions and deletions and Manta calls all SV types.
+                # 14.2 In normal mode, Delly is used to call inversions and deletions and Manta calls all SV types.
                 # In intensive mode, both Delly and Manta call all SV events
 
                 os.system("mkdir %sdelly" % (out))
@@ -968,7 +983,7 @@ if SV:
 
                 print("\nStructural variant calling with Delly is complete.\n")
 
-                # 13.3 In normal and intensive modes, SV calls with Manta and Delly are merged together using SURVIVOR to create a union set of structural variants.
+                # 14.3 In normal and intensive modes, SV calls with Manta and Delly are merged together using SURVIVOR to create a union set of structural variants.
 
                 print("\nStructural variants called with Manta and Delly are being merged with SURVIVOR to create a union callset...\n")
 
@@ -995,7 +1010,7 @@ if SV:
                 "\n\nWARNING: Structural variant calling cannot be performed with single end reads. If you want this to be performed, please provide paired-end aligned reads to DNAscan.\n\n"
             )
 
-# 14. Transposable element insertion detection with MELT
+# 15. Transposable element insertion detection with MELT
 if MEI:
     if "mei.log" in os.listdir(out + "logs"):
 
@@ -1066,7 +1081,7 @@ if len(SV_results_file) != 0 and len(MEI_results_file) != 0:
     if not debug:
         os.system("rm %s/results/survivor_sample_files %s/results/*.vcf" % (out, out))
 
-# 15. Annotation with Annovar with optional missense variant prioritisation according to ACMG guidelines (intervar_20180118 database)
+# 16. Annotation with Annovar with optional missense variant prioritisation according to ACMG guidelines (intervar_20180118 database)
 
 if annotation:
     if "annovar.log" in os.listdir(out + "logs"):
@@ -1108,7 +1123,7 @@ if annotation:
             print("\nAnnotation with ANNOVAR is complete.\n")
 
         if SV or MEI:
-        #15.1 Structural variant annotation and prioritisation is carried out using AnnotSV
+        #16.1 Structural variant annotation and prioritisation is carried out using AnnotSV
             if "annotsv.log" in os.listdir(out + "logs"):
                 print(
                     "WARNING: The presence of annotsv.log in logs is telling you that SV annotation was already peformed, please remove annotsv.log if you wish to perform this stage anyway\n"
@@ -1170,7 +1185,7 @@ else:
         variant_results_file = "%s%s_sorted.vcf.gz" % (out, sample_name)
 
 
-# 16. Microbes screening
+# 17. Microbes screening
 
 if virus or bacteria or custom_microbes:
 
@@ -1180,17 +1195,17 @@ if virus or bacteria or custom_microbes:
             "WARNING: The presence of microbes.log in logs is telling you that microbes scanning was already peformed, please remove microbes.log if you wish to perform this stage anyway\n"
         )
     else:
-        # 16.1 Exctract non human reads
+        # 17.1 Exctract non human reads
         print("\nExtracting non-human reads...\n")
         os.system(
             "%ssamtools view -@ %s -hf 4 %s | %ssamtools bam2fq -s %ssingleton_reads.fastq -@ %s - > %sunaligned_reads.fastq ; cat %ssingleton_reads.fastq >> %sunaligned_reads.fastq ; gzip  %sunaligned_reads.fastq "
             % (path_samtools, num_cpu, bam_file, path_samtools, out, num_cpu,
                out, out, out, out))
 
-        # 16.2 Identifies present non-human microbes
+        # 17.2 Identifies present non-human microbes
         if virus:
 
-            # 16.2.1 Identifies present viruses
+            # 17.2.1 Identifies present viruses
             print("\nIdentifying viruses present in sample...\n")
             os.system(
                 "%shisat2 --no-spliced-alignment -p %s -x %s -U %sunaligned_reads.fastq.gz | %ssamtools view -@ %s -hSb -  | %ssamtools sort -@ %s -T %stemp.file -o %soutput_virus.bam -"
@@ -1200,7 +1215,7 @@ if virus or bacteria or custom_microbes:
                 "%ssamtools index -@ %s %soutput_virus.bam; %ssamtools idxstats %soutput_virus.bam > %svirus_stats.txt"
                 % (path_samtools, num_cpu, out, path_samtools, out, out))
 
-            # 16.2.2 Generates virus report
+            # 17.2.2 Generates virus report
             print("\nGenerating virus coverage and stats report...\n")
             os.system(
                 "awk \'{print $1}\' %svirus_stats.txt > %svirus_list.txt ; for i in $(cat %svirus_list.txt | grep C_); do printf \"$i \"; %ssamtools depth %soutput_virus.bam -r $i | awk \'$3>0 {print $0}\' | wc -l; done > %svirus_coverage_stats.txt"
@@ -1239,7 +1254,7 @@ if virus or bacteria or custom_microbes:
 
         if bacteria:
 
-            # 16.2.3 Identifies present bacteria
+            # 17.2.3 Identifies present bacteria
             print("\nIdentifying bacteria present in sample...\n")
 
             os.system(
@@ -1250,7 +1265,7 @@ if virus or bacteria or custom_microbes:
                 "%ssamtools index -@ %s %soutput_bacteria.bam; %ssamtools idxstats %soutput_bacteria.bam > %sbacteria_stats.txt"
                 % (path_samtools, num_cpu, out, path_samtools, out, out))
 
-            # 16.2.4 Generates bacteria report
+            # 17.2.4 Generates bacteria report
             print("\nGenerating bacteria coverage and stats report...\n")
 
             os.system(
@@ -1292,7 +1307,7 @@ if virus or bacteria or custom_microbes:
 
         if custom_microbes:
 
-            # 16.2.5 Identifies present user-selected microbes
+            # 17.2.5 Identifies present user-selected microbes
             print("\nIdentifying user-selected microbes that are present in sample...\n")
 
             os.system(
@@ -1303,7 +1318,7 @@ if virus or bacteria or custom_microbes:
                 "%ssamtools index -@ %s %soutput_custom_microbes.bam; %ssamtools idxstats %soutput_custom_microbes.bam > %scustom_microbes_stats.txt"
                 % (path_samtools, num_cpu, out, path_samtools, out, out))
 
-            # 16.2.6 Generates user-selected microbes report
+            # 17.2.6 Generates user-selected microbes report
             print("\nGenerating user-selected microbe coverage and stats report...\n")
 
             os.system(
@@ -1352,7 +1367,7 @@ if virus or bacteria or custom_microbes:
 
         print("\nMicrobe screening is complete.\n")
 
-# 17. Alignment report generation ( samtools flagstat and stats )
+# 18. Alignment report generation ( samtools flagstat and stats )
 
 if alignment_report:
     if "alignment_report.log" in os.listdir(out + "logs"):
@@ -1374,7 +1389,7 @@ if alignment_report:
         print("\nAlignment report is now available.\n")
 
 
-# 18. Sequencing data report generation ( fastqc )
+# 19. Sequencing data report generation ( fastqc )
 
 if sequencing_report:
     if "sequencing_report.log" in os.listdir(out + "logs"):
@@ -1405,7 +1420,7 @@ if sequencing_report:
             )
 
 
-# 19. Snv and indel calling report generation ( bcftools stats )
+# 20. Snv and indel calling report generation ( bcftools stats )
 
 if calls_report:
     if "calls_report.log" in os.listdir(out + "logs"):
@@ -1424,7 +1439,7 @@ if calls_report:
 
         print("\nCalls report for SNVs and indels are now available.\n")
 
-# 20. Html report generation ( Multiqc )
+# 21. Html report generation ( Multiqc )
 
 if alignment_report or calls_report or sequencing_report:
     if "multiqc.log" in os.listdir(out + "logs"):
@@ -1443,7 +1458,7 @@ if alignment_report or calls_report or sequencing_report:
 
         print("\nHTML report created.\n")
 
-# 21. Annotated variants report generation
+# 22. Annotated variants report generation
 
 if results_report:
     if "annovar.log" not in os.listdir(out + "logs"):
@@ -1528,7 +1543,7 @@ if results_report:
                 if not debug:
                     os.system("rm %stemp.vcf" % (out))
 
-        #21.1 knotAnnotSV SV report generation
+        #22.1 knotAnnotSV SV report generation
             if SV or MEI:
                 if SV:
                     print("\nGenerating SV annotation HTML report...\n")
@@ -1576,7 +1591,7 @@ if results_report:
 
             print("\nResults report for annotated variants is now available.\n")
 
-# 22. Starting iobio services
+# 23. Starting iobio services
 
 if iobio:
     if "iobio.log" in os.listdir(out + "logs"):
