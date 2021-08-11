@@ -2,8 +2,8 @@
 
 ################################################################
 # Program: DNAscan
-# Version 0.1
-# Author: Alfredo Iacoangeli (alfredo.iacoangeli@kcl.ac.uk)
+# Version 2.0
+# Author: Heather Marriott (heather.marriott@kcl.ac.uk) and Alfredo Iacoangeli (alfredo.iacoangeli@kcl.ac.uk) 
 #################################################################
 
 ################################################################
