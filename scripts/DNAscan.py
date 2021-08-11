@@ -1480,68 +1480,67 @@ if results_report:
             )
 
         else:
-            if variantcalling:
-                print("\nGenerating report of annotated variant calls...\n")
+            print("\nGenerating report of annotated variant calls...\n")
 
-                os.system("zcat %s > %stemp.vcf" % (variant_results_file, out))
+            os.system("zcat %s > %stemp.vcf" % (variant_results_file, out))
 
-                #vcf = open('%stemp.vcf' % (out), 'r')
+            #vcf = open('%stemp.vcf' % (out), 'r')
 
-                #vcf_lines = vcf.readlines()
+            #vcf_lines = vcf.readlines()
 
-                gene_list_file = open(path_gene_list)
+            gene_list_file = open(path_gene_list)
 
-                gene_list_lines = gene_list_file.readlines()
+            gene_list_lines = gene_list_file.readlines()
 
-                gene_list = gene_list_lines
+            gene_list = gene_list_lines
 
-                out_file_all = open(
-                    '%sreports/%s_all_variants.txt' % (out, sample_name), 'w')
+            out_file_all = open(
+                '%sreports/%s_all_variants.txt' % (out, sample_name), 'w')
 
-                counter = 0
+            counter = 0
 
-                for i in gene_list:
+            for i in gene_list:
 
-                    with open('%stemp.vcf' % (out)) as vcf:
+                with open('%stemp.vcf' % (out)) as vcf:
 
-                        for j in vcf:
+                    for j in vcf:
 
-                            check1 = re.search(
-                                r'(^chr)|(^[0-9,X,Y,M]+\t)', j, flags=0)
+                        check1 = re.search(
+                            r'(^chr)|(^[0-9,X,Y,M]+\t)', j, flags=0)
 
-                            check = re.search(
-                                "=%s;" % (i.strip().upper()), j, flags=0)
+                        check = re.search(
+                            "=%s;" % (i.strip().upper()), j, flags=0)
 
-                            if check and check1:
+                        if check and check1:
 
-                                infos = j.split('ANNOVAR_DATE')[1][12:].split(
-                                    'ALLELE_END')[0].replace(";", "\t")
+                            infos = j.split('ANNOVAR_DATE')[1][12:].split(
+                                'ALLELE_END')[0].replace(";", "\t")
 
-                                if counter == 0:
+                            if counter == 0:
 
-                                    replaced_1 = re.sub(
-                                        '=[a-z,A-Z,0-9,\.,\_,\-,:,>,<]+', '',
-                                        infos)
-
-                                    out_file_all.write(
-                                        'CHR\tPosition\tRef\tAlt\tGenotype\t%s\n' %
-                                        (replaced_1))
-
-                                    counter = 1
-
-                                replaced = re.sub('[a-z,A-Z,0-9,\.,\_,\-,:,>,<]+=',
-                                                  '', infos)
+                                replaced_1 = re.sub(
+                                    '=[a-z,A-Z,0-9,\.,\_,\-,:,>,<]+', '',
+                                    infos)
 
                                 out_file_all.write(
-                                    '%s\t%s\t%s\t%s\t%s\t%s\n' %
-                                    (j.split('\t')[0], j.split('\t')[1],
-                                     j.split('\t')[3], j.split('\t')[4],
-                                     j.split('\t')[-1].split(':')[0], replaced))
+                                    'CHR\tPosition\tRef\tAlt\tGenotype\t%s\n' %
+                                    (replaced_1))
 
-                out_file_all.close()
+                                counter = 1
+
+                            replaced = re.sub('[a-z,A-Z,0-9,\.,\_,\-,:,>,<]+=',
+                                              '', infos)
+
+                            out_file_all.write(
+                                '%s\t%s\t%s\t%s\t%s\t%s\n' %
+                                (j.split('\t')[0], j.split('\t')[1],
+                                 j.split('\t')[3], j.split('\t')[4],
+                                 j.split('\t')[-1].split(':')[0], replaced))
+
+            out_file_all.close()
             
-                if not debug:
-                    os.system("rm %stemp.vcf" % (out))
+            if not debug:
+                os.system("rm %stemp.vcf" % (out))
 
         #22.1 knotAnnotSV SV report generation
             if SV or MEI:
