@@ -1558,6 +1558,9 @@ if results_report:
 
                             os.system("mv %s%s_SVMEIanno/%s_annotated_SVMEI.html %s/reports/%s_SVMEIannotatedvariants.html" % (
                                 out, sample_name, sample_name, out, sample_name)) 
+                            
+                            if not debug:
+                                os.system("rm -r %s%s_SVMEIanno" % (out, sample_name))
                 
                             print("\nStructural element and transposable element HTML report created.\n")
                         else:
@@ -1587,6 +1590,9 @@ if results_report:
 
                                 os.system("mv %s%s_MEIanno/%s_annotated_MEI.html %s/reports/%s_MEIannotatedvariants.html" % (
                                     out, sample_name, sample_name, out, sample_name)) 
+                                
+                                if not debug:
+                                    os.system("rm -r %s%s_MEIanno" % (out, sample_name))
                 
                                 print("\nTransposable element HTML report created.\n")
                       
