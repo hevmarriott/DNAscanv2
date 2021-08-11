@@ -963,8 +963,10 @@ if SV or MEI:
                     
                         is_variant_file_OK(delly_SV_DEL_results_file, "Vcf", "SV")
                         is_variant_file_OK(delly_SV_INV_results_file, "Vcf", "SV")
+                        
+                        print("\nInversion and deletion structural variant calling with Delly is complete.\n")
 
-                else:
+                    else:
                         print("\nStructural variants are being called with Delly...\n")
 
                         os.system("%sdelly call -g %s -o %sdelly/%s_delly.bcf -x %s %s" % (
@@ -980,7 +982,7 @@ if SV or MEI:
 
                         is_variant_file_OK(delly_SV_results_file, "Vcf", "SV")
 
-                    print("\nStructural variant calling with Delly is complete.\n")
+                        print("\nStructural variant calling with Delly is complete.\n")
 
                     # 14.3 In normal and intensive modes, SV calls with Manta and Delly are merged together using SURVIVOR to create a union set of structural variants.
 
