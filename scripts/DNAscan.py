@@ -1064,8 +1064,8 @@ if SV or MEI:
         
     if os.path.isfile(SV_results_file) == True and os.path.isfile(MEI_results_file) == True:
         print("\nMerging SV and MEI callsets together with SURVIVOR to create a union callset...\n")
-        os.system("bgzip -d %s" (SV_results_file))
-        os.system("bgzip -d %s" (MEI_results_file))
+        os.system("bgzip -d %s" % (SV_results_file))
+        os.system("bgzip -d %s" % (MEI_results_file))
         os.system("ls %s/results/*.vcf > %s/results/survivor_sample_files" % (out, out))
         os.system("%sSURVIVOR merge %s/results/survivor_sample_files 1000 1 1 1 0 30 %s/results/%s_SV_MEI_merged.vcf" % (
         path_SURVIVOR, out, out, sample_name))
