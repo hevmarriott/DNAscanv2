@@ -1080,7 +1080,11 @@ if SV or MEI:
         print("\nMerging of SV and MEI variant calls is complete.\n")
 
         if not debug:
-            os.system("rm %s/results/survivor_sample_files %s/results/*.vcf %s %s" % (out, out, SV_results_file, MEI_results_file))
+            os.system("rm %s/results/survivor_sample_files %s/results/*.vcf %s/results/%s_MEI.vcf.gz*" % (out, out, out, sample_name))
+            if mode == "fast":
+                os.system("rm %s/results/%s_manta_SV.vcf.gz*" % (out, sample_name))
+            else:
+                os.system("rm %s/results/%s_SV_merged.vcf.gz*" % (out, sample_name))
 
 # 16. Annotation with Annovar with optional missense variant prioritisation according to ACMG guidelines (intervar_20180118 database)
 
