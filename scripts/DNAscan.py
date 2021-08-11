@@ -1080,7 +1080,7 @@ if SV or MEI:
         print("\nMerging of SV and MEI variant calls is complete.\n")
 
         if not debug:
-            os.system("rm %s/results/survivor_sample_files %s/results/*.vcf" % (out, out))
+            os.system("rm %s/results/survivor_sample_files %s/results/*.vcf %s %s" % (out, out, SV_results_file, MEI_results_file))
 
 # 16. Annotation with Annovar with optional missense variant prioritisation according to ACMG guidelines (intervar_20180118 database)
 
@@ -1133,7 +1133,7 @@ if annotation:
                     SV_annotation_file = "%s/results/%s_annotated_SV.tsv" % (out, sample_name)
                 if MEI:
                     MEI_annotation_file = "%s/results/%s_annotated_MEI.tsv" % (out, sample_name)
-                if SV and MEI:
+                if os.path.isfile(SV_MEI_results_file):
                     SV_MEI_annotation_file = "%s/results/%s_annotated_SV_MEI.tsv" % (out, sample_name)
             else:
                 os.environ["ANNOTSV"] = "%s" % (path_annotsv)
@@ -1146,27 +1146,8 @@ if annotation:
 
                 else:
                     genome_build = "GRCh38"
-            
-                if SV:
-                
-                    print("\nStructural variant annotation is being performed with AnnotSV...\n")
-                    os.system("%s/bin/AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/results/%s_annotated_SV -SVminSize 30 %s" % (
-                        path_annotsv, path_annotsv, path_bcftools, path_bedtools, SV_results_file, candidate_gene_cmd, genome_build, out, sample_name, annotsv_custom_options))
-
-                    SV_annotation_file = "%s/results/%s_annotated_SV.tsv" % (out, sample_name)
-               
-                    print("\nStructural variant annotation is complete.\n")
-                
-                if MEI:
-                    print("\nTransposable element annotation is being performed with AnnotSV...\n")
-                    os.system("%s/bin/AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/results/%s_annotated_MEI -SVminSize 30 %s" % (
-                        path_annotsv, path_annotsv, path_bcftools, path_bedtools, MEI_results_file, candidate_gene_cmd, genome_build, out, sample_name, annotsv_custom_options))
-
-                    MEI_annotation_file = "%s/results/%s_annotated_MEI.tsv" % (out, sample_name)
-                
-                    print("\nTransposable element annotation is complete.\n")
                     
-                if SV and MEI:
+                if os.path.isfile(SV_MEI_results_file) == True:
                     print("\nStructural variant and transposable element annotation is being performed with AnnotSV...\n")
                     os.system("%s/bin/AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/results/%s_annotated_MEI -SVminSize 30 %s" % (
                         path_annotsv, path_annotsv, path_bcftools, path_bedtools, SV_MEI_results_file, candidate_gene_cmd, genome_build, out, sample_name, annotsv_custom_options))
@@ -1174,6 +1155,26 @@ if annotation:
                     SV_MEI_annotation_file = "%s/results/%s_annotated_SV_MEI.tsv" % (out, sample_name)
                 
                     print("\nStructural variant and transposable element annotation is complete.\n")
+            
+                else:
+                    if SV:
+                
+                        print("\nStructural variant annotation is being performed with AnnotSV...\n")
+                        os.system("%s/bin/AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/results/%s_annotated_SV -SVminSize 30 %s" % (
+                            path_annotsv, path_annotsv, path_bcftools, path_bedtools, SV_results_file, candidate_gene_cmd, genome_build, out, sample_name, annotsv_custom_options))
+
+                        SV_annotation_file = "%s/results/%s_annotated_SV.tsv" % (out, sample_name)
+               
+                        print("\nStructural variant annotation is complete.\n")
+                
+                    if MEI:
+                        print("\nTransposable element annotation is being performed with AnnotSV...\n")
+                        os.system("%s/bin/AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/results/%s_annotated_MEI -SVminSize 30 %s" % (
+                            path_annotsv, path_annotsv, path_bcftools, path_bedtools, MEI_results_file, candidate_gene_cmd, genome_build, out, sample_name, annotsv_custom_options))
+
+                        MEI_annotation_file = "%s/results/%s_annotated_MEI.tsv" % (out, sample_name)
+                
+                        print("\nTransposable element annotation is complete.\n")
                     
                 os.system("touch  %slogs/annotsv.log" % (out))
                 
@@ -1543,49 +1544,49 @@ if results_report:
                         print("WARNING: Structural variant and/or mobile element insertion annotation was not peformed - please perform structural variant calling and/or mobile element insertion calling and annotation using the -SV and/or -MEI and -annotation flags if you wish to generate an AnnotSV results report.\n")
                      
                     else:
-                        if SV:
-                            print("\nGenerating SV annotation HTML report...\n")
+                        if os.path.isfile(SV_MEI_results_file) == True:
+                            print("\nGenerating structural variant and transposable element annotation HTML report...\n")
 
-                            os.system("mkdir %s%s_SVanno" % (out, sample_name))
+                            os.system("mkdir %s%s_SVMEIanno" % (out, sample_name))
 
-                            os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_SVanno --genomeBuild %s" % (
-                                path_knotannotsv, path_knotannotsv, SV_annotation_file, out, sample_name, reference))
+                            os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_SVMEIanno --genomeBuild %s" % (
+                                path_knotannotsv, path_knotannotsv, SV_MEI_annotation_file, out, sample_name, reference))
 
-                            os.system("mv %s%s_SVanno/%s_annotated_SV.html %s/reports/%s_SVannotatedvariants.html" % (
-                                out, sample_name, sample_name, out, sample_name))
-
-                            if not debug:
-                                os.system("rm -r %s%s_SVanno" % (out, sample_name))
-
-                            print("\nSV HTML report created.\n")
-                
-                        if MEI:
-                            print("\nGenerating transposable element annotation HTML report...\n")
-
-                            os.system("mkdir %s%s_MEIanno" % (out, sample_name))
-
-                            os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_MEIanno --genomeBuild %s" % (
-                                path_knotannotsv, path_knotannotsv, MEI_annotation_file, out, sample_name, reference))
-
-                            os.system("mv %s%s_MEIanno/%s_annotated_MEI.html %s/reports/%s_MEIannotatedvariants.html" % (
+                            os.system("mv %s%s_SVMEIanno/%s_annotated_SVMEI.html %s/reports/%s_SVMEIannotatedvariants.html" % (
                                 out, sample_name, sample_name, out, sample_name)) 
                 
-                            print("\nTransposable element HTML report created.\n")
-                    
-            if SV and MEI:
-                print("\nGenerating structural variant and transposable element annotation HTML report...\n")
+                            print("\nStructural element and transposable element HTML report created.\n")
+                        else:
+                            if SV:
+                                print("\nGenerating SV annotation HTML report...\n")
 
-                os.system("mkdir %s%s_SVMEIanno" % (out, sample_name))
+                                os.system("mkdir %s%s_SVanno" % (out, sample_name))
 
-                os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_SVMEIanno --genomeBuild %s" % (
-                    path_knotannotsv, path_knotannotsv, SV_MEI_annotation_file, out, sample_name, reference))
+                                os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_SVanno --genomeBuild %s" % (
+                                    path_knotannotsv, path_knotannotsv, SV_annotation_file, out, sample_name, reference))
 
-                os.system("mv %s%s_SVMEIanno/%s_annotated_SVMEI.html %s/reports/%s_SVMEIannotatedvariants.html" % (
-                    out, sample_name, sample_name, out, sample_name)) 
+                                os.system("mv %s%s_SVanno/%s_annotated_SV.html %s/reports/%s_SVannotatedvariants.html" % (
+                                    out, sample_name, sample_name, out, sample_name))
+
+                                if not debug:
+                                    os.system("rm -r %s%s_SVanno" % (out, sample_name))
+
+                                print("\nSV HTML report created.\n")
                 
-                print("\nStructural element and transposable element HTML report created.\n")
-                    
-            os.system("touch  %slogs/results_report.log" % (out))
+                            if MEI:
+                                print("\nGenerating transposable element annotation HTML report...\n")
+
+                                os.system("mkdir %s%s_MEIanno" % (out, sample_name))
+
+                                os.system("perl %sknotAnnotSV.pl --configFile %s/config_AnnotSV.yaml --annotSVfile %s --outDir %s%s_MEIanno --genomeBuild %s" % (
+                                    path_knotannotsv, path_knotannotsv, MEI_annotation_file, out, sample_name, reference))
+
+                                os.system("mv %s%s_MEIanno/%s_annotated_MEI.html %s/reports/%s_MEIannotatedvariants.html" % (
+                                    out, sample_name, sample_name, out, sample_name)) 
+                
+                                print("\nTransposable element HTML report created.\n")
+                      
+            os.system("touch %slogs/results_report.log" % (out))
 
             print("\nResults report for annotated variants is now available.\n")
 
