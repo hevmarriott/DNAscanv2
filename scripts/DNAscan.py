@@ -1495,7 +1495,7 @@ if results_report:
             gene_list = gene_list_lines
 
             out_file_all = open(
-                '%sreports/%s_all_variants.txt' % (out, sample_name), 'w')
+                '%sreports/%s_annovar_variants.txt' % (out, sample_name), 'w')
 
             counter = 0
 
