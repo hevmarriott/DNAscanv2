@@ -1595,7 +1595,35 @@ if results_report:
                                     os.system("rm -r %s%s_MEIanno" % (out, sample_name))
                 
                                 print("\nTransposable element HTML report created.\n")
-                      
+                    
+            #22.2 Concise results report for all variants called (SV, MEI, SNVs and indels)
+            if os.path.isfile("%s/reports/%s_annovar_variants.txt" % out, sample_name) == True:
+                if not MEI and mode == "fast" and os.path.isfile(SV_annotation_file) == True:
+                    annotsv_file == SV_annotation_file
+                
+                if not SV and os.path.isfile(MEI_annotation_file) = True:
+                    annotsv_file = MEI_annotation_file
+                    
+                os.system("cat %s | cut -f 2,3,6,15,17,27,28,33,72,86,87 | awk -v OFS='\t' '{split($4,a,/:/);$4=a[1]}1' | awk -v OFS='\t' ' {NR==1?$11="Clinvar_ID\t"$11:$11="\t"$11 } 1 ' | awk  -v OFS="\t" ' {NR==1?$13="Clinvar_Phenotype\t"$13:$13="\t"$13 } 1 ' | awk  -v OFS="\t" ' {NR==1?$14="Variant_Frequency_ExAC\t"$14:$14="\t"$14 } 1 ' | awk  -v OFS="\t" ' {NR==1?$14="Variant_Frequency_1000g\t"$14:$14="\t"$14 } 1 ' | awk  -v OFS="\t" ' {NR==1?$14="Variant_Frequency_gnomAD\t"$14:$14="\t"$14 } 1 '| awk -F '\t' 'NR>1 {print "chr"$0}' > %s/reports/temp_%s_SV_variants.tsv" % (
+                    annotsv_file, out, sample_name))
+                
+                if SV and mode != "fast" and not MEI or if os.path.isfile(SV_MEI_annotation_file) == True:
+                    if not MEI and SV and mode != "fast":
+                        annotsv_file = SV_annotation_file
+                        
+                    if os.path.isfile(SV_MEI_annotation_file) == True:
+                        annotsv_file = SV_MEI_annotation_file
+      
+                    os.system("cat %s | cut -f 2,3,6,15,18,28,29,34,73,87,88 | awk -v OFS='\t' '{split($4,a,/:/);$4=a[1]}1' | awk -v OFS='\t' ' {NR==1?$11="Clinvar_ID\t"$11:$11="\t"$11 } 1 ' | awk  -v OFS="\t" ' {NR==1?$12="Clinvar_Phenotype\t"$13:$13="\t"$13 } 1 ' | awk  -v OFS="\t" ' {NR==1?$14="Variant_Frequency_ExAC\t"$14:$14="\t"$14 } 1' | awk  -v OFS="\t" ' {NR==1?$14="Variant_Frequency_1000g\t"$14:$14="\t"$14 } 1' | awk  -v OFS="\t" ' {NR==1?$14="Variant_Frequency_gnomAD\t"$14:$14="\t"$14 } 1 ' | awk -F '\t' 'NR>1 {print "chr"$0}' > %s/reports/temp_%s_SV_variants.tsv" % (
+                        annotsv_file, out, sample_name)
+                              
+                os.system("cat %s/reports/%s_annovar_variants.txt | awk '{print $1 "\t" $2 "\t" $9 "\t" $5 "\t" $7 "\t" $6 "\t" $10 "\t" $91 "\t" $79 "\t" $77 "\t" $78 "\t" $83 "\t" $120 "\t" $121}' | awk -v OFS="\t" '{$3=SNP/indel ; print ;} | awk -v OFS='\t' '{split($9,a,/:/);$9=a[5]}1' | awk -v OFS="\t" ' {NR==1?$8="Overlapping_Genes\t"$8:$8="\t"$8 } 1 ' | awk -v OFS="\t" ' {NR==1?$11="OMIM_Phenotype\t"$11:$11="\t"$11 } 1 ' > %s/reports/temp_%s_snvindel_variants.tsv" % (
+                    out, sample_name, out, sample_name))
+                              
+                os.system("cp %s/all_variants_report_header.txt %s/reports/%s_all_variants.tsv" % (path_scripts, out, sample_name))
+                os.system("tail -n +2 %s/reports/temp_%s_snvindel_variants.tsv >> %s/reports/%s_all_variants.tsv" % (out, sample_name, out, sample_name))      
+                os.system("tail -n +2 %s/reports/temp_%s_SV_variants.tsv >> %s/reports/%s_all_variants.tsv" % (out, sample_name, out, sample_name))
+                    
             os.system("touch %slogs/results_report.log" % (out))
 
             print("\nResults report for annotated variants is now available.\n")
