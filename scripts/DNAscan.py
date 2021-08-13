@@ -1603,7 +1603,7 @@ if results_report:
                     if mode == "fast" and os.path.isfile(SV_annotation_file) == True:
                         annotsv_file = SV_annotation_file
                 
-                    if not SV and os.path.isfile(MEI_annotation_file) = True:
+                    if not SV and os.path.isfile(MEI_annotation_file) == True:
                         annotsv_file = MEI_annotation_file
                     
                     print("\nGenerating a concise results report for all annotated variants (SNVs, indels, SV and or MEI)...\n")
