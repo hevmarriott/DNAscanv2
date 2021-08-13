@@ -1153,7 +1153,7 @@ if annotation:
                     
                 if os.path.isfile(SV_MEI_results_file) == True:
                     print("\nStructural variant and transposable element annotation is being performed with AnnotSV...\n")
-                    os.system("%s/bin/AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/results/%s_annotated_MEI -SVminSize 30 %s" % (
+                    os.system("%s/bin/AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/results/%s_annotated_SV_MEI -SVminSize 30 %s" % (
                         path_annotsv, path_annotsv, path_bcftools, path_bedtools, SV_MEI_results_file, candidate_gene_cmd, genome_build, out, sample_name, annotsv_custom_options))
 
                     SV_MEI_annotation_file = "%s/results/%s_annotated_SV_MEI.tsv" % (out, sample_name)
