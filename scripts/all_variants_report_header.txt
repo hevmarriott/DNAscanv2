@@ -1,0 +1,1 @@
+Chr Position  Variant_Type  Genotype  Gene_Name Genomic_Region  Coding_Region Overlapping_Genes ACMG_Class  OMIM_ID Clinvar_ID  OMIM_Phenotype  Clinvar_Phenotype Variant_Frequency_ExAC  Variant_Frequency_1000g Variant_Frequency_gnomAD 
