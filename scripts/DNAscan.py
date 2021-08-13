@@ -1598,7 +1598,7 @@ if results_report:
                     
             #22.2 Concise results report for all variants called (SV, MEI, SNVs and indels)
             if os.path.isfile("%s/reports/%s_annovar_variants.txt" % out, sample_name) == True:
-                if SV_results_file == "%s/results/%s_manta_SV.vcf.gz" % out, sample_name or if not SV and os.path.isfile(MEI_results_file) == True: 
+                if SV_results_file == "%s/results/%s_manta_SV.vcf.gz" % (out, sample_name) or if not SV and os.path.isfile(MEI_results_file) == True: 
                     if mode == "fast" and os.path.isfile(SV_annotation_file) == True:
                         annotsv_file = SV_annotation_file
                 
