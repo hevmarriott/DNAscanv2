@@ -91,7 +91,7 @@ def create_parser():
       action="store_true",
       dest="expansion",
       help=
-      'if this flag is set DNAscan will look for the expansions described in the jason folder in paths_configs.py  (Default = "False") ',
+      'if this flag is set DNAscan will look for the expansions described in the json folder in paths_configs.py with ExpansionHunter and non-reference/novel tandem repeats with ExpansionHunter Denovo  (Default = "False") ',
       default=False)
 
   parser.add_argument(
@@ -99,7 +99,7 @@ def create_parser():
       action="store_true",
       dest="SV",
       help=
-      'if this flag is set the structural variant calling stage will be performed (Default = "False") ',
+      'if this flag is set the structural variant calling stage will be performed with Manta (in all modes) and Delly (normal mode for inversions and deletions; all variants in intensive mode) (Default = "False") ',
       default=False)
   
   parser.add_argument(
@@ -107,7 +107,7 @@ def create_parser():
       action="store_true",
       dest="MEI",
       help=
-      ' if this flag is set, mobile element insertion/transposable element calling will be performed (Default = "False") ',
+      ' if this flag is set, mobile element insertion/transposable element calling will be performed with MELT (Default = "False") ',
       default=False)
 
   parser.add_argument(
@@ -155,7 +155,7 @@ def create_parser():
       action="store_true",
       dest="annotation",
       help=
-      'if this flag is set DNAscan will annotate the found variants (Default = "False")  ',
+      'if this flag is set DNAscan will annotate the found SNV and indel variants with Annovar and AnnotSV for SV and MEI variants (Default = "False")  ',
       default=False)
 
   parser.add_argument(
@@ -163,7 +163,7 @@ def create_parser():
       action="store_true",
       dest="results_report",
       help=
-      'if this flag is set DNAscan generate a results report (Default = "False")  ',
+      'if this flag is set DNAscan will generate a results report describing the annotated variants (Default = "False")  ',
       default=False)
 
   parser.add_argument(
@@ -171,7 +171,7 @@ def create_parser():
       action="store_true",
       dest="alignment_report",
       help=
-      'if this flag is set DNAscan generate an alignment report (Default = "False") ',
+      'if this flag is set DNAscan will generate an alignment report (Default = "False") ',
       default=False)
 
   parser.add_argument(
@@ -179,7 +179,7 @@ def create_parser():
       action="store_true",
       dest="sequencing_report",
       help=
-      'if this flag is set DNAscan generate a report describing the input sequencing data (Default = "False") ',
+      'if this flag is set DNAscan will generate a report describing the input sequencing data (Default = "False") ',
       default=False)
 
   parser.add_argument(
@@ -187,7 +187,7 @@ def create_parser():
       action="store_true",
       dest="calls_report",
       help=
-      'if this flag is set DNAscan generate a report describing the found snvs and small indels (Default = "False")',
+      'if this flag is set DNAscan will generate a report describing the found snvs and small indels (Default = "False")',
       default=False)
 
   parser.add_argument(
