@@ -26,11 +26,11 @@
 
 ## Introduction
 
-DNAscan is a fast and efficient bioinformatics pipeline that allows for the analysis of DNA Next Generation sequencing data, requiring very little computational effort and memory usage. DNAscan can analyse 40x whole genome NGS data in ~8 hours, using as little as 8 cpus and 16 Gbs of RAM while guaranteeing a very high performance. We do this by exploiting state-of-the-art bioinformatics tools. DNAscan can screen your DNA NGS data for single nucleotide variants, small indels, structural variants, repeat expansions, viral (or any other organism’s) genetic material. Its results are annotated using a wide range of databases including ClinVar, EXAC, dbSNP and CADD and uploaded onto the gene.iobio platform for an on-the-fly analysis/interpretation.
+DNAscan is a fast and efficient bioinformatics pipeline that allows for the analysis of DNA Next Generation sequencing data, requiring very little computational effort and memory usage. DNAscan can analyse 40x whole genome NGS data in ~8 hours, using as little as 8 cpus and 16 Gbs of RAM while guaranteeing a very high performance. We do this by exploiting state-of-the-art bioinformatics tools. DNAscan can screen your DNA NGS data for single nucleotide variants, small indels, structural variants, transposable elements, known and non-reference repeat expansions and viral (or any other organism’s) genetic material. Its results are annotated using a wide range of databases including refGene, ClinVar, EXAC, dbSNP, CADD, and gnomAD and 1000g for variant frequency estimation, and are uploaded onto the gene.iobio platform for an on-the-fly analysis/interpretation.
 
 ![alt text](https://github.com/hevmarriott/DNAscanv2/raw/master/DNAscan_pipeline_pic.jp2)
 
-Figure 1. Central panel: Pipeline overview. DNAscan accepts sequencing data, and optionally variant files. The pipeline firstly performs an alignment step (details in the left panel), followed by a customizable data analysis protocol (details in the right panel). Finally, results are annotated and a user friendly report is generated. Right panel: detailed description of the post alignment analysis pipeline (intensive mode). Aligned reads are used by the variant calling pipeline (Freebayes + GATK HC + Bcftools), both aligned and unaligned reads are used by Manta and ExpansionHunter (for which known repeat description files have to be provided) to look for structural variants. The unaligned reads are mapped to a database of known viral genomes (NCBI database) to screen for the presence of their genetic material in the input sequencing data. Left panel: Alignment stage description. Raw reads are aligned with HISAT2. Resulting soft/hard-clipped reads and unaligned reads are realigned with BWA mem and then merged with the others using samtools.
+Figure 1. Central panel: Pipeline overview. DNAscan accepts sequencing data, and optionally variant files. The pipeline firstly performs an alignment step (details in the left panel), followed by a customizable data analysis protocol (details in the right panel). Finally, results are annotated and a user friendly report is generated. Right panel: detailed description of the post alignment analysis pipeline (intensive mode). Aligned reads are used by the variant calling pipeline (Strelka), both aligned and unaligned reads are used by Manta, Delly, ExpansionHunter (for which known repeat description files have to be provided) and ExpansionHunter Denovo to look for structural variants and by MELT for transposable elements. The unaligned reads are mapped to a database of known viral genomes (NCBI database) to screen for the presence of their genetic material in the input sequencing data. Left panel: Alignment stage description. Raw reads are aligned with HISAT2. Resulting soft/hard-clipped reads and unaligned reads are realigned with BWA mem and then merged with the others using samtools.
 
 
 ## Citation
@@ -51,9 +51,9 @@ Figure 1. Central panel: Pipeline overview. DNAscan accepts sequencing data, and
 
 ### Obtaining
 
-**Version:** 0.1
+**Version:** 2.0
 
-Please make sure all dependencies are installed before running DNAscan. Instructions on how to install all dependencies are available in the following chapter. However, a bash script to set up all dependencies (Annovar and GATK need a manual download and registration step) is available in scripts.
+Please make sure all dependencies are installed before running DNAscan. Instructions on how to install all dependencies are available in the following chapter. However, a bash script to set up all dependencies (Annovar and MELT need a manual registration and download step) is available in scripts.
 
 #### Local Deployment
 
@@ -63,12 +63,11 @@ To obtain DNAscan please use git to download the most recent development tree:
 git clone https://github.com/hevmarriott/DNAscan.git
 ```
 
-Once you have downloaded DNAscan, you can set up all needed dependencies for either hg19 or hg38 by running the install_dependencies_(hg19/hg38).sh script available in DNAscan/scripts. Before running install_dependencies.sh please download and uncompress Annovar by registering at the following [link](http://download.openbioinformatics.org/annovar_download_form.php) and unzip GATK 4.1.9.0 after downloading at the following [link](https://github.com/broadinstitute/gatk/releases/download/4.1.9.0/gatk-4.1.9.0.zip). Install_dependencies.sh will install all software dependencies, the selected reference genome and its hisat2 and bwa indexes (these jobs run in the background and will finish after the script ends (approximately 1 hour) and update paths_configs.py accordingly. The only requirement before running DNAscan is to edit paths_configs.py with the paths of the newly installed software dependencies.
+Once you have downloaded DNAscan, you can set up all needed dependencies for either hg19 or hg38 by running the install_dependencies_(hg19/hg38).sh script available in DNAscan/scripts. Before running install_dependencies.sh please download Annovar by registering at the following [link](http://download.openbioinformatics.org/annovar_download_form.php) and MELTv2.2.2 by registering at the following [link](https://melt.igs.umaryland.edu/downloads.php). Install_dependencies.sh will install all software dependencies, the selected reference genome and its hisat2 and bwa indexes (these jobs run in the background and will finish after the script ends (approximately 1 hour) and update paths_configs.py accordingly. The only requirement before running DNAscan is to edit paths_configs.py with the paths of the newly installed software dependencies.
 
 ```bash
 
-bash scripts/install_dependencies_(hg19/hg38).sh /path/to/set_up/directory/ /path/to/DNAscan/directory/ /path/to/annovar/directory/ /path/to/gatk-
-4.1.9.0/directory/ $num_threads
+bash scripts/install_dependencies_(hg19/hg38).sh /path/to/set_up/directory/ /path/to/DNAscan/directory/ /path/to/annovar.tar.gz /path/to/MELTv2.2.2.tar.gz $num_threads
 
 source ~/.bashrc
 
@@ -77,8 +76,8 @@ NOTE: If you want to perform annotation with Annovar, the CADD database takes up
 
 #### Obtain with Docker
 
-IMPORTANT: if you want to use the intensive mode or the annotation step of DNAscan you need to register and download both Annovar and GATK 4.1.9.0. Remember to mirror into the container the folder where you have deployed these using the -v flag or copy them inside the container using the docker cp command as described below.
-The easiest way to get started with DNAscan is to use its Docker image, which has all dependencies and the reference genome build and BWA/Hisat2 indexes installed, except for Annovar and GATK 4.1.9.0:
+IMPORTANT: if you want to use the mobile element insertion or annotation step of DNAscan you need to register and download both Annovar and MELTv2.2.2. Remember to mirror into the container the folder where you have deployed these using the -v flag or copy them inside the container using the docker cp command as described below.
+The easiest way to get started with DNAscan is to use its Docker image, which has all dependencies and the reference genome build and BWA/Hisat2 indexes installed, except for Annovar and MELTv2.2.2:
 
 ```bash
 sudo docker run  -v /path/to/your/data_folder:/container/path/where/you/want/your/data --storage-opt size=50G  -it hevmarriott/dnascan_hg19 OR hevmarriott/dnascan_hg38 /bin/bash
@@ -120,7 +119,7 @@ After installing docker run an Ubuntu image:
 docker run -v /path/to/your/data_folder:/container/path/where/you/want/your/data  -it [--storage-opt size=500G] ubuntu /bin/bash 
 
 ```
-Before you do this, make sure that you have registered and downloaded Annovar and installed GATK 4.1.9.0 if you want to run the normal/fast modes and perform annotation. 
+Before you do this, make sure that you have registered and downloaded Annovar and MELTv2.2.2 if you want to run the mobile element insertion mode and perform annotation. 
 
 Then install git, download this repository and run the install_dependencies_(hg19/hg38).sh script, which downloads the selected reference genome build and BWA/Hisat2 indexes as well as the Annovar databases:
 
@@ -130,13 +129,13 @@ sudo apt-get update
 
 sudo apt-get install git
 
-git clone https://github.com/hevmarriott/DNAscanv2.git
+git clone https://github.com/hevmarriott/DNAscan.git
 
 cd DNAscan
 
-#By default install_dependencies.sh downloads the following Annovar databases: Exac, Refgene, Dbnsfp, Clinvar and Avsnp. If you wish to download the CADD database (about 350G) please uncomment the appropiate line. If you are not interested in performing annotation, please # the annovar lines in the install_dependencies.sh script. 
+#By default install_dependencies.sh downloads the following Annovar databases: Exac, Refgene, Dbnsfp, Clinvar, Avsnp, Intervar, 1000g and gnomad211. If you wish to download the CADD database (about 350G) please uncomment the appropiate line. If you are not interested in performing annotation, please # the annovar lines in the install_dependencies.sh script. 
 
-bash scripts/install_dependencies_(hg19/hg38).sh /path/to/set_up/directory/ /path/to/DNAscan/directory/ /path/to/annovar/directory/ /path/to/gatk-4.1.9.0/directory/ $num_threads
+bash scripts/install_dependencies_(hg19/hg38).sh /path/to/set_up/directory/ /path/to/DNAscan/directory/ /path/to/annovar.tar.gz /path/to/MELTv2.2.2.tar.gz $num_threads
 
 source ~/.bashrc
 
@@ -161,20 +160,21 @@ Its basic use requires the following options:
  The desired pipeline stages are performed according to the optional arguments selected:
  
  ```bash
-  -filter_string FILTER_STRING  bcftools filter string, eg GQ>20 & DP>10 (Default = ""QUAL > 1 & QUAL / INFO/AO > 10 & SAF > 0 & SAR > 0 & RPR > 1 & RPL > 1"")
+  -filter_string FILTER_STRING  bcftools filter string for strelka, eg GQ>20 & DP>10 (Default = ""FORMAT/FT == "PASS"")
   -iobio                if this flag is set the iobio service links will be provided at the end of the analysis (Default = "False")
   -alignment            if this flag is set the alignment stage will be performed (Default = "False")
-  -expansion            if this flag is set DNAscan will look for the expansions described in the json folder described in paths_configs.py  (Default = "False"). It requires a path to a folder containing the json repeat-specification files to be specified in paths_configs.py
-  -SV                   if this flag is set the structural variant calling stage will be performed with Manta (in all modes) and Whamg (in normal/intensive mode) (Default = "False") 
+  -expansion            if this flag is set DNAscan will look for the expansions described in the json folder described in paths_configs.py with ExpansionHunter and non-reference/novel tandem repeats with ExpansionHunter Denovo (Default = "False"). 
+  -SV                   if this flag is set the structural variant calling stage will be performed with Manta (in all modes) and Delly (normal mode for inversions and deletions; all variants in intensive mode) (Default = "False") 
+  -MEI			if this flag is set, mobile element insertion/transposable element calling will be performed with MELT
   -virus                if this flag is set DNAscan will perform viral scanning (Default = "False")  
   -bacteria             if this flag is set DNAscan will perform bacteria scanning (Default = "False") 
   -custom_microbes      if this flag is set DNAscan will perform a customized microbe scanning according to the provided microbe data base in paths_configs.py (Default = "False")  
   -variantcalling       if this flag is set DNAscan will perform snv and indel calling (Default = "False")  
-  -annotation           if this flag is set DNAscan will annotate the found variants (Default = "False")  
-  -results_report       if this flag is set DNAscan generate a results report (Default = "False")  
-  -alignment_report     if this flag is set DNAscan generate an alignment report (Default = "False") 
-  -sequencing_report    if this flag is set DNAscan generate a report describing the input sequencing data (Default = "False") 
-  -calls_report         if this flag is set DNAscan generate a report describing the found snvs and indels (Default = "False")
+  -annotation           if this flag is set DNAscan will annotate the found SNV and indel variants with Annovar and AnnotSV for SV and MEI variants (Default = "False")  
+  -results_report       if this flag is set DNAscan will generate a results report describing the annotated variants (Default = "False")  
+  -alignment_report     if this flag is set DNAscan will generate an alignment report (Default = "False") 
+  -sequencing_report    if this flag is set DNAscan will generate a report describing the input sequencing data (Default = "False") 
+  -calls_report         if this flag is set DNAscan will generate a report describing the found snvs and indels (Default = "False")
   -rm_dup               if this flag is set DNAscan will remove duplicates from the sample bam file (Default = "False")
 
 ```
@@ -185,8 +185,8 @@ Also, one of the three analysis modes can be chosen with the -mode option:
 -mode  MODE            options are fast, normal, intensive [string] (default = "fast")
 
 ```
-Fast mode uses Hisat2 and Freebayes to quickly align and call variants. It is ideal if you are focusing your analysis on single nucleotide variants. Normal mode performs an alignment refinement using BWA on selected reads. This step improves the alignment of soft-clipped reads and reads containing small indels. It is recommended if your focus is on structural variants. Intensive mode adds a further indel calling step to the pipeline using GATK Haplotype Caller which improves the performance on small indels. If your analysis focuses on the discovery of non human material (e.g. viruses or bacteria) in your sequencing data, please note that that the selected mode does not affect this step. A detailed description of the 3 modes can be found in the [DNAscan paper](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2791-8).
-Structural variant calling with Whamg can now be performed in normal and intensive modes, as it requires paired-end reads to be aligned using BWA. 
+Fast mode uses Hisat2 and Strelka to quickly align and call variants. It is ideal if you are focusing your analysis on single nucleotide variants. Normal mode performs an alignment refinement using BWA on selected reads. This step improves the alignment of soft-clipped reads and reads containing small indels. It is recommended if your focus is on structural variants. Intensive mode adds a further indel calling step to the pipeline using Strelka on regions of the genome which are identified as having one potential deletion or insertion variant during alignment, which improves the performance on small indels. If your analysis focuses on the discovery of non human material (e.g. viruses or bacteria) in your sequencing data, please note that that the selected mode does not affect this step. Structural variant calling with Delly can now be performed in normal and intensive modes and mobile element insertion calling can be achieved in all modes using MELT.
+A detailed description of the 3 modes can be found in the [DNAscan paper](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2791-8).
 
 Finally, a set of optional arguments can be used to customise the analysis:
 
@@ -201,9 +201,9 @@ Finally, a set of optional arguments can be used to customise the analysis:
 ```
 
 
-#### How to make the read mappers and variant callers use custom options
+#### How to make the read mappers and variant callers/annotators use custom options
 
-The file paths_configs.py in DNAscan/scripts can be used for this purpose. In paths_configs.py there is a section where a string of options can be passed to the read mappers (Hisat2 and BWA) and the variant callers (Freebayes and GATK HC):
+The file paths_configs.py in DNAscan/scripts can be used for this purpose. In paths_configs.py there is a section where a string of options can be passed to the read mappers (Hisat2 and BWA) variant callers/annotators (MELT and AnnotSV):
 
  ```bash
  #custom tool options
@@ -212,26 +212,24 @@ hisat_custom_options = ""
 
 bwa_custom_options = ""
 
-freebayes_custom_options = ""
+melt_custom_options = ""
 
-GATK_HC_custom_options = ""
+annotsv_custom_options = ""
 ```
 
-For example, if we want the callers to discard reads with base quality < 15, we can modify as follows:
+For example, if we know the coverage and read length of our samples (40x 150bp), we can tell MELT to skip coverage calculation step with:
 
 
 ```bash
-freebayes_custom_options = "--min-base-quality 15"
-
-gatk_HC_custom_options = "-mbq 15"
+melt_custom_options = "-cov 40 -r 150"
 ```
 
 For a complete list of options that can be used with these tools please see the following links:
 
 [Hisat2](https://ccb.jhu.edu/software/hisat2/manual.shtml)
 [BWA](http://bio-bwa.sourceforge.net/bwa.shtml)
-[Freebayes](https://github.com/ekg/freebayes)
-[GATK HC](https://gatk.broadinstitute.org/hc/en-us/sections/360010932391-4-1-9-0)
+[MELT](https://melt.igs.umaryland.edu/manual.php#_MELT_Options)
+[AnnotSV](https://github.com/lgmgeo/AnnotSV/blob/master/README.AnnotSV_3.0.8.pdf)
 
 #### Usage example
 
@@ -267,12 +265,12 @@ python3 /path/to/DNAscan/scripts/DNAscan.py -format fastq -in data1.fq.gz -in2 d
 
 #### Looking for repeat expansions
 
-Let's assume we have human paired end whole exome sequening data in two fastq files and want to perform snvs/indels calling vs hg19 and scan for some specific repeat expansions. The DNAscan command line would be:
+Let's assume we have human paired end whole exome sequencing data in two fastq files and want to perform snvs/indels calling vs hg19 and scan for some specific and novel repeat expansions. The DNAscan command line would be:
 
  ```bash
 python3 /path/to/DNAscan/scripts/DNAscan.py -format fastq -in data1.fq.gz -in2 data2.fq.gz -reference hg19 -alignment -variantcalling -expansion -out /path/to/outdir/ -mode fast
 ```
-Note that the json repeat-specification files must be specified in paths_configs.py. For a guide on how to create a json repeat-specification file see the this [LINK](https://github.com/Illumina/ExpansionHunter/wiki/Inputs) to the ExpansionHunter instructions. Examples for 17 known repeat expansions, as well as ExpansionHunter variant catalogs for both hg19 and hg38 are in the DNAscan/repeats folder.
+Note that for ExpansionHunter, the json repeat-specification files must be specified in paths_configs.py. For a guide on how to create a json repeat-specification file see the this [LINK](https://github.com/Illumina/ExpansionHunter/wiki/Inputs) to the ExpansionHunter instructions. Examples for 17 known repeat expansions, as well as ExpansionHunter variant catalogs for both hg19 and hg38 are in the DNAscan/repeats folder.
 
 #### Running DNAscan on a subregion of the human region
 
@@ -318,24 +316,26 @@ The analyse_list_of_samples.py takes  file containing the input file of one samp
 
 ### ALSgeneScanner
 
-ALSgeneScanner is a pipeline designed for the analysis of NGS data of ALS patients. It perfoms alignment, variant calling, structural variant calling and repeat expansion calling as well as variant annotation using Annovar. It restricts the analysis to a subset of genes (150) which have been shown to be associated with ALS. A complete list of the included genes is available as a [Google Spreadsheet](https://goo.gl/mngrMC). It also prioritizes variants according to the scientific evidence of the gene association and the effect prediction of the variant. To run ALSgeneScanner the user has to use the appropriate flag as in the following example. At present this can only be done using the reference genome hg19.
+ALSgeneScanner is a pipeline designed for the analysis of NGS data of ALS patients. It perfoms alignment, variant calling, structural variant calling and repeat expansion calling as well as variant annotation using Annovar. It restricts the analysis to a subset of genes (175) which have been shown to be associated with ALS. A complete list of the included genes is available as a [Google Spreadsheet](https://goo.gl/mngrMC). It also prioritizes variants according to the scientific evidence of the gene association and the effect prediction of the variant. To run ALSgeneScanner the user has to use the appropriate flag as in the following example. This can be done using either the hg19 or hg38 reference genome.
 
-Usage example:
+Usage example for hg19:
 
 ```bash
 python3 /path/to/DNAscan/scripts/DNAscan.py -format fastq -in data1.fq.gz -in2 data2.fq.gz -reference hg19 -alsgenescanner -out /path/to/outdir/ -mode fast
 ```
 
-RefGene, ClinVar and dbnsfp30a are necessary to run ALSgeneScanner.
+RefGene, ClinVar, dbnsfp33a and Intervar are necessary to run ALSgeneScanner.
 
 Please use the following commands to download the appropiate Annovar databases:
 
 ```bash
-annotate_variation.pl -buildver hg19 -downdb -webfrom annovar dbnsfp30a /path/to/annovar/database/
+annotate_variation.pl -buildver hg19 -downdb -webfrom annovar dbnsfp33a /path/to/annovar/database/
 
 annotate_variation.pl -buildver hg19 -downdb -webfrom annovar refGene /path/to/annovar/database/
 
-annotate_variation.pl -buildver hg19 -downdb -webfrom annovar clinvar_20210123 /path/to/annovar/database/
+annotate_variation.pl -buildver hg19 -downdb -webfrom annovar clinvar_20210501 /path/to/annovar/database/
+
+annotate_variation.pl -buildver hg19 -downdb -webfrom annovar intervar_20180118 /path/to/annovar/database/
 ```
 
 
@@ -357,7 +357,7 @@ DNAscan output tree:
            
 ### How to download the reference genome
 
-DNAscan can be used with the following human genome reference builds: hg19, hg38, grch37, grch38. The used build can be specified when running DNAscan by using the option -reference (options are hg19, hg38, grch37 and grch38). However, DNAscan uses Annovar to annotate the variants and Annovar is only compatible with hg19 and hg38 at present. Therefore, if the user wants to use grch37 and grch38 the pipeline will skip the annotation step. We are currently working on this and it will be possible to run DNAscan on grch37 and grch38 without limitations. 
+DNAscan can be used with the following human genome reference builds: hg19, hg38, grch37, grch38. The used build can be specified when running DNAscan by using the option -reference (options are hg19, hg38, grch37 and grch38). However, DNAscan uses Annovar to annotate the SNV/indel variants and Annovar is only compatible with hg19 and hg38 at present. Therefore, if the user wants to use grch37 and grch38 the pipeline will skip the annotation step. We are currently working on this and it will be possible to run DNAscan on grch37 and grch38 without limitations. 
 
 #### hg38
 
@@ -527,23 +527,25 @@ Fast mode pipeline (ideal if focusing on SNVs):
 * Samblaster >= 0.1.24
 * Sambamba >= 0.6.6
 * Manta 1.6.0 (optional, needed only if interested in structural variants)
+* MELT v2.2.2 (optional, needed only if interested in mobile insertion elements)
 * ExpansionHunter = 3.2.2 (optional, needed only if interested in known motif expansions)
+* ExpansionHunter Denovo = 0.9.0 (optional, needed only if interested in non-reference/novel motif discovery)
 * Bcftools >= 1.9 (optional, needed only if interested in performing custom variant filtering and calls report)
 * Annovar "Version >= $Date: 2016-02-01 00:11:18 -0800 (Mon, 1 Feb 2016)" (optional, needed only if interested in performing variant annotation)
+* AnnotSV = 3.0.8 (optional, needed only if interested in performing variant annotation)
 
 Normal mode pipeline (better performance on indels and SVs):
 * BWA 0.7.17
-* Whamg 1.8.0 (optional, needed only if interested in structural variants)
+* Delly v0.8.7 (optional, needed only if interested in structural variants)
 
 Intensive mode pipeline (top performance on indels):
-* Genome Analysis Toolkit 4.1.9.0
-* Whamg 1.8.0 (optional, needed only if interested in structural variants)
+* Delly v0.8.7 (optional, needed only if interested in structural variants)
 
 Tools needed for generating graphical reports 
 * RTG Tools >= 3.6.2 
 * Multiqc >= 1.2 
 * Fastqc >=0.11.9
-
+* knotAnnotSV = 1.0.0 (optional, needed only if interested in structural elements
 
 Tools needed for a container based deployment 
 * Docker >= 1.7.1
@@ -608,24 +610,28 @@ annotate_variation.pl -buildver hg19 -downdb -webfrom annovar refGene humandb/
 
 annotate_variation.pl -buildver hg19 -downdb -webfrom annovar exac03 humandb/
 
-annotate_variation.pl -buildver hg19 -downdb -webfrom annovar dbnsfp30a humandb/
+annotate_variation.pl -buildver hg19 -downdb -webfrom annovar dbnsfp33a humandb/
 
-annotate_variation.pl -buildver hg19 -downdb -webfrom annovar clinvar_20210123 humandb/
+annotate_variation.pl -buildver hg19 -downdb -webfrom annovar clinvar_20210501 humandb/
 
 annotate_variation.pl -buildver hg19 -downdb -webfrom annovar avsnp147 humandb/
 
 annotate_variation.pl -buildver hg19 -downdb -webfrom annovar cadd humandb/
 
-annotate_variation.pl -buildver hg19 -downdb -webfrom annovar cadd humandb/
+annotate_variation.pl -buildver hg19 -downdb -webfrom annovar intervar_20180118 humandb/
+
+annotate_variation.pl -buildver hg19 -downdb -webfrom annovar 1000g2015aug humandb/
+
+annotate_variation.pl -buildver hg19 -downdb -webfrom annovar gnomad211_genome humandb/
 
 ```
 
 Finally, we have to update paths_configs.py appropriately. Details about how to download and use the Annovar databases can be found [here](http://annovar.openbioinformatics.org/en/latest/). For the above databases:
 
 ```bash
-annovar_protocols = "refGene,dbnsfp30a,clinvar_20210123,avsnp147,cadd"
+annovar_protocols = "refGene,dbnsfp33a,clinvar_20210501,avsnp147,cadd,intervar_20180118,ALL.sites.2015_08,gnomad211_genome"
 
-annovar_operations = "g,f,f,f,f"
+annovar_operations = "g,f,f,f,f,f,f,f"
 
 ```
 
@@ -636,13 +642,13 @@ annovar_operations = "g,f,f,f,f"
 **Singularity** is also a container project similar to Docker and does not require sudo privileges to run. This can be very important if you decide to use our framework on a machine for which you do not have such privileges. E.g. your institution HPC cluster. In this case you can use Singularity to convert the docker image into a singularity image and run a bash shell in the resulting Singularity container:
 
 ```bash 
-$ singularity shell docker://hevmarriott/dnascanv2_hg19 OR docker://hevmarriott/dnascanv2_hg38
+$ singularity shell docker://hevmarriott/dnascan_hg19 OR docker://hevmarriott/dnascan_hg38
 ```
 After starting the bash shell inside the singularity container you can find a working deployment of DNAscan in /DNAscan
 
 ```bash 
-$ Singularity.dnascanv2_hg19 OR .dnascanv2_hg38 > cd /DNAscan
-$ Singularity.dnascanv2_hg19 OR .dnascanv2_hg38 > cat /DNAscan/docker/welcome_message.txt
+$ Singularity.dnascan_hg19 OR .dnascanv2_hg38 > cd /DNAscan
+$ Singularity.dnascan_hg19 OR .dnascanv2_hg38 > cat /DNAscan/docker/welcome_message.txt
 ```
 
 
@@ -673,6 +679,7 @@ $ Singularity.dnascanv2_hg19 OR .dnascanv2_hg38 > cat /DNAscan/docker/welcome_me
 
 ## Core Contributors
 - [Dr Alfredo Iacoangeli](alfredo.iacoangeli@kcl.ac.uk), UK
+- [Heather Marriott](heather.marriott@kcl.ac.uk), UK
 - [Dr Stephen J Newhouse](stephen.j.newhouse@gmail.com), UK
 
 ### Contributors
