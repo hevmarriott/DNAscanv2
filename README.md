@@ -647,8 +647,8 @@ $ singularity shell docker://hevmarriott/dnascan_hg19 OR docker://hevmarriott/dn
 After starting the bash shell inside the singularity container you can find a working deployment of DNAscan in /DNAscan
 
 ```bash 
-$ Singularity.dnascan_hg19 OR .dnascanv2_hg38 > cd /DNAscan
-$ Singularity.dnascan_hg19 OR .dnascanv2_hg38 > cat /DNAscan/docker/welcome_message.txt
+$ Singularity.dnascan_hg19 OR .dnascan_hg38 > cd /DNAscan
+$ Singularity.dnascan_hg19 OR .dnascan_hg38 > cat /DNAscan/docker/welcome_message.txt
 ```
 
 
