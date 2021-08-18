@@ -41,14 +41,13 @@ tab2_layout = [[sg.Text('Input Format', size=(16,1)), sg.Combo(['fastq', 'sam', 
 [sg.Text('Mode', size=(16,1)), sg.Combo(['fast', 'normal', 'intensive'], size=(7,1), key='-mode', default_value='fast'), sg.Text('\tRead Type', size=(16,1), tooltip='If input format is fastq, select whether the reads are paired (1) or single (0) end'), sg.Combo(['0', '1'], size=(7,1), key='-paired', default_value='1')],
 [sg.Text('Input File 1', size=(16,1)), sg.InputText('data/test_data.1.fq.gz', size=(40,1), key='-in'), sg.FileBrowse()],
 [sg.Text('Input File 2', size=(16,1), tooltip='Only required for paired end reads in fastq format'), sg.InputText('data/test_data.2.fq.gz', key='-in2', size=(40,1)), sg.FileBrowse()],
-[sg.Text('Reference File', size=(16,1), tooltip='Full path to reference fasta file'), sg.InputText('hg19/hg19.fa', size=(40,1), key='-ref_file'), sg.FileBrowse()],
+[sg.Text('Reference File', size=(16,1), tooltip='Path to reference fasta file'), sg.InputText('hg19/hg19.fa', size=(40,1), key='-ref_file'), sg.FileBrowse()],
 [sg.Text('DNAscan Directory', size=(16,1), tooltip='Path to downloaded DNAscan directory i.e. /home/DNAscan/'), sg.InputText('', size=(40,1), key='-dnascan_dir'), sg.FolderBrowse()],
 [sg.Text('Output Directory', size=(16,1), tooltip='Path to output directory i.e. results/'), sg.InputText('results/', size=(40,1), key='-out'), sg.FolderBrowse()],
 [sg.Text('VCF File', size=(16,1), tooltip='OPTIONAL: Path to complementary VCF file with variant calls ready for SNP/indel annotation'), sg.InputText('', size=(40,1), key='-vcf'), sg.FileBrowse()],
 [sg.Text('Sample Name', size=(16,1)), sg.InputText('sample', size=(40,1), key='-sample_name')],
 [sg.Text('Filter String', size=(16,1), tooltip='Bcftools hard variant filter string for Strelka small variants'), sg.InputText('\'FORMAT/FT == "PASS"\'', key='-filter_string', size=(40,1))]]
 
-#sort out this tab layout (swap advanced and read group)
 tab3_layout = [[sg.Text('Analysis:', size=(10,1), font="Helvetica 10 italic")],
 [sg.Checkbox(text='Alignment\t ',key='-alignment', tooltip='Fast Mode: HISAT2 aligns all reads\nNormal and Intensive Mode: HISAT2 aligns all reads and BWA-MEM realigns any soft/hard-clipped and unaligned reads'), sg.Checkbox(text='SNV/Indels\t', key='-variantcalling', tooltip='Fast and Normal Mode: Strelka calls germline SNVs and indels\nIntensive Mode: Strelka calls germline SNVs and indels on genomic positions identified by at least one read as harbouring at least one deletion or insertion'), sg.Checkbox(text='Virus\t  ', key='-virus', tooltip='If selected, the genome will be scanned for the presence of viral DNA'), sg.Checkbox(text='Bacteria', key='-bacteria', tooltip='If selected, the genome will be scanned for the presence of bacterial DNA')],
 [sg.Checkbox(text='Structural Variants\t ', key='-SV', tooltip='Fast Mode: Manta is used to call all SV types\nNormal Mode: Manta calls all SV types and Delly is used to call inversion and deletion SV\nIntensive Mode: Manta and Delly call all SV  types'), sg.Checkbox(text='Mobile Elements\t', key='-MEI', tooltip='All Modes: MELT is used to call mobile insertion elements - i.e. Alu, SVA and LINE1 transposable elements'), sg.Checkbox(text='Microbes', key='-custom_microbes', tooltip='If selected, the genome will be scanned for the presence of custom microbes')],
@@ -57,15 +56,13 @@ tab3_layout = [[sg.Text('Analysis:', size=(10,1), font="Helvetica 10 italic")],
 [sg.Text('Reports:', size=(36,1), font="Helvetica 10 italic"), sg.Text('Regions:', size=(10,1), font="Helvetica 10 italic")],
 [sg.Checkbox(text='Sequencing\t', key='-sequencing_report', tooltip='If selected, a sequencing quality report will be generated with FastQC'), sg.Checkbox(text='Alignment\t', key='-alignment_report', tooltip='If selected, an alignment report will be generated with samtools flagstat'), sg.Checkbox(text='Exome\t  ', key='-exome', tooltip='If selected, analysis will be restricted to exonic regions'), sg.Checkbox(text='Custom (BED)', key='-BED', tooltip='If selected, analysis will be restricted to custom regions specified in a BED file in paths_configs')],
 [sg.Checkbox(text='Variant Calling\t', key='-calls_report', tooltip='If selected, an SNV and indel calls report will be generated using bcftools stats'), sg.Checkbox(text='Annotation\t', key='-results_report', tooltip='SNVs/Indels: ANNOVAR results will be converted into a TSV report\nStructural Variants/Mobile Element Insertions: An HTML results report will be generated with knotAnnotSV\nBoth: Reports will be generated as above, with the addition of a concise report describing the basic characteristics of called simple and structural variants'), sg.Checkbox(text='ALS Genes', key='-alsgenescanner', tooltip='If selected, analysis will be restricted to ALS genes as part of ALSGeneScanner')],
-[sg.Text('Advanced Options:', size=(41,1), font="Helvetica 10 italic"), sg.Text('Read Group Information:', size=(21,1), font="Helvetica 10 italic")],
-[sg.Text('BED File', size=(13,1)), sg.InputText('', size=(20,1), key='-path_bed'), sg.FileBrowse(), sg.Text(' ID', size=(10,1)), sg.InputText('', size=(10,1), key='-RG_ID')],
-[sg.Text('Gene List', size=(13,1)), sg.InputText('', size=(20,1), key='-path_gene_list'), sg.FileBrowse(), sg.Text(' Library', size=(10,1)), sg.InputText('', size=(10,1), key='-RG_LB')],
-[sg.Text('HISAT Options', size=(13,1)), sg.InputText('', size=(20,1), key='-hisat_custom_options'), sg.Text('\t   Platform', size=(18,1)), sg.InputText('', size=(10,1), key='-RG_PL')],
-[sg.Text('BWA Options', size=(13,1)), sg.InputText('', size=(20,1), key='-bwa_custom_options'), sg.Text('\t   Platform Unit', size=(18,1)), sg.InputText('', size=(10,1), key='-RG_PU')],
-[sg.Text('AnnotSV Options', size=(13,1)), sg.InputText('', size=(20,1), key='-annotsv_custom_options'), sg.Text('\t   Sample', size=(18,1)), sg.InputText('', size=(10,1), key='-RG_SM')],
+[sg.Text('Advanced Options:', size=(41,1), font="Helvetica 10 italic", tooltip='These options are only required if you want to customise alignment, MEI and/or SV annotation or you want to restrict analysis\nto custom regions listed in either a BED file or a gene list and have not manually inputted them into paths_configs'), sg.Text('Read Group Information:', size=(21,1), font="Helvetica 10 italic", tooltip='These options are only required if you want to override the default read group\n parameters in paths_configs and have not inputted them manually')],
+[sg.Text('BED File', size=(13,1)), sg.InputText('', size=(20,1), key='-path_bed', tooltip='Path to BED file'), sg.FileBrowse(), sg.Text(' ID', size=(10,1)), sg.InputText('', size=(10,1), key='-RG_ID', tooltip='Read Group Identifier')],
+[sg.Text('Gene List', size=(13,1)), sg.InputText('', size=(20,1), key='-path_gene_list', tooltip='Path to gene list'), sg.FileBrowse(), sg.Text(' Library', size=(10,1)), sg.InputText('', size=(10,1), key='-RG_LB', tooltip='DNA Preparation Library Identifier')],
+[sg.Text('HISAT Options', size=(13,1)), sg.InputText('', size=(20,1), key='-hisat_custom_options'), sg.Text('\t   Platform', size=(18,1)), sg.InputText('', size=(10,1), key='-RG_PL', tooltip='Sequencing technology used i.e. ILLUMINA')],
+[sg.Text('BWA Options', size=(13,1)), sg.InputText('', size=(20,1), key='-bwa_custom_options'), sg.Text('\t   Platform Unit', size=(18,1)), sg.InputText('', size=(10,1), key='-RG_PU', tooltip='Flowcell and Lane info in the format FLOWCELL_BARCODE:LANE:SAMPLE_BARCODE')],
+[sg.Text('AnnotSV Options', size=(13,1)), sg.InputText('', size=(20,1), key='-annotsv_custom_options'), sg.Text('\t   Sample', size=(18,1)), sg.InputText('', size=(10,1), key='-RG_SM', tooltip='Sample sequenced in the read group')],
 [sg.Text('MELT Options ', size=(13,1)), sg.InputText('', size=(20,1), key='-melt_custom_options')]]
-
-
 
 col_1 = [[sg.Image(r'DNAscan_logo.001.png', size=(500,100))],
 [sg.TabGroup([[sg.Tab('Dependency Installation', tab1_layout, element_justification='left'),
@@ -102,7 +99,7 @@ while True:
         webbrowser.open("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6567555/", new=1)
 
     if event == 'Key Information':
-        sg.popup('Program Name: DNAscan\nVersion: 2.0\nDevelopers:\nDr Alfredo Iacoangeli, Research Fellow in Bioinformatics, Department of Biostatistics and Health Informatics, KCL\nHeather Marriott, PhD Candidate, Department of Basic and Clinical Neuroscience, KCL\nFunding Sources:\nMotor Neurone Disease Association\nNIHR Maudsley Biomedical Research Centre (BRC), KCL\nDRIVE-Health CDT Programme, KCL\nGlaxoSmithKline', title='About')
+        sg.popup('Program Name: DNAscan\nVersion: 2.0\n\nDevelopers:\nDr Alfredo Iacoangeli, Research Fellow in Bioinformatics, Department of Biostatistics and Health Informatics, KCL\nHeather Marriott, PhD Candidate, Department of Basic and Clinical Neuroscience, KCL\n\nFunding Sources:\nMotor Neurone Disease Association\nNIHR Maudsley Biomedical Research Centre (BRC), KCL\nDRIVE-Health CDT Programme, KCL\nGlaxoSmithKline', title='About')
 
     if event == 'Run DNAscan':
         params = ''
