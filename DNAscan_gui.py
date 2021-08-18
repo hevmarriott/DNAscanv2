@@ -48,36 +48,37 @@ tab2_layout = [[sg.Text('Input Format', size=(16,1)), sg.Combo(['fastq', 'sam', 
 [sg.Text('Sample Name', size=(16,1)), sg.InputText('sample', size=(40,1), key='-sample_name')],
 [sg.Text('Filter String', size=(16,1), tooltip='Bcftools hard variant filter string for Strelka small variants'), sg.InputText('\'FORMAT/FT == "PASS"\'', key='-filter_string', size=(40,1))]]
 
-#sort out this tab layout
-tab3_layout = [[sg.Text('Analysis:', size=(10,1))],
+#sort out this tab layout (swap advanced and read group)
+tab3_layout = [[sg.Text('Analysis:', size=(10,1), font="Helvetica 10 italic")],
 [sg.Checkbox(text='Alignment\t ',key='-alignment', tooltip='Fast Mode: HISAT2 aligns all reads\nNormal and Intensive Mode: HISAT2 aligns all reads and BWA-MEM realigns any soft/hard-clipped and unaligned reads'), sg.Checkbox(text='SNV/Indels\t', key='-variantcalling', tooltip='Fast and Normal Mode: Strelka calls germline SNVs and indels\nIntensive Mode: Strelka calls germline SNVs and indels on genomic positions identified by at least one read as harbouring at least one deletion or insertion'), sg.Checkbox(text='Virus\t  ', key='-virus', tooltip='If selected, the genome will be scanned for the presence of viral DNA'), sg.Checkbox(text='Bacteria', key='-bacteria', tooltip='If selected, the genome will be scanned for the presence of bacterial DNA')],
 [sg.Checkbox(text='Structural Variants\t ', key='-SV', tooltip='Fast Mode: Manta is used to call all SV types\nNormal Mode: Manta calls all SV types and Delly is used to call inversion and deletion SV\nIntensive Mode: Manta and Delly call all SV  types'), sg.Checkbox(text='Mobile Elements\t', key='-MEI', tooltip='All Modes: MELT is used to call mobile insertion elements - i.e. Alu, SVA and LINE1 transposable elements'), sg.Checkbox(text='Microbes', key='-custom_microbes', tooltip='If selected, the genome will be scanned for the presence of custom microbes')],
 [sg.Checkbox(text='Repeat Expansions', key='-expansion', tooltip='All Modes: ExpansionHunter is used to scan for and genotype known pathogenic repeat expansions from the repeat catalog specified in the paths_configs file\nExpansionHunter Denovo is additionally used to generate a novel/non-reference short tandem repeat profile'), sg.Checkbox(text='Variant Annotation ', key='-annotation', tooltip='SNP/Indels: ANNOVAR is used to annotate small variant calls using several databases (specified in paths_configs)\nStructural Variants/Mobile Element Insertions: AnnotSV annotates structural and transposable element calls using their integrated databases'), sg.Checkbox(text='Iobio Services', key='-iobio', tooltip='If selected, a link to iobio services will be provided, which allows for on-the-fly variant interpretation and visualisation')],
 [sg.Checkbox(text='Include Read Group', key='-RG', tooltip='If set, alignment will use the read group values provided in paths_configs'), sg.Checkbox(text='Remove Duplicates', key='-rm_dup', tooltip='If set, DNAscan will remove duplicates from the alignment BAM file'), sg.Checkbox(text='Debug Mode\t', key='-debug', tooltip='If selected, will keep the temporary and intermediate files after DNAscan has finished running')],
-[sg.Text('Reports:', size=(36,1)), sg.Text('Regions:', size=(10,1))],
-[sg.Checkbox(text='Sequencing\t', key='-sequencing_report', tooltip='If selected, a sequencing quality report will be generated with FastQC'), sg.Checkbox(text='Alignment\t', key='-alignment_report', tooltip='If selected, an alignment report will be generated with samtools flagstat'), sg.Checkbox(text='Exome', key='-exome', tooltip='If selected, analysis will be restricted to exonic regions')],
-[sg.Checkbox(text='Variant Calling\t', key='-calls_report', tooltip='If selected, an SNV and indel calls report will be generated using bcftools stats'), sg.Checkbox(text='Annotation\t', key='-results_report', tooltip='SNVs/Indels: ANNOVAR results will be converted into a TSV report\nStructural Variants/Mobile Element Insertions: An HTML results report will be generated with knotAnnotSV\nBoth: Reports will be generated as above, with the addition of a concise report describing the basic characteristics of called simple and structural variants'), sg.Checkbox(text='Custom (BED)', key='-BED', tooltip='If selected, analysis will be restricted to custom regions specified in a BED file in paths_configs')],
-[sg.Text('', size=(35,1)), sg.Checkbox(text='ALS Genes', key='-alsgenescanner', tooltip='If selected, analysis will be restricted to ALS genes as part of ALSGeneScanner')],
-[sg.Text('Read Group Information:', size=(21,1)), sg.Text('Advanced Options:', size=(20,1))],
-[sg.Text('ID', size=(10,1)), sg.InputText('', size=(10,1), key='-RG_ID'), sg.Text('  BED File', size=(15,1)), sg.InputText('', size=(20,1), key='-path_bed'), sg.FileBrowse()],
-[sg.Text('Library', size=(10,1)), sg.InputText('', size=(10,1), key='-RG_LB'), sg.Text('  Gene List', size=(15,1)), sg.InputText('', size=(20,1), key='-path_gene_list'), sg.FileBrowse()],
-[sg.Text('Platform', size=(10,1)), sg.InputText('', size=(10,1), key='-RG_PL'), sg.Text('  HISAT Options', size=(15,1)), sg.InputText('', size=(20,1), key='-hisat_custom_options')],
-[sg.Text('Platform Unit', size=(10,1)), sg.InputText('', size=(10,1), key='-RG_PU'), sg.Text('  BWA Options', size=(15,1)), sg.InputText('', size=(20,1), key='-bwa_custom_options')],
-[sg.Text('Sample', size=(10,1)), sg.InputText('', size=(10,1), key='-RG_SM'), sg.Text('  AnnotSV Options', size=(15,1)), sg.InputText('', size=(20,1), key='-annotsv_custom_options')],
-[sg.Text('', size=(20,1)), sg.Text('   MELT Options ', size=(15,1)), sg.InputText('', size=(20,1), key='-melt_custom_options')]]
+[sg.Text('Reports:', size=(36,1), font="Helvetica 10 italic"), sg.Text('Regions:', size=(10,1), font="Helvetica 10 italic")],
+[sg.Checkbox(text='Sequencing\t', key='-sequencing_report', tooltip='If selected, a sequencing quality report will be generated with FastQC'), sg.Checkbox(text='Alignment\t', key='-alignment_report', tooltip='If selected, an alignment report will be generated with samtools flagstat'), sg.Checkbox(text='Exome\t  ', key='-exome', tooltip='If selected, analysis will be restricted to exonic regions'), sg.Checkbox(text='Custom (BED)', key='-BED', tooltip='If selected, analysis will be restricted to custom regions specified in a BED file in paths_configs')],
+[sg.Checkbox(text='Variant Calling\t', key='-calls_report', tooltip='If selected, an SNV and indel calls report will be generated using bcftools stats'), sg.Checkbox(text='Annotation\t', key='-results_report', tooltip='SNVs/Indels: ANNOVAR results will be converted into a TSV report\nStructural Variants/Mobile Element Insertions: An HTML results report will be generated with knotAnnotSV\nBoth: Reports will be generated as above, with the addition of a concise report describing the basic characteristics of called simple and structural variants'), sg.Checkbox(text='ALS Genes', key='-alsgenescanner', tooltip='If selected, analysis will be restricted to ALS genes as part of ALSGeneScanner')],
+[sg.Text('Advanced Options:', size=(41,1), font="Helvetica 10 italic"), sg.Text('Read Group Information:', size=(21,1), font="Helvetica 10 italic")],
+[sg.Text('BED File', size=(13,1)), sg.InputText('', size=(20,1), key='-path_bed'), sg.FileBrowse(), sg.Text(' ID', size=(10,1)), sg.InputText('', size=(10,1), key='-RG_ID')],
+[sg.Text('Gene List', size=(13,1)), sg.InputText('', size=(20,1), key='-path_gene_list'), sg.FileBrowse(), sg.Text(' Library', size=(10,1)), sg.InputText('', size=(10,1), key='-RG_LB')],
+[sg.Text('HISAT Options', size=(13,1)), sg.InputText('', size=(20,1), key='-hisat_custom_options'), sg.Text('\t   Platform', size=(18,1)), sg.InputText('', size=(10,1), key='-RG_PL')],
+[sg.Text('BWA Options', size=(13,1)), sg.InputText('', size=(20,1), key='-bwa_custom_options'), sg.Text('\t   Platform Unit', size=(18,1)), sg.InputText('', size=(10,1), key='-RG_PU')],
+[sg.Text('AnnotSV Options', size=(13,1)), sg.InputText('', size=(20,1), key='-annotsv_custom_options'), sg.Text('\t   Sample', size=(18,1)), sg.InputText('', size=(10,1), key='-RG_SM')],
+[sg.Text('MELT Options ', size=(13,1)), sg.InputText('', size=(20,1), key='-melt_custom_options')]]
 
-col_1 = [[sg.Image(r'DNAscan_logo.001.png', size=(400,100))],
+
+
+col_1 = [[sg.Image(r'DNAscan_logo.001.png', size=(500,100))],
 [sg.TabGroup([[sg.Tab('Dependency Installation', tab1_layout, element_justification='left'),
 sg.Tab('Basic Options', tab2_layout), sg.Tab('Customisation and Advanced Options', tab3_layout)]])]]
 
 col = [[sg.Frame(layout=[
-[sg.MLine(size=(100,37), key='-ML-',autoscroll=True, write_only=False, reroute_stdout=True, reroute_stderr=True, reroute_cprint=True)],[sg.Button('Install Dependencies'), sg.Button('Add Advanced Options'), sg.Button('Run DNAscan'),sg.Text('', size=(25,1)), sg.Button('Reset')]], title="Output Window")],]
+[sg.MLine(size=(100,32), key='-ML-',autoscroll=True, write_only=False, reroute_stdout=True, reroute_stderr=True, reroute_cprint=True)],[sg.Button('Install Dependencies'), sg.Button('Add Advanced Options'), sg.Button('Run DNAscan'),sg.Text('', size=(25,1)), sg.Button('Reset')]], title="Output Window")],]
 
 col2 = sg.Column(col, element_justification='center')
 
 col1 = sg.Column(col_1)
 
-layout_usage = [[sg.Menu(menu_def, )],[col1,col2]]
+layout_usage = [[sg.Menu(menu_def, font= "Helvetica 10")],[col1,col2]]
 
 install_keys = '-install_dir', '-DNASCAN_dir', '-annovar_dir', '-melt_dir', '-num_cpu'
 
@@ -85,7 +86,7 @@ defined_keys = '-format', '-reference', '-mode', '-in', '-in2', '-ref_file', '-d
 
 advanced_keys = '-path_bed', '-path_gene_list', '-hisat_custom_options', '-bwa_custom_options', '-annotsv_custom_options', '-melt_custom_options', '-RG_ID', '-RG_LB', '-RG_PL', '-RG_PU', '-RG_SM'
 
-window = sg.Window("DNAscan v2.0 App", layout_usage, size=(1300,800),resizable=True,return_keyboard_events=True, grab_anywhere=True, enable_close_attempted_event=True)
+window = sg.Window("DNAscan v2.0 App", layout_usage,size=(1300,800),resizable=True,return_keyboard_events=True, grab_anywhere=True, enable_close_attempted_event=True)
 while True:
     event, values = window.read()
     if event == 'Github':
