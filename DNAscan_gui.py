@@ -2,6 +2,7 @@ import PySimpleGUI as sg
 import subprocess
 import sys
 import os
+import webbrowser
 
 sg.theme('Reddit')
 
@@ -27,7 +28,10 @@ def runCommand(cmd, timeout=None, window=None):
     retval = p.wait(timeout)
     return (retval, output)
 
-tab1_layout = [[sg.Text('Reference Version', size=(16,1)), sg.Combo(['hg19', 'hg38'], size=(7,1), key='-reference_version'), sg.Text('\tNo. of CPU', size=(16,1)), sg.InputText('4', size=(9,1), key='-num_cpu')],
+menu_def = [['Manual',['Github', 'Publications',['DNAscanv1.0', 'DNAscanv2.0', 'ALSGeneScanner'],]],
+['About', ['Key Information'],],]
+
+tab1_layout = [[sg.Text('Reference Version', size=(16,1)), sg.Combo(['hg19', 'hg38'], size=(7,1), key='-reference_version', default_value='hg19'), sg.Text('\tNo. of CPU', size=(16,1)), sg.InputText('4', size=(9,1), key='-num_cpu')],
 [sg.Text('Installation Directory', size=(16,1), tooltip='Path to directory which will hold all dependencies i.e. home/dependencies/'), sg.InputText('', size=(40,1), key='-install_dir'), sg.FolderBrowse()],
 [sg.Text('DNAscan Directory', size=(16,1), tooltip='Path to installed DNAscan directory i.e. /home/DNAscan/'), sg.InputText('', size=(40,1), key='-DNASCAN_dir'), sg.FolderBrowse()],
 [sg.Text('ANNOVAR File', size=(16,1), tooltip='Path to the downloaded Annovar tar.gz file'),sg.InputText('', size=(40,1), key='-annovar_dir'), sg.FileBrowse()],
@@ -63,17 +67,17 @@ tab3_layout = [[sg.Text('Analysis:', size=(10,1))],
 [sg.Text('', size=(20,1)), sg.Text('   MELT Options ', size=(15,1)), sg.InputText('', size=(20,1), key='-melt_custom_options')]]
 
 col_1 = [[sg.Image(r'DNAscan_logo.001.png', size=(400,100))],
-[sg.TabGroup([[sg.Tab('Install Dependencies', tab1_layout, element_justification='left'),
+[sg.TabGroup([[sg.Tab('Dependency Installation', tab1_layout, element_justification='left'),
 sg.Tab('Basic Options', tab2_layout), sg.Tab('Customisation and Advanced Options', tab3_layout)]])]]
 
 col = [[sg.Frame(layout=[
-[sg.MLine(size=(100,37), key='-ML-',autoscroll=True, write_only=False, reroute_stdout=True, reroute_stderr=True, reroute_cprint=True)],[sg.Button('Install Dependencies'), sg.Button('Add Advanced Options'), sg.Button('Run DNAscan'),]], title="Output Window")],]
+[sg.MLine(size=(100,37), key='-ML-',autoscroll=True, write_only=False, reroute_stdout=True, reroute_stderr=True, reroute_cprint=True)],[sg.Button('Install Dependencies'), sg.Button('Add Advanced Options'), sg.Button('Run DNAscan'),sg.Text('', size=(25,1)), sg.Button('Reset')]], title="Output Window")],]
 
 col2 = sg.Column(col, element_justification='center')
 
 col1 = sg.Column(col_1)
 
-layout_usage = [[col1,col2]]
+layout_usage = [[sg.Menu(menu_def, )],[col1,col2]]
 
 install_keys = '-install_dir', '-DNASCAN_dir', '-annovar_dir', '-melt_dir', '-num_cpu'
 
@@ -81,9 +85,24 @@ defined_keys = '-format', '-reference', '-mode', '-in', '-in2', '-ref_file', '-d
 
 advanced_keys = '-path_bed', '-path_gene_list', '-hisat_custom_options', '-bwa_custom_options', '-annotsv_custom_options', '-melt_custom_options', '-RG_ID', '-RG_LB', '-RG_PL', '-RG_PU', '-RG_SM'
 
-window = sg.Window("DNAscan v2.0", layout_usage, size=(1300,800),resizable=True,return_keyboard_events=True, grab_anywhere=True, enable_close_attempted_event=True)
+window = sg.Window("DNAscan v2.0 App", layout_usage, size=(1300,800),resizable=True,return_keyboard_events=True, grab_anywhere=True, enable_close_attempted_event=True)
 while True:
     event, values = window.read()
+    if event == 'Github':
+        webbrowser.open("https://github.com/hevmarriott/DNAscanv2", new=1)
+
+    if event == 'DNAscanv1.0':
+        webbrowser.open("https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2791-8", new=1)
+
+    if event == 'DNAscanv2.0':
+        sg.popup('We are currently in the process of producing a DNAscan suite update paper detailing the additional functionality of DNAscan2.0.\n\nIn the meantime please visit the DNAscanv2 Github page (accessible by clicking Manual > Github on the menu) if you want to be informed about the functionality of DNAscanv2.0.', title='Publications > DNAscan2.0')
+
+    if event == 'ALSGeneScanner':
+        webbrowser.open("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6567555/", new=1)
+
+    if event == 'Key Information':
+        sg.popup('Program Name: DNAscan\nVersion: 2.0\nDevelopers:\nDr Alfredo Iacoangeli, Research Fellow in Bioinformatics, Department of Biostatistics and Health Informatics, KCL\nHeather Marriott, PhD Candidate, Department of Basic and Clinical Neuroscience, KCL\nFunding Sources:\nMotor Neurone Disease Association\nNIHR Maudsley Biomedical Research Centre (BRC), KCL\nDRIVE-Health CDT Programme, KCL\nGlaxoSmithKline', title='About')
+
     if event == 'Run DNAscan':
         params = ''
         for key in values:
@@ -104,9 +123,9 @@ while True:
         for key in values:
             if key in install_keys:
                 params_install += f" {values[key]} "
-        if values['-reference'] == 'hg19':
+        if values['-reference_version'] == 'hg19':
             command_install = install_dep_hg19_command + params_install
-        if values['-reference'] == 'hg38':
+        if values['-reference_version'] == 'hg38':
             command_install = install_dep_hg38_command + params_install
         window['-ML-'].update(command_install)
         runCommand(cmd=command_install, window=window)
@@ -121,6 +140,9 @@ while True:
         window['-ML-'].update(command_advanced)
         runCommand(cmd=command_advanced, window=window)
         sg.cprint('*'*20+'Advanced options have been added to the configs file'+'*'*20)
+
+    if event == 'Reset':
+        window['-ML-'].update('')
 
     if event == sg.WINDOW_CLOSE_ATTEMPTED_EVENT and sg.popup_yes_no('Do you really want to exit?') == 'Yes':
         break
