@@ -70,7 +70,7 @@ col_1 = [[sg.Image(r'DNAscan_logo.001.png', size=(500,100))],
 sg.Tab('Basic Options', tab2_layout), sg.Tab('Customisation and Advanced Options', tab3_layout)]])]]
 
 col = [[sg.Frame(layout=[
-[sg.MLine(size=(100,32), key='-ML-',autoscroll=True, write_only=False, reroute_stdout=True, reroute_stderr=True, reroute_cprint=True)],[sg.Button('Install Dependencies'), sg.Button('Add Advanced Options'), sg.Button('Run DNAscan'),sg.Text('', size=(25,1)), sg.Button('Reset')]], title="Output Window")],]
+[sg.MLine(size=(100,32), key='-ML-',autoscroll=True, write_only=False, reroute_stdout=True, reroute_stderr=True, reroute_cprint=True)],[sg.Button('Install Dependencies'), sg.Button('Add Advanced Options/Read Group Info'), sg.Button('Run DNAscan'),sg.Text('', size=(25,1)), sg.Button('Reset')]], title="Output Window")],]
 
 col2 = sg.Column(col, element_justification='center')
 
@@ -130,7 +130,7 @@ while True:
         runCommand(cmd=command_install, window=window)
         sg.cprint('*'*20+'Dependencies have been installed'+'*'*20)
 
-    if event == 'Add Advanced Options':
+    if event == 'Add Advanced Options/Read Group Info':
         params_advanced = ''
         for key in values:
             if key in advanced_keys:
