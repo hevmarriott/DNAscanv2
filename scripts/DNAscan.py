@@ -75,6 +75,7 @@ import pysam
 import gzip
 import loadInNS
 import parsing_file
+import create_variant_catalog
 
 from argparse import RawTextHelpFormatter
 
@@ -853,8 +854,6 @@ if expansion:
 
         is_variant_file_OK(expansion_results_file, "Vcf", "expansion")
 
-        os.system("touch  %slogs/EH.log" % (out))
-
         print("\nRepeat expansion scanning is complete.\n")
 
         if not debug:
@@ -873,6 +872,44 @@ if expansion:
             
         else:
             print("\nWARNING: %s is empty, please run again and make sure all paths are correct if you want to perform genome-wide short tandem repeat profiling.\n" % STR_profile)
+            
+        #13.1 Convert the novel/non-reference loci identified with ExpansionHunter Denovo to variant catalog format
+        print("\nConverting loci identified with ExpansionHunter Denovo into ExpansionHunter variant catalog format...\n")
+        
+        os.system("cat %s/results/%s.locus.tsv | sed 's/contig/chr/g' | cut -f1-4 > %s/results/%s_EHDNinput.txt" % (out, sample_name, out, sample_name))
+        
+        EHDN_input = "%s/results/%s_EHDNinput.txt" % (out, sample_name)
+        
+        EHDN_variant_catalog = "%s/results/%s_EHDN_variant_catalog.json" % (out, sample_name)
+        
+        EHDN_excluded = "%s/results/%s_EHDN_excluded.csv" % (out, sample_name)
+        
+        EHDN_unmatched = "%s/results/%s_EHDN_unmatched.csv" % (out, sample_name)
+        
+        create_variant_catalog.transform_format_sarah(EHDN_input, path_reference, EHDN_variant_catalog, EHDN_unmatched, EHDN_excluded)
+        
+        #13.2 Genotype the novel/non reference variant catalog with ExpansionHunter
+        if len(EHDN_variant_catalog) != 0:
+            print("\nGenotyping denovo loci with ExpansionHunter...\n")
+            
+            os.system("%sExpansionHunter --reads %s --reference %s  --variant-catalog %s --output-prefix %s/temp_EHDN" % (
+                path_expansionHunter, bam_file, path_reference, EHDN_variant_catalog, out))
+            os.system("mv %s/temp_EHDN.vcf %s/results/%s_EHDNexpansions.vcf ; bgzip %s/results/%s_EHDNexpansions.vcf ; %stabix -p vcf %s/results/%s_EHDNexpansions.vcf.gz" % (
+                out, out, sample_name, out, sample_name, path_tabix, out, sample_name))
+
+            EHDNexpansion_results_file = "%s/results/%s_EHDNexpansions.vcf.gz" % (out, sample_name)
+
+            is_variant_file_OK(EHDNexpansion_results_file, "Vcf", "EHDNexpansion")
+            
+            print("\nDenovo expansion loci genotyping is complete.\n")
+            
+            if not debug:
+                os.system("rm %stemp_EHDN.json* %stemp_EHDN_realigned.bam, %s, %s, %s" % (out, out, EHDN_excluded, EHDN_unmatched, EHDN_input))
+            
+        else:
+            print("\nThe ExpansionHunter Denovo variant catalog is empty. Please run again and check everything is correct before running expansion again if you wish to perform this step.\n")
+            
+        os.system("touch  %slogs/EH.log" % (out))   
     
 # 14. Structural Variant calling
 if SV or MEI:
