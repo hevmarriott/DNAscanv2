@@ -32,6 +32,8 @@
 # 11. Perform variant hard filtering
 # 12. Perform known expansions search with ExpansionHunter
 # 13. Compute genome-wide short tandem repeat profiles with ExpansionHunter Denovo
+#   13.1 Convert the novel/non-reference loci identified with ExpansionHunter Denovo to variant catalog format
+#   13.2 Genotype the novel/non reference variant catalog with ExpansionHunter
 # 14. Structural Variant calling with Manta (normal and intensive mode)
 #   14.1 Manta only (fast mode)
 #   14.2 Delly additionally calls inversion and deletion variants (in normal mode) and general structural variant classes (intensive mode)
