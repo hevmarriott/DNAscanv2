@@ -2,14 +2,6 @@
 
 #Usage: bash GUI_advanced_options.sh  $path_to_bed_file $path_to_gene_list $hisat_options $bwa_options $annotsv_options $melt_options
 
-args=()
-[  "x$1" = xFALSE ] ||  args+=( --optflag1 "$1" )
-[  "x$2" = xFALSE ] ||  args+=( --optflag2 "$2" )
-[  "x$3" = xFALSE ] ||  args+=( --optflag3 "$3" )
-[  "x$4" = xFALSE ] ||  args+=( --optflag4 "$4" )
-[  "x$5" = xFALSE ] ||  args+=( --optflag5 "$5" )
-[  "x$6" = xFALSE ] ||  args+=( --optflag6 "$6" )
-
 path_gene_list=$2
 
 path_bed=$1
