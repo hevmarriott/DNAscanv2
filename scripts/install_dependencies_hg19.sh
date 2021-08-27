@@ -35,35 +35,29 @@ mkdir $INSTALL_DIR/humandb
 
 tar -zxf $ANNOVAR_EXEC --directory $INSTALL_DIR
 
-$ANNOVAR_DIR=$INSTALL_DIR/annovar
+chmod +x $INSTALL_DIR/annovar*
 
-cd $DNASCAN_DIR
+#nohup $INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar cadd $INSTALL_DIR/humandb/ &
 
-chmod +x $ANNOVAR_DIR/*
+$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar refGene $INSTALL_DIR/humandb/
 
-#nohup $ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar cadd $INSTALL_DIR/humandb/ &
+$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar exac03 $INSTALL_DIR/humandb/
 
-$ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar refGene $INSTALL_DIR/humandb/
+$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar dbnsfp33a $INSTALL_DIR/humandb/
 
-$ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar exac03 $INSTALL_DIR/humandb/
+$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar clinvar_20210501 $INSTALL_DIR/humandb/
 
-$ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar dbnsfp33a $INSTALL_DIR/humandb/
+$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar avsnp147 $INSTALL_DIR/humandb/
 
-$ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar clinvar_20210501 $INSTALL_DIR/humandb/
+$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar intervar_20180118 $INSTALL_DIR/humandb/
 
-$ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar avsnp147 $INSTALL_DIR/humandb/
+$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar 1000g2015aug $INSTALL_DIR/humandb/
 
-$ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar intervar_20180118 $INSTALL_DIR/humandb/
-
-$ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar 1000g2015aug $INSTALL_DIR/humandb/
-
-$ANNOVAR_DIR/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar gnomad211_genome $INSTALL_DIR/humandb/
+$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar gnomad211_genome $INSTALL_DIR/humandb/
 
 cd $INSTALL_DIR
 
 tar -zxf $MELT_EXEC --directory $INSTALL_DIR
-
-$MELT_DIR=$INSTALL_DIR/MELTv2.2.2
 
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 
@@ -213,7 +207,7 @@ sed "s|path_hisat_index = \"\"|path_hisat_index = \"$DNASCAN_DIR\/hg19\/hg19\"|"
 
 sed "s|path_bwa_index = \"\"|path_bwa_index = \"$DNASCAN_DIR\/hg19\/hg19.fa\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
 
-sed "s|path_annovar = \"\"|path_annovar = \"$ANNOVAR_DIR\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
+sed "s|path_annovar = \"\"|path_annovar = \"$INSTALL_DIR\/annovar\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
 sed "s|path_annovar_db = \"\"|path_annovar_db = \"$INSTALL_DIR\/humandb\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
 
