@@ -1,6 +1,16 @@
 #!/bin/bash
 
-#Usage: bash add_dependencies.sh $path_to_gene_list $path_to_bed_file $hisat_options $bwa_options $annotsv_options $melt_options $RG_ID $RG_LB $RG_SM $RG_PU $RG_PL
+#Usage: bash GUI_advanced_options.sh $path_to_gene_list $path_to_bed_file $hisat_options $bwa_options $annotsv_options $melt_options
+
+args=()
+[  "x$1" = xFALSE ] ||  args+=( --optflag1 "$1" )
+[  "x$2" = xFALSE ] ||  args+=( --optflag2 "$2" )
+[  "x$3" = xFALSE ] ||  args+=( --optflag3 "$3" )
+[  "x$4" = xFALSE ] ||  args+=( --optflag4 "$4" )
+[  "x$5" = xFALSE ] ||  args+=( --optflag5 "$5" )
+[  "x$6" = xFALSE ] ||  args+=( --optflag6 "$6" )
+
+GUI_advanced_options "${args[@]}"
 
 path_gene_list=$1
 
@@ -14,38 +24,16 @@ annotsv_custom_options=$5
 
 melt_custom_options=$6
 
-RG_ID=$7
+sed "s|path_gene_list = \"\"|path_gene_list = \"$path_gene_list\"|" scripts/paths_configs.py >> scripts/paths_configs.py
 
-RG_LB=$8
+sed "s|path_bed = \"\"|path_bed = \"$path_bed\"|"  scripts/paths_configs.py >> scripts/paths_configs.py
 
-RG_SM=$9
+sed "s|hisat_custom_options = \"\"|hisat_custom_options = \"$hisat_custom_options\"|" scripts/paths_configs.py >> scripts/paths_configs.py
 
-RG_PU=$10
+sed "s|bwa_custom_options = \"\"|bwa_custom_options = \"$bwa_custom_options\"|" scripts/paths_configs.py >> scripts/paths_configs.py
 
-RG_PL=$11
+sed "s|annotsv_custom_options = \"\"|annotsv_custom_options = \"$annotsv_custom_options\"|" scripts/paths_configs.py >> scripts/paths_configs.py
 
-sed "s|path_gene_list = \"\"|path_gene_list = \"$path_gene_list\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
-
-sed "s|path_bed = \"\"|path_bed = \"$path_bed\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
-
-sed "s|hisat_custom_options = \"\"|hisat_custom_options = \"$hisat_custom_options\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
-
-sed "s|bwa_custom_options = \"\"|bwa_custom_options = \"$bwa_custom_options\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
-
-sed "s|annotsv_custom_options = \"\"|annotsv_custom_options = \"$annotsv_custom_options\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
-
-sed "s|melt_custom_options = \"\"|melt_custom_options = \"$melt_custom_options\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
-
-sed "s|RG_ID = \"\"|RG_ID = \"$RG_ID\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
-
-sed "s|RG_LB = \"\"|RG_LB = \"$RG_LB\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
-
-sed "s|RG_SM = \"\"|RG_SM = \"$RG_SM\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
-
-sed "s|RG_PU = \"\"|RG_PU = \"$RG_PU\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
-
-sed "s|RG_PL = \"\"|RG_PL = \"$RG_PL\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
-
-mv scripts/paths_configs.py_temp scripts/paths_configs.py
+sed "s|melt_custom_options = \"\"|melt_custom_options = \"$melt_custom_options\"|" scripts/paths_configs.py >> scripts/paths_configs.py
 
 chmod +x scripts/*
