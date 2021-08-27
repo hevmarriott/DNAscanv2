@@ -23,7 +23,11 @@ sudo apt-get install -y perl
 
 sudo apt-get install -y ttf-dejavu
 
-sudo apt-get install -y wget bzip2 gzip make git tcl http json tar csv
+sudo apt-get install -y wget bzip2 gzip make git tcl tar 
+
+sudo apt-get install -y snap
+
+sudo snap install http
 
 mkdir $INSTALL_DIR
 
@@ -120,6 +124,10 @@ conda install -y survivor=1.0.7
 conda install -y perl=5.26.2=h470a237_0
 
 conda install -y perl-app-cpanminus
+
+pip install json
+
+pip install python-csv
 
 cd $DNASCAN_DIR
 
