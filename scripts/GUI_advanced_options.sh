@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#Usage: bash GUI_advanced_options.sh $path_to_gene_list $path_to_bed_file $hisat_options $bwa_options $annotsv_options $melt_options
+#Usage: bash GUI_advanced_options.sh  $path_to_bed_file $path_to_gene_list $hisat_options $bwa_options $annotsv_options $melt_options
 
 args=()
 [  "x$1" = xFALSE ] ||  args+=( --optflag1 "$1" )
@@ -10,11 +10,9 @@ args=()
 [  "x$5" = xFALSE ] ||  args+=( --optflag5 "$5" )
 [  "x$6" = xFALSE ] ||  args+=( --optflag6 "$6" )
 
-GUI_advanced_options.sh "${args[@]}"
+path_gene_list=$2
 
-path_gene_list=$1
-
-path_bed=$2
+path_bed=$1
 
 hisat_custom_options=$3
 
