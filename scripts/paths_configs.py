@@ -6,15 +6,15 @@ import os.path
 
 #Configs 
 
-RG_ID = "4"
+RG_ID = ""
 
-RG_LB = "lib1"
+RG_LB = ""
 
-RG_PL = "illumina"
+RG_PL = ""
 
-RG_PU = "unit1"
+RG_PU = ""
 
-RG_SM = "20"
+RG_SM = ""
 
 tmp_dir = ""
 
@@ -75,11 +75,13 @@ path_vcftools = ""
 
 path_scripts = "scripts/"
 
-path_bed = "data/test_data.bed"
+path_bed = ""
 
-path_gene_list = "data/list_of_genes.txt"
+path_gene_list = ""
 
-#path_bed="/users/k1513213/brc_scratch/indels_project/gene_list_positions_sorted_no_overlap.bed"
+#path_bed (for test data)="data/test_data.bed"
+
+#path_gene_list (for test data)="data/list_of_genes.txt"
 
 #hg19 can be downloaded from http://hgdownload.cse.ucsc.edu/goldenPath/hg19/
 path_reference = ""
