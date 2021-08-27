@@ -10,7 +10,7 @@ args=()
 [  "x$5" = xFALSE ] ||  args+=( --optflag5 "$5" )
 [  "x$6" = xFALSE ] ||  args+=( --optflag6 "$6" )
 
-GUI_advanced_options "${args[@]}"
+GUI_advanced_options.sh "${args[@]}"
 
 path_gene_list=$1
 
