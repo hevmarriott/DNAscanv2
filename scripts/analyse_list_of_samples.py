@@ -14,7 +14,6 @@
 #   5.1 Create DNAscan input file option string per line in the input list
 #   5.2 Create working dir tree
 #   5.3 Run DNAscan for one sample
-#   5.4 Run ExpansionHunterDenovo to detect unknown/non-reference repeat expansions
 ################################################################
 
 import argparse, os, paths_configs, loadInNS, os.path
@@ -85,53 +84,4 @@ for sample in list_file_lines:
     # 5.3 Run DNAscan for one sample
 
     os.system( "python3 %s/scripts/DNAscan.py %s -sample_name %s %s -out %s/%s/ " %( dnascan_dir , option_string , sample_name , input_file_string , out_dir , sample_name) )
-    
-    sample_names = open("%s/multisample_list.txt" % (out_dir), "a")
-    sample_names.write('%s\n' % (sample.split('.')[0]))
-    
-sample_names.close()
 
-# 5.4 Run ExpansionHunterDenovo to detect unknown/non-reference repeat expansions
-if "-expansion" in option_string:
-    print("\nPerforming unknown and non-reference repeat expansion analysis (motif and locus outlier modes) for all analysed samples using ExpansionHunter Denovo...\n")
-    manifest_file = open("%s/multisample_manifest.txt" % (out_dir), 'w')
-    
-with open("%s/multisample_list.txt" % (out_dir) , 'r' ) as f:
-    samples_lines = f.read().splitlines()
-    for sample in samples_lines:
-        if "-format fastq" in option_string:
-            if "-mode fast" in option_string:
-                bam = "%s/%s/sorted.bam" % (out_dir, sample)
-            if "-mode fast" not in option_string:
-                bam = "%s/%s/sorted_merged.bam" % (out_dir, sample)
-                
-        if "-format bam" in option_string:
-            bam = "%s.bam" % (sample)
-            
-        if reference == "hg19" or reference == "grch37":
-            ref = "hg19"
-            
-        if reference == "hg38" or reference == "grch38":
-            ref = "hg38"
-            
-        os.system("%s/bin/ExpansionHunterDenovo profile --reads %s --reference %s --output-prefix %s/%s --min-anchor-mapq 50 --max-irr-mapq 40 --log-reads" %
-        (path_expansionHunterDenovo_dir, bam, path_reference, out_dir, sample))
-
-        STR_profile = "%s/%s.str_profile.json" % (out_dir, sample)
-
-        manifest_file.write("%s\tcase\t%s\n" % (sample, STR_profile))
-
-    manifest_file.close()
-
-    os.system("%s/bin/ExpansionHunterDenovo merge --reference %s --manifest %s/multisample_manifest.txt --output-prefix %s/multisample" % (path_expansionHunterDenovo_dir, path_reference, out_dir, out_dir))
-
-    os.system("%s/scripts/outlier.py locus --manifest %s/multisample_manifest.txt --multisample-profile %s/multisample.multisample_profile.json --output %s/multisample.outlier_locus.tsv" % (path_expansionHunterDenovo_dir, out_dir, out_dir, out_dir))
-
-    os.system("%s/scripts/outlier.py motif --manifest %s/multisample_manifest.txt --multisample-profile %s/multisample.multisample_profile.json --output %s/multisample.outlier_motif.tsv" % (path_expansionHunterDenovo_dir, out_dir, out_dir, out_dir))
-
-    print("\nRepeat expansion analysis with ExpansionHunter Denovo is complete\n")
-    
-    if "-debug" in option_string:
-        os.system("rm %s/*.locus.tsv %s/*.motif.tsv %s/*.reads.tsv %s/*.str_profile.json" % (out_dir, out_dir, out_dir, out_dir))
-        
-f.close()
