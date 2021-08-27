@@ -24,16 +24,16 @@ annotsv_custom_options=$5
 
 melt_custom_options=$6
 
-sed "s|path_gene_list = \"\"|path_gene_list = \"$path_gene_list\"|" scripts/paths_configs.py >> scripts/paths_configs.py
+sed -i "s|path_gene_list = \"\"|path_gene_list = \"$path_gene_list\"|" scripts/paths_configs.py
 
-sed "s|path_bed = \"\"|path_bed = \"$path_bed\"|"  scripts/paths_configs.py >> scripts/paths_configs.py
+sed -i "s|path_bed = \"\"|path_bed = \"$path_bed\"|"  scripts/paths_configs.py
 
-sed "s|hisat_custom_options = \"\"|hisat_custom_options = \"$hisat_custom_options\"|" scripts/paths_configs.py >> scripts/paths_configs.py
+sed -i "s|hisat_custom_options = \"\"|hisat_custom_options = \"$hisat_custom_options\"|" scripts/paths_configs.py 
 
-sed "s|bwa_custom_options = \"\"|bwa_custom_options = \"$bwa_custom_options\"|" scripts/paths_configs.py >> scripts/paths_configs.py
+sed -i "s|bwa_custom_options = \"\"|bwa_custom_options = \"$bwa_custom_options\"|" scripts/paths_configs.py
 
-sed "s|annotsv_custom_options = \"\"|annotsv_custom_options = \"$annotsv_custom_options\"|" scripts/paths_configs.py >> scripts/paths_configs.py
+sed -i "s|annotsv_custom_options = \"\"|annotsv_custom_options = \"$annotsv_custom_options\"|" scripts/paths_configs.py 
 
-sed "s|melt_custom_options = \"\"|melt_custom_options = \"$melt_custom_options\"|" scripts/paths_configs.py >> scripts/paths_configs.py
+sed -i "s|melt_custom_options = \"\"|melt_custom_options = \"$melt_custom_options\"|" scripts/paths_configs.py 
 
 chmod +x scripts/*
