@@ -23,7 +23,7 @@ sudo apt-get install -y perl
 
 sudo apt-get install -y ttf-dejavu
 
-sudo apt-get install -y wget bzip2 gzip make git tcl tcllib tar 
+sudo apt-get install -y wget bzip2 gzip make git tcl tcllib tar gcc g++
 
 mkdir $INSTALL_DIR
 
@@ -115,6 +115,10 @@ conda install -y perl=5.26.2=h470a237_0
 
 conda install -y perl-app-cpanminus
 
+cpan YAML::XS
+
+cpan Sort::Key::Natural
+
 cd $DNASCAN_DIR
 
 mkdir hg19
@@ -136,8 +140,6 @@ nohup bwa index hg19.fa &
 nohup hisat2-build -p $NUM_CPUS hg19.fa hg19 &
 
 sudo apt-get update -qq
-
-sudo apt-get install -y -qq bzip2 gcc g++ make python zlib1g-dev
 
 cd $INSTALL_DIR
 
@@ -182,10 +184,6 @@ wget https://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/refGene.txt.gz
 cd $INSTALL_DIR
 
 git clone https://github.com/mobidic/knotAnnotSV
-
-cpan YAML::XS
-
-cpan Sort::Key::Natural
 
 export PATH=$INSTALL_DIR/knotAnnotSV/:$PATH
 
