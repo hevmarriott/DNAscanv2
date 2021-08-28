@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Usage: bash install_dependencies.sh $path_to_setup_dir $path_to_DNASCAN_dir $path_to_ANNOVAR $path_to_MELT $num_cpu
-#Example: bash install_dependencies.sh /home/local/ /home/DNAscan /home/annovar.tar.gz /home/MELTv2.2.2.tar.gz 4
+#Example: bash install_dependencies.sh /home/local /home/DNAscan /home/annovar.tar.gz /home/MELTv2.2.2.tar.gz 4
 
 INSTALL_DIR=$1
 
@@ -23,11 +23,7 @@ sudo apt-get install -y perl
 
 sudo apt-get install -y ttf-dejavu
 
-sudo apt-get install -y wget bzip2 gzip make git tcl tar 
-
-sudo apt-get install -y snap
-
-sudo snap install http
+sudo apt-get install -y wget bzip2 gzip make git tcl tcllib tar 
 
 mkdir $INSTALL_DIR
 
@@ -118,10 +114,6 @@ conda install -y survivor=1.0.7
 conda install -y perl=5.26.2=h470a237_0
 
 conda install -y perl-app-cpanminus
-
-pip install json
-
-pip install python-csv
 
 cd $DNASCAN_DIR
 
@@ -225,7 +217,7 @@ sed "s|path_knotannotsv = \"\"|path_knotannotsv = \"$INSTALL_DIR\/knotAnnotSV\/\
 
 sed "s|path_strelka = \"\"|path_strelka = \"$INSTALL_DIR\/strelka-2.9.10.centos6_x86_64\/bin\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
-sed "s|path_delly_exclude_regions = \"\"|path_delly_exclude_regions = \"$DNASCAN_DIR\/db\delly_hg19.excl.tsv\"|"  scripts/paths_configs.py > scripts/paths_configs.py_temp
+sed "s|path_delly_exclude_regions = \"\"|path_delly_exclude_regions = \"$DNASCAN_DIR\/db\/delly_hg19.excl.tsv\"|"  scripts/paths_configs.py > scripts/paths_configs.py_temp
 
 sed "s|path_expansionHunterDenovo_dir = \"\"|path_expansionHunterDenovo_dir = \"$INSTALL_DIR\/ExpansionHunterDenovo-v0.9.0-linux_x86_64\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
