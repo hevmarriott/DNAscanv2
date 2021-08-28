@@ -21,7 +21,7 @@ sudo apt-get install -y perl
 
 sudo apt-get install -y ttf-dejavu
 
-sudo apt-get install -y wget bzip2 gzip make git tcl http json tar csv
+sudo apt-get install -y wget bzip2 gzip make git tcl tcllib tar gcc g++
 
 mkdir $INSTALL_DIR
 
@@ -30,8 +30,6 @@ mkdir $INSTALL_DIR/humandb
 tar -zxf $ANNOVAR_EXEC --directory $INSTALL_DIR
 
 $ANNOVAR_DIR=$INSTALL_DIR/annovar
-
-cd $DNASCAN_DIR
 
 chmod +x $ANNOVAR_DIR/*
 
@@ -85,8 +83,6 @@ conda install -y biopython=1.78
 
 conda install -y samtools=1.9
 
-conda install -y freebayes=1.3.2
-
 conda install -y bedtools=2.25.0
 
 conda install -y vcftools=0.1.16
@@ -119,6 +115,10 @@ conda install -y perl=5.26.2=h470a237_0
 
 conda install -y perl-app-cpanminus
 
+cpan YAML::XS
+
+cpan Sort::Key::Natural
+
 cd $DNASCAN_DIR
 
 mkdir hg38
@@ -136,8 +136,6 @@ nohup bwa index hg38.fa &
 nohup hisat2-build -p $NUM_CPUS hg38.fa hg38 &
 
 sudo apt-get update -qq
-
-sudo apt-get install -y -qq bzip2 gcc g++ make python zlib1g-dev
 
 cd $INSTALL_DIR
 
@@ -165,6 +163,8 @@ export PATH=$INSTALL_DIR/ExpansionHunterDenovo-v0.9.0-linux_x86_64/bin:$PATH
 
 echo export PATH=$INSTALL_DIR/ExpansionHunterDenovo-v0.9.0-linux_x86_64/bin:$PATH >> ~/.bashrc
 
+git clone https://github.com/lgmgeo/AnnotSV
+
 cd AnnotSV
 
 make PREFIX=. install
@@ -180,10 +180,6 @@ wget https://hgdownload.cse.ucsc.edu/goldenPath/hg38/database/refGene.txt.gz
 cd $INSTALL_DIR
 
 git clone https://github.com/mobidic/knotAnnotSV
-
-cpan YAML::XS
-
-cpan Sort::Key::Natural
 
 export PATH=$INSTALL_DIR/knotAnnotSV/:$PATH
 
@@ -215,7 +211,7 @@ sed "s|path_knotannotsv = \"\"|path_knotannotsv = \"$INSTALL_DIR\/knotAnnotSV\/\
 
 sed "s|path_strelka = \"\"|path_strelka = \"$INSTALL_DIR\/strelka-2.9.10.centos6_x86_64\/bin\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
-sed "s|path_delly_exclude_regions = \"\"|path_delly_exclude_regions = \"$DNASCAN_DIR\/db\delly_hg38.excl.tsv\"|"  scripts/paths_configs.py > scripts/paths_configs.py_temp
+sed "s|path_delly_exclude_regions = \"\"|path_delly_exclude_regions = \"$DNASCAN_DIR\/db\/delly_hg38.excl.tsv\"|"  scripts/paths_configs.py > scripts/paths_configs.py_temp
 
 sed "s|path_expansionHunterDenovo_dir = \"\"|path_expansionHunterDenovo_dir = \"$INSTALL_DIR\/ExpansionHunterDenovo-v0.9.0-linux_x86_64\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
