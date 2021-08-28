@@ -29,8 +29,6 @@ mkdir $INSTALL_DIR/humandb
 
 tar -zxf $ANNOVAR_EXEC --directory $INSTALL_DIR
 
-$ANNOVAR_DIR=$INSTALL_DIR/annovar
-
 chmod +x $ANNOVAR_DIR/*
 
 #nohup $ANNOVAR_DIR/annotate_variation.pl -buildver hg38 -downdb -webfrom annovar cadd $INSTALL_DIR/humandb/ &
@@ -54,8 +52,6 @@ $ANNOVAR_DIR/annotate_variation.pl -buildver hg38 -downdb -webfrom annovar gnoma
 cd $INSTALL_DIR
 
 tar -zxf $MELT_EXEC --directory $INSTALL_DIR
-
-$MELT_DIR=$INSTALL_DIR/MELTv2.2.2
 
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 
@@ -193,7 +189,7 @@ sed "s|path_hisat_index = \"\"|path_hisat_index = \"$DNASCAN_DIR\/hg38\/hg38\"|"
 
 sed "s|path_bwa_index = \"\"|path_bwa_index = \"$DNASCAN_DIR\/hg38\/hg38.fa\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
 
-sed "s|path_annovar = \"\"|path_annovar = \"$ANNOVAR_DIR\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
+sed "s|path_annovar = \"\"|path_annovar = \"$INSTALL_DIR\/annovar\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
 sed "s|path_annovar_db = \"\"|path_annovar_db = \"$INSTALL_DIR\/humandb\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
 
