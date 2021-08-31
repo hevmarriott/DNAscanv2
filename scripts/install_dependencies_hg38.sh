@@ -71,11 +71,11 @@ conda config --add channels r
 
 conda config --add channels bioconda
 
+conda config --add channels anaconda
+
 conda install -y python=3.8.0
 
 conda install -y pysam=0.16.0.1
-
-conda install -y biopython=1.78
 
 conda install -y samtools=1.9
 
@@ -108,6 +108,8 @@ conda install -y pysimplegui=4.40.0
 conda install -y survivor=1.0.7
 
 conda install -y perl=5.26.2=h470a237_0
+
+conda install -y biopython=1.78
 
 conda install -y perl-app-cpanminus
 
