@@ -56,7 +56,7 @@
 # 21. Html report generation ( Multiqc )
 # 22. Annotated variants results report generation
 #   22.1 knotAnnotSV annotated structural variants report generation
-#   22.2 Concise results report for all variants called (SV, MEI, SNVs and indels)
+#   22.2 Concise results report for all variants called (SV, MEI, expansions, SNVs and indels)
 # 23. Starting iobio services
 #################################################################
 
@@ -1136,37 +1136,86 @@ if annotation:
             "WARNING: The presence of annovar.log in logs is telling you that annotation was already peformed, please remove annovar.log if you wish to perform this stage anyway\n"
         )
 
-        variant_results_file = "%sresults/%s_annotated.vcf.gz" % (out,
-                                                                  sample_name)
+        variant_results_file = "%s/results/%s_SNPindel_annotated.vcf.gz" % (out, sample_name)
+        
+        expansion_variant_results_file = "%sresults/%s_expansions_annotated.vcf.gz" % (out, sample_name)
+        
     else:
         if variantcalling:
-            print("\nAnnotation is being performed using Annovar, with the databases and respective operations defined in paths_configs.py...\n")
+            print("\nAnnotation of SNP and indels are being performed using ANNOVAR, with the databases and respective operations defined in paths_configs.py...\n")
 
             os.system(
-                "perl %stable_annovar.pl  --thread %s --vcfinput %s %s -buildver %s -remove -protocol %s -operation %s -nastring . --outfile %s/annovar.vcf"
+                "perl %stable_annovar.pl  --thread %s --vcfinput %s %s -buildver %s -remove -protocol %s -operation %s -nastring . --outfile %s/annovar_SNPindel.vcf"
                 % (path_annovar, num_cpu, variant_results_file, path_annovar_db,
                    reference, annovar_protocols, annovar_operations, out))
 
             if not debug and not alsgenescanner:
                 os.system(
-                    "rm %sannovar.vcf.%s_multianno.txt %sannovar.vcf.avinput" %
+                    "rm %sannovar_SNPindel.vcf.%s_multianno.txt %sannovar_SNPindel.vcf.avinput" %
                     (out, reference, out))
 
             os.system(
-                "mv %s/annovar.vcf.%s_multianno.vcf %sresults/%s_annotated.vcf" % (out, reference, out, sample_name)) 
-            os.system("bgzip -f %sresults/%s_annotated.vcf ; %stabix -fp vcf %sresults/%s_annotated.vcf.gz" % (
+                "mv %s/annovar_SNPindel.vcf.%s_multianno.vcf %sresults/%s_SNPindel_annotated.vcf" % (out, reference, out, sample_name))
+
+            os.system("bgzip -f %sresults/%s_SNPindel_annotated.vcf ; %stabix -fp vcf %sresults/%s_SNPindel_annotated.vcf.gz" % (
                 out, sample_name, path_tabix, out, sample_name))
 
             os.system("mv %s %sresults/" % (variant_results_file, out))
             os.system("mv %s.tbi %sresults/" % (variant_results_file, out))
 
-            variant_results_file = "%sresults/%s_annotated.vcf.gz" % (out,
-                                                                  sample_name)
+            variant_results_file = "%sresults/%s_SNPindel_annotated.vcf.gz" % (out, sample_name)
             is_variant_file_OK(variant_results_file, "Vcf", "annotation")
 
-            os.system("touch  %slogs/annovar.log" % (out))
+            print("\nSNP and indel annotation is complete.\n")
 
-            print("\nAnnotation with ANNOVAR is complete.\n")
+        if expansion: 
+            if os.path.isfile(EHDNexpansion_results_file) == True:
+                print('Repeat expansions and short tandem repeats called with ExpansionHunter software are being merged with SURVIVOR to create a union callset...\n')
+                os.system("gzip -dk %s/results/*expansions.vcf.gz" % (out, sample_name))
+                os.system("ls %s/results/*expansions.vcf > %s/results/survivor_expansion_sample_files" % (out, out))
+                os.system("%sSURVIVOR merge %s/results/survivor_expansion_sample_files 1000 1 1 1 0 30 %s/results/%s_expansions_merged.vcf" % (
+                path_SURVIVOR, out, out, sample_name))
+                os.system("perl %svcf-sort.pl %s/results/%s_expansions_merged.vcf | bgzip -c > %s/results/%s_expansions_merged.vcf.gz" % (
+                path_scripts, out, sample_name, out, sample_name))
+                os.system("%stabix -p vcf %s/results/%s_expansions_merged.vcf.gz" % (path_tabix, out, sample_name))
+
+                expansion_variant_results_file = "%s/results/%s_expansions_merged.vcf.gz" (out, sample_name)
+
+                is_variant_file_OK(expansion_variant_results_file, "Vcf", "expansion")
+
+                if not debug:
+                    os.system("rm %s/results/survivor_expansion_sample_files %s/results/%s_expansions_merged.vcf %s/results/*expansions.vcf" % (out, out, sample_name, out))
+                    
+            else:
+                expansion_variant_results_file = "%s/results/%s_expansions.vcf.gz" % (out, sample_name)
+
+            print("\nAnnotation of repeat expansions and/or short tandem repeats are being performed using ANNOVAR, with the databases and respective operations defined in paths_configs.py...\n")
+            os.system(
+                "perl %stable_annovar.pl  --thread %s --vcfinput %s %s -buildver %s -remove -protocol %s -operation %s -nastring . --outfile %s/annovar_expansions.vcf"
+                % (path_annovar, num_cpu, expansion_variant_results_file, path_annovar_db,
+                   reference, annovar_protocols, annovar_operations, out))
+            
+            if not debug:
+                os.system(
+                    "rm %sannovar_expansions.vcf.%s_multianno.txt %sannovar_expansions.vcf.avinput" %
+                    (out, reference, out))
+                
+            os.system(
+                "mv %s/annovar_expansions.vcf.%s_multianno.vcf %sresults/%s_expansions_annotated.vcf" % (out, reference, out, sample_name))
+
+            os.system("bgzip -f %sresults/%s_expansions_annotated.vcf ; %stabix -fp vcf %sresults/%s_expansions_annotated.vcf.gz" % (
+                out, sample_name, path_tabix, out, sample_name))
+
+            os.system("mv %s %sresults/" % (expansion_variant_results_file, out))
+            os.system("mv %s.tbi %sresults/" % (expansion_variant_results_file, out))
+
+            expansion_variant_results_file = "%sresults/%s_expansions_annotated.vcf.gz" % (out, sample_name)
+            
+            is_variant_file_OK(expansion_variant_results_file, "Vcf", "expansion")
+
+            print("\nRepeat expansion and/or short tandem repeat annotation is complete.\n")
+
+        os.system("touch %slogs/annovar.log" % (out))
 
         if SV or MEI:
         #16.1 Structural variant annotation and prioritisation is carried out using AnnotSV
@@ -1511,7 +1560,7 @@ if results_report:
     if "annovar.log" not in os.listdir(out + "logs"):
 
         print(
-            "WARNING: SNP and Indel variant annotation was not peformed - please perform variant calling and annotation using the -variantcalling and -annotation flags if you wish to generate a SNP and indel Annovar results report.\n"
+            "WARNING: Variant annotation was not peformed - please perform variant calling and annotation using the -variantcalling/-expansion and -annotation flags if you wish to generate an ANNOVAR results report.\n"
         )
         
     else:
@@ -1521,11 +1570,11 @@ if results_report:
             )
 
         else:
-            print("\nGenerating report of annotated variant calls...\n")
+            print("\nGenerating report of annotated SNP and indel variant calls...\n")
 
-            os.system("zcat %s > %stemp.vcf" % (variant_results_file, out))
+            os.system("zcat %s > %stemp_SNPindel.vcf" % (variant_results_file, out))
 
-            #vcf = open('%stemp.vcf' % (out), 'r')
+            #vcf = open('%stemp_SNPindel.vcf' % (out), 'r')
 
             #vcf_lines = vcf.readlines()
 
@@ -1536,13 +1585,13 @@ if results_report:
             gene_list = gene_list_lines
 
             out_file_all = open(
-                '%sreports/%s_annovar_variants.txt' % (out, sample_name), 'w')
+                '%sreports/%s_annovar_SNPindelvariants.txt' % (out, sample_name), 'w')
 
             counter = 0
 
             for i in gene_list:
 
-                with open('%stemp.vcf' % (out)) as vcf:
+                with open('%stemp_SNPindel.vcf' % (out)) as vcf:
 
                     for j in vcf:
 
@@ -1581,7 +1630,70 @@ if results_report:
             out_file_all.close()
             
             if not debug:
-                os.system("rm %stemp.vcf" % (out))
+                os.system("rm %stemp_SNPindel.vcf" % (out))
+                
+            if expansion:
+                print("\nGenerating report of annotated expansion/short tandem repeat calls...\n")
+
+                os.system("zcat %s > %stemp_expansions.vcf" % (expansion_variant_results_file, out))
+
+                #vcf = open('%stemp_expansions.vcf' % (out), 'r')
+
+                #vcf_lines = vcf.readlines()
+
+                gene_list_file = open(path_gene_list)
+
+                gene_list_lines = gene_list_file.readlines()
+
+                gene_list = gene_list_lines
+
+                out_file_all = open(
+                '%sreports/%s_annovar_expansionvariants.txt' % (out, sample_name), 'w')
+
+                counter = 0
+
+                for i in gene_list:
+
+                    with open('%stemp_expansions.vcf' % (out)) as vcf:
+
+                        for j in vcf:
+
+                            check1 = re.search(
+                                r'(^chr)|(^[0-9,X,Y,M]+\t)', j, flags=0)
+
+                            check = re.search(
+                                "=%s;" % (i.strip().upper()), j, flags=0)
+
+                            if check and check1:
+
+                                infos = j.split('ANNOVAR_DATE')[1][12:].split(
+                                    'ALLELE_END')[0].replace(";", "\t")
+
+                                if counter == 0:
+
+                                    replaced_1 = re.sub(
+                                        '=[a-z,A-Z,0-9,\.,\_,\-,:,>,<]+', '',
+                                        infos)
+
+                                    out_file_all.write(
+                                        'CHR\tPosition\tRef\tAlt\tGenotype\t%s\n' %
+                                        (replaced_1))
+
+                                    counter = 1
+
+                                replaced = re.sub('[a-z,A-Z,0-9,\.,\_,\-,:,>,<]+=',
+                                                  '', infos)
+
+                                out_file_all.write(
+                                    '%s\t%s\t%s\t%s\t%s\t%s\n' %
+                                    (j.split('\t')[0], j.split('\t')[1],
+                                     j.split('\t')[3], j.split('\t')[4],
+                                     j.split('\t')[-1].split(':')[0], replaced))
+
+                out_file_all.close()
+
+                if not debug:
+                    os.system("rm %stemp_expansions.vcf" % (out)) 
 
         #22.1 knotAnnotSV SV report generation
             if SV or MEI:
@@ -1637,7 +1749,7 @@ if results_report:
                 
                                 print("\nTransposable element HTML report created.\n")
                     
-            #22.2 Concise results report for all variants called (SV, MEI, SNVs and indels)
+            #22.2 Concise results report for all variants called (SV, MEI, expansion, SNVs and indels)
             if os.path.isfile("%s/reports/%s_annovar_variants.txt" % (out, sample_name)) == True:
                 if SV_results_file == "%s/results/%s_manta_SV.vcf.gz" % (out, sample_name) or not SV and os.path.isfile(MEI_results_file) == True: 
                     if mode == "fast" and os.path.isfile(SV_annotation_file) == True:
@@ -1646,7 +1758,7 @@ if results_report:
                     if not SV and os.path.isfile(MEI_annotation_file) == True:
                         annotsv_file = MEI_annotation_file
                     
-                    print("\nGenerating a concise results report for all annotated variants (SNVs, indels, SV and/or MEI)...\n")
+                    print("\nGenerating a concise results report for all annotated variants (SNVs, indels, expansion, SV and/or MEI)...\n")
                     
                     os.system("cat %s | cut -f 2,3,6,15,17,27,28,33,72,86,87 | awk -v OFS='\t' '{split($4,a,/:/);$4=a[1]}1' | awk -v OFS='\t' ' {NR==1?$11=\"Clinvar_ID\t\"$11:$11=\"\t\"$11 } 1 ' | awk  -v OFS='\t' ' {NR==1?$13=\"Clinvar_Phenotype\t\"$13:$13=\"\t\"$13 } 1 ' | awk  -v OFS='\t' ' {NR==1?$14=\"Variant_Frequency_ExAC\t\"$14:$14=\"\t\"$14 } 1 ' | awk  -v OFS='\t' ' {NR==1?$14=\"Variant_Frequency_1000g\t\"$14:$14=\"\t\"$14 } 1 ' | awk  -v OFS='\t' ' {NR==1?$14=\"Variant_Frequency_gnomAD\t\"$14:$14=\"\t\"$14 } 1 ' | awk -F '\t' 'NR>1 {print \"chr\"$0}' > %s/reports/temp_%s_SV_variants.tsv" % (
                         annotsv_file, out, sample_name))
@@ -1659,7 +1771,7 @@ if results_report:
                     if os.path.isfile(SV_MEI_annotation_file) == True:
                         annotsv_file = SV_MEI_annotation_file
                         
-                    print("\nGenerating a concise results report for all annotated variants (SNVs, indels, SV and/or MEI)...\n")
+                    print("\nGenerating a concise results report for all annotated variants (SNVs, indels, expansion, SV and/or MEI)...\n")
       
                     os.system("cat %s | cut -f 2,3,6,15,18,28,29,34,73,87,88 | awk -v OFS='\t' '{split($4,a,/:/);$4=a[1]}1' | awk -v OFS='\t' ' {NR==1?$11=\"Clinvar_ID\t\"$11:$11=\"\t\"$11 } 1 ' | awk  -v OFS='\t' ' {NR==1?$12=\"Clinvar_Phenotype\t\"$13:$13=\"\t\"$13 } 1 ' | awk  -v OFS='\t' ' {NR==1?$14=\"Variant_Frequency_ExAC\t\"$14:$14=\"\t\"$14 } 1 ' | awk  -v OFS='\t' ' {NR==1?$14=\"Variant_Frequency_1000g\t\"$14:$14=\"\t\"$14 } 1 ' | awk  -v OFS='\t' ' {NR==1?$14=\"Variant_Frequency_gnomAD\t\"$14:$14=\"\t\"$14 } 1 ' | awk -F '\t' 'NR>1 {print \"chr\"$0}' > %s/reports/temp_%s_SV_variants.tsv" % (
                         annotsv_file, out, sample_name))
@@ -1670,11 +1782,16 @@ if results_report:
                 os.system("cp %sall_variants_report_header.txt %s/reports/%s_all_variants.tsv" % (path_scripts, out, sample_name))
                 os.system("tail -n +2 %s/reports/temp_%s_snvindel_variants.tsv >> %s/reports/%s_all_variants.tsv" % (out, sample_name, out, sample_name))      
                 os.system("tail -n +2 %s/reports/temp_%s_SV_variants.tsv >> %s/reports/%s_all_variants.tsv" % (out, sample_name, out, sample_name))
+                
+                if os.path.isfile("%s/reports/%s_annovar_expansionvariants.txt" % (out, sample_name)) == True:
+                    os.system("cat %s/reports/%s_annovar_expansionvariants.txt | awk '{print $1 \"\t\" $2 \"\t\" $9 \"\t\" $5 \"\t\" $7 \"\t\" $6 \"\t\" $10 \"\t\" $91 \"\t\" $79 \"\t\" $77 \"\t\" $78 \"\t\" $83 \"\t\" $120 \"\t\" $121}' | awk -v OFS='\t' '{$3=\"STR\" ; print ;}' | awk -v OFS='\t' '{split($9,a,/:/);$9=a[5]}1' | awk -v OFS='\t' ' {NR==1?$8=\"Overlapping_Genes\t\"$8:$8=\"\t\"$8 } 1 ' | awk -v OFS='\t' ' {NR==1?$11=\"OMIM_Phenotype\t\"$11:$11=\"\t\"$11 } 1 ' > %s/reports/temp_%s_expansion_variants.tsv" % (out, sample_name, out, sample_name))
+
+                    os.system("tail -n +2 %s/reports/temp_%s_expansion_variants.tsv >> %s/reports/%s_all_variants.tsv" % (out, sample_name, out, sample_name))
                               
                 if not debug:
                     os.system("rm %s/reports/temp*" % (out))  
                           
-                print("\nConcise results report for all annotated variants (SNVs, indels, SV and or MEI) is now available.\n")
+                print("\nConcise results report for all annotated variants (SNVs, indels, expansion, SV and or MEI) is now available.\n")
                     
             os.system("touch %slogs/results_report.log" % (out))
 
