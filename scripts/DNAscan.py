@@ -629,6 +629,9 @@ if format == "sam" and "sam2bam.log" not in os.listdir(out + "logs"):
 
 if format == "bam":
     bam_file = "%s" % (input_file)
+    
+if format == "cram":
+    bam_file = "%s" % (input_file)
 
 # 10.Variant (snv and indel) calling
 
@@ -978,15 +981,27 @@ if SV or MEI:
                     # In intensive mode, both Delly and Manta call all SV events
 
                     os.system("mkdir %sdelly" % (out))
+                    
+                    if format == "cram":
+                        print("\nConverting input cram file to bam format for structural variant detection with Delly...\n")
+                        os.system("samtools view -b -h -@ %s -T %s -o %s/%s.bam %s" % (num_cpu, path_reference, out, sample_name, bam_file))
+                        os.system("samtools index -@ %s %s/%s.bam" % (num_cpu, out, sample_name))
+                        delly_bam = "%s/%s.bam" % (out, sample_name)
+                        
+                    if format == "fastq":
+                        delly_bam = "%ssorted_merged.bam" % (out)
+                    
+                    if format == "bam":
+                        delly_bam = bam_file
 
                     if mode == "normal":
 
                         print("\nDelly will additionally call inversion and deletion structural variants...\n")
 
                         os.system("%sdelly call -t DEL -g %s -o %sdelly/%s_delly_DEL.bcf -x %s %s" % (
-                        path_delly, path_reference, out, sample_name, path_delly_exclude_regions, bam_file))
+                        path_delly, path_reference, out, sample_name, path_delly_exclude_regions, delly_bam))
                         os.system("%sdelly call -t INV -g %s -o %sdelly/%s_delly_INV.bcf -x %s %s" % (
-                        path_delly, path_reference, out, sample_name, path_delly_exclude_regions, bam_file))
+                        path_delly, path_reference, out, sample_name, path_delly_exclude_regions, delly_bam))
                         os.system("%sbcftools view %sdelly/%s_delly_DEL.bcf > %sdelly/%s_delly_DEL_SV.vcf" % (
                         path_bcftools, out, sample_name, out, sample_name))
                         os.system("%sbcftools view %sdelly/%s_delly_INV.bcf > %sdelly/%s_delly_INV_SV.vcf" % (
@@ -1011,7 +1026,7 @@ if SV or MEI:
                         print("\nStructural variants are being called with Delly...\n")
 
                         os.system("%sdelly call -g %s -o %sdelly/%s_delly.bcf -x %s %s" % (
-                        path_delly, path_reference, out, sample_name, path_delly_exclude_regions, bam_file))
+                        path_delly, path_reference, out, sample_name, path_delly_exclude_regions, delly_bam))
                         os.system("%sbcftools view %sdelly/%s_delly.bcf > %sdelly/%s_delly_SV.vcf" % (
                         path_bcftools, out, sample_name, out, sample_name))
 
