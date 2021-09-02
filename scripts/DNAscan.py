@@ -1197,7 +1197,7 @@ if annotation:
                 path_scripts, out, sample_name, out, sample_name))
                 os.system("%stabix -p vcf %s/results/%s_expansions_merged.vcf.gz" % (path_tabix, out, sample_name))
 
-                expansion_variant_results_file = "%s/results/%s_expansions_merged.vcf.gz" (out, sample_name)
+                expansion_variant_results_file = "%s/results/%s_expansions_merged.vcf.gz" % (out, sample_name)
 
                 is_variant_file_OK(expansion_variant_results_file, "Vcf", "expansion")
 
