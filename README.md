@@ -150,7 +150,7 @@ Its basic use requires the following options:
 
 ```bash
 
-  -format FORMAT        options are bam, sam, fastq, vcf [string] 
+  -format FORMAT        options are bam, sam, cram, fastq, vcf [string] 
   -reference REFERENCE  options are hg19, hg38, grch37 and grch38 [string]
   -in INPUT_FILE        input file [string]
   -in2 INPUT_FILE       second input file (for paired end reads in fastq format only) [string]
