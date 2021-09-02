@@ -226,7 +226,7 @@ def create_parser():
       action="store",
       dest="format",
       default="fastq",
-      help='options are bam, sam, fastq, vcf [string] ')
+      help='options are bam, sam, cram, fastq, vcf [string] ')
 
   parser.add_argument(
       '-reference',
