@@ -18,7 +18,7 @@ RG_SM = ""
 
 tmp_dir = ""
 
-num_cpu = "1"
+num_cpu = "4"
 
 RAM_GB = ""
 
