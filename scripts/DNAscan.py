@@ -1059,6 +1059,9 @@ if SV or MEI:
 
                     if not debug:
                         os.system("rm -r %sdelly %s/results/survivor_sample_files %s/results/*.vcf %s/results/*SV.vcf.gz*" % (out, out, out, out))
+                        
+                        if format == "cram":
+                            os.system("rm %s/%s.bam*" % (out, sample_name))
 
                 os.system("touch %slogs/SV.log" % (out))
 
