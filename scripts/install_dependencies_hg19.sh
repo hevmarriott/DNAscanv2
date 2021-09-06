@@ -73,8 +73,6 @@ conda config --add channels r
 
 conda config --add channels bioconda
 
-conda config --add channels anaconda
-
 conda install -y python=3.8.0
 
 conda install -y pysam=0.16.0.1
