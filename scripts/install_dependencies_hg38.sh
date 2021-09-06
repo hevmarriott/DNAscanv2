@@ -99,7 +99,7 @@ conda install -y sambamba=0.7.1
 
 conda install -y samblaster=0.1.26
 
-conda install -y delly=0.8.7
+conda install -y delly=0.8.3
 
 conda install -y pysimplegui=4.40.0
 
