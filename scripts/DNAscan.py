@@ -217,8 +217,8 @@ if alsgenescanner:
     alignment = True
     variantcalling = True
     annotation = True
-    #SV = True
-    #expansion = True
+    SV = True
+    expansion = True
     BED = True
     path_expansionHunter_jsons = '%s/repeats/%s/' % (dnascan_dir, reference)
     path_gene_list = ""
