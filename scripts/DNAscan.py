@@ -696,7 +696,7 @@ if variantcalling:
                     if mode != "intensive":
 
                         os.system("mv %s/results/%s_strelka.vcf.gz %s%s_sorted.vcf.gz" % (out, sample_name, out, sample_name))
-                        os.system ("%stabix -p bcf %s%s_sorted.vcf.gz" % (path_tabix, out, sample_name))
+                        os.system ("%stabix -p vcf %s%s_sorted.vcf.gz" % (path_tabix, out, sample_name))
 
                         variant_results_file = "%s%s_sorted.vcf.gz" % (out, sample_name)
 
