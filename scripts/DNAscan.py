@@ -1121,7 +1121,7 @@ if SV or MEI:
 
             print("\nTransposable element insertion scanning with MELT is complete.\n")
         
-    if os.path.isfile(SV_results_file) == True and os.path.isfile(MEI_results_file) == True:
+    if 'SV_results_file' in locals() and 'MEI_results_file' in locals():
         print("\nMerging SV and MEI callsets together with SURVIVOR to create a union callset...\n")
         os.system("bgzip -d %s" % (SV_results_file))
         os.system("bgzip -d %s" % (MEI_results_file))
