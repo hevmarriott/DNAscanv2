@@ -1121,7 +1121,7 @@ if SV or MEI:
 
             print("\nTransposable element insertion scanning with MELT is complete.\n")
         
-    if 'SV_results_file' in locals() and 'MEI_results_file' in locals():
+    if 'SV_results_file' in locals() and os.path.isfile("%s/results/%s_MEI.vcf.gz" % (out, sample_name)) == True:
         print("\nMerging SV and MEI callsets together with SURVIVOR to create a union callset...\n")
         os.system("bgzip -d %s" % (SV_results_file))
         os.system("bgzip -d %s" % (MEI_results_file))
@@ -1245,7 +1245,7 @@ if annotation:
                     SV_annotation_file = "%s/results/%s_annotated_SV.tsv" % (out, sample_name)
                 if MEI:
                     MEI_annotation_file = "%s/results/%s_annotated_MEI.tsv" % (out, sample_name)
-                if os.path.isfile(SV_MEI_results_file):
+                if os.path.isfile("%s/results/%s_SV_MEI_merged.vcf.gz" % (out, sample_name)) == True:
                     SV_MEI_annotation_file = "%s/results/%s_annotated_SV_MEI.tsv" % (out, sample_name)
             else:
                 os.environ["ANNOTSV"] = "%s" % (path_annotsv)
@@ -1259,7 +1259,7 @@ if annotation:
                 else:
                     genome_build = "GRCh38"
                     
-                if os.path.isfile(SV_MEI_results_file) == True:
+                if os.path.isfile("%s/results/%s_SV_MEI_merged.vcf.gz" % (out, sample_name)) == True:
                     print("\nStructural variant and transposable element annotation is being performed with AnnotSV...\n")
                     os.system("%s/bin/AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/results/%s_annotated_SV_MEI -SVminSize 30 %s" % (
                         path_annotsv, path_annotsv, path_bcftools, path_bedtools, SV_MEI_results_file, candidate_gene_cmd, genome_build, out, sample_name, annotsv_custom_options))
@@ -1719,7 +1719,7 @@ if results_report:
                         print("WARNING: Structural variant and/or mobile element insertion annotation was not peformed - please perform structural variant calling and/or mobile element insertion calling and annotation using the -SV and/or -MEI and -annotation flags if you wish to generate an AnnotSV results report.\n")
                      
                     else:
-                        if os.path.isfile(SV_MEI_results_file) == True:
+                        if os.path.isfile("%s/results/%s_SV_MEI_merged.vcf.gz" % (out, sample_name)) == True:
                             print("\nGenerating structural variant and transposable element annotation HTML report...\n")
 
                             os.system("mkdir %s%s_SVMEIanno" % (out, sample_name))
@@ -1770,10 +1770,10 @@ if results_report:
             #22.2 Concise results report for all variants called (SV, MEI, expansion, SNVs and indels)
             if os.path.isfile("%s/reports/%s_annovar_variants.txt" % (out, sample_name)) == True:
                 if SV_results_file == "%s/results/%s_manta_SV.vcf.gz" % (out, sample_name) or not SV and os.path.isfile(MEI_results_file) == True: 
-                    if mode == "fast" and os.path.isfile(SV_annotation_file) == True:
+                    if mode == "fast" and os.path.isfile("%s/results/%s_annotated_SV.tsv" % (out, sample_name)) == True:
                         annotsv_file = SV_annotation_file
                 
-                    if not SV and os.path.isfile(MEI_annotation_file) == True:
+                    if not SV and os.path.isfile("%s/results/%s_annotated_MEI.tsv" % (out, sample_name)) == True:
                         annotsv_file = MEI_annotation_file
                     
                     print("\nGenerating a concise results report for all annotated variants (SNVs, indels, expansion, SV and/or MEI)...\n")
@@ -1786,7 +1786,7 @@ if results_report:
                         if SV:
                             annotsv_file = SV_annotation_file
                         
-                    if os.path.isfile(SV_MEI_annotation_file) == True:
+                    if os.path.isfile("%s/results/%s_annotated_SV_MEI.tsv" % (out, sample_name)) == True:
                         annotsv_file = SV_MEI_annotation_file
                         
                     print("\nGenerating a concise results report for all annotated variants (SNVs, indels, expansion, SV and/or MEI)...\n")
