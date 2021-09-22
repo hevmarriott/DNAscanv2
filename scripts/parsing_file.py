@@ -94,6 +94,14 @@ def create_parser():
       'if this flag is set DNAscan will look for the expansions described in the json folder in paths_configs.py with ExpansionHunter and non-reference/novel tandem repeats with ExpansionHunter Denovo  (Default = "False") ',
       default=False)
 
+    parser.add_argument(
+      '-STR',
+      action="store_true",
+      dest="STR",
+      help=
+      'if this flag is set DNAscan will look for genome-wide novel/non-reference tandem repeats with ExpansionHunter Denovo  (Default = "False") ',
+      default=False)
+  
   parser.add_argument(
       '-SV',
       action="store_true",
