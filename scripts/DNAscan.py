@@ -118,6 +118,7 @@ reference = args.reference
 input_file = args.input_file
 input_file2 = args.input_file2
 expansion = args.expansion
+STR = args.STR
 out = args.out + '/'
 vcf = args.vcf
 SV = args.SV
@@ -858,8 +859,19 @@ if expansion:
         is_variant_file_OK(expansion_results_file, "Vcf", "expansion")
 
         print("\nRepeat expansion scanning is complete.\n")
+        
+        os.system("touch  %slogs/EH.log" % (out)) 
+
+        if not debug:  
+            os.system("rm %stemp_EH.json* %stemp_EH_realigned.bam" % (out, out)) 
             
 # 13. Compute genome-wide short tandem repeat profiles with ExpansionHunter Denovo
+if STR:
+    if "STR.log" in os.listdir(out):
+        print(
+            "WARNING: The presence of EH.log in logs is telling you that the expansion scan was already peformed, please remove SV.log if you wish to perform this stage anyway\n"
+        )
+    else:
         print("\nExpansionHunter Denovo is scanning the genome to construct a catalog-free short tandem repeat profile...\n")
     
         os.system("%s/bin/ExpansionHunterDenovo profile --reads %s --reference %s --output-prefix %s/results/%s --min-anchor-mapq 50 --max-irr-mapq 40 --log-reads" % (
@@ -910,10 +922,7 @@ if expansion:
             print("\nWARNING: %s is empty, please run again and make sure all paths are correct if you want to perform genome-wide short tandem repeat profiling.\n" % STR_profile)
 
             
-        os.system("touch  %slogs/EH.log" % (out)) 
-
-        if not debug:  
-            os.system("rm %stemp_EH.json* %stemp_EH_realigned.bam" % (out, out))  
+        os.system("touch  %slogs/STR.log" % (out)) 
     
 # 14. Structural Variant calling
 if SV or MEI:
