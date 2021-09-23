@@ -167,6 +167,8 @@ Its basic use requires the following options:
   -iobio                if this flag is set the iobio service links will be provided at the end of the analysis (Default = "False")
   -alignment            if this flag is set the alignment stage will be performed (Default = "False")
   -expansion            if this flag is set DNAscan will look for the expansions described in the json folder described in paths_configs.py with ExpansionHunter and non-reference/novel tandem repeats with ExpansionHunter Denovo (Default = "False"). 
+  -STR			if this flag is set DNAscan will look for genome-wide novel/non-reference tandem repeats with ExpansionHunter Denovo  (Default = "False").		
+  -genotypeSTR		if this flag is set in addition to STR, DNAscan will genotype the identified STR loci with ExpansionHunter (Default = "False").
   -SV                   if this flag is set the structural variant calling stage will be performed with Manta (in all modes) and Delly (normal mode for inversions and deletions; all variants in intensive mode) (Default = "False") 
   -MEI			if this flag is set, mobile element insertion/transposable element calling will be performed with MELT
   -virus                if this flag is set DNAscan will perform viral scanning (Default = "False")  
@@ -188,7 +190,7 @@ Also, one of the three analysis modes can be chosen with the -mode option:
 -mode  MODE            options are fast, normal, intensive [string] (default = "fast")
 
 ```
-Fast mode uses Hisat2 and Strelka to quickly align and call variants. It is ideal if you are focusing your analysis on single nucleotide variants. Normal mode performs an alignment refinement using BWA on selected reads. This step improves the alignment of soft-clipped reads and reads containing small indels. It is recommended if your focus is on structural variants. Intensive mode adds a further indel calling step to the pipeline using Strelka on regions of the genome which are identified as having one potential deletion or insertion variant during alignment, which improves the performance on small indels. If your analysis focuses on the discovery of non human material (e.g. viruses or bacteria) in your sequencing data, please note that that the selected mode does not affect this step. Structural variant calling with Delly can now be performed in normal and intensive modes and mobile element insertion calling can be achieved in all modes using MELT.
+Fast mode uses Hisat2 and Strelka to quickly align and call variants. It is ideal if you are focusing your analysis on single nucleotide variants. Normal mode performs an alignment refinement using BWA on selected reads. This step improves the alignment of soft-clipped reads and reads containing small indels. It is recommended if your focus is on structural variants. Intensive mode adds a further indel calling step to the pipeline using Strelka on regions of the genome which are identified as having one potential deletion or insertion variant during alignment, which improves the performance on small indels. If your analysis focuses on the discovery of non human material (e.g. viruses or bacteria) in your sequencing data, please note that that the selected mode does not affect this step. Structural variant calling with Delly can now be performed in normal and intensive modes and mobile element insertion calling can be achieved in all modes using MELT. Additionally, ExpansionHunter Denovo can be used to identify non-catalogue genome-wide short tandem repeat loci, with the added option to genotype these loci using ExpansionHunter (recommended only for higher spec computers/HPC systems)
 A detailed description of the 3 modes can be found in the [DNAscan paper](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-2791-8).
 
 Finally, a set of optional arguments can be used to customise the analysis:
@@ -532,7 +534,7 @@ Fast mode pipeline (ideal if focusing on SNVs):
 * Manta 1.6.0 (optional, needed only if interested in structural variants)
 * MELT v2.2.2 (optional, needed only if interested in mobile insertion elements)
 * ExpansionHunter = 3.2.2 (optional, needed only if interested in known motif expansions)
-* ExpansionHunter Denovo = 0.9.0 (optional, needed only if interested in non-reference/novel motif discovery)
+* ExpansionHunter Denovo = 0.9.0 (optional, needed only if interested in non-reference/novel hort tandem repeat motif discovery)
 * Bcftools >= 1.9 (optional, needed only if interested in performing custom variant filtering and calls report)
 * Annovar "Version >= $Date: 2016-02-01 00:11:18 -0800 (Mon, 1 Feb 2016)" (optional, needed only if interested in performing variant annotation)
 * AnnotSV = 3.0.8 (optional, needed only if interested in performing variant annotation)
