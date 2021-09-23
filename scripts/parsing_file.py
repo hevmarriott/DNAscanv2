@@ -103,6 +103,14 @@ def create_parser():
       default=False)
   
   parser.add_argument(
+      '-genotypeSTR',
+      action="store_true",
+      dest="genotypeSTR",
+      help=
+      'if this flag is set in addition to STR, DNAscan will genotype the identified STR loci with ExpansionHunter (Default = "False") ',
+      default=False)
+  
+  parser.add_argument(
       '-SV',
       action="store_true",
       dest="SV",
