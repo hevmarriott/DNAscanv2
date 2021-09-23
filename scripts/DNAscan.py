@@ -899,7 +899,7 @@ if STR:
             create_variant_catalog.transform_format_sarah(EHDN_input, path_reference, EHDN_variant_catalog, EHDN_unmatched, EHDN_excluded)
 
             #13.2 Genotype the novel/non reference variant catalog with ExpansionHunter
-            if len(EHDN_variant_catalog) != 0 and genotypeSTR == "yes":
+            if len(EHDN_variant_catalog) != 0 and genotypeSTR == "True":
                 print("\nGenotyping denovo loci with ExpansionHunter...\n")
                         
                 os.system("%sExpansionHunter --reads %s --reference %s  --variant-catalog %s --output-prefix %s/temp_EHDN" % (
