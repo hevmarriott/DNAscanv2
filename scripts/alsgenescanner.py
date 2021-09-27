@@ -2,8 +2,8 @@
 
 ################################################################
 # Program: ALSgeneScanner variant score-DNAscan
-# Version 0.1
-# Author: Alfredo Iacoangeli (alfredo.iacoangeli@kcl.ac.uk)
+# Version 2.0
+# Author: Heather Marriott (heather.marriott@kcl.ac.uk) and Alfredo Iacoangeli (alfredo.iacoangeli@kcl.ac.uk)
 #################################################################
 import sys
 
@@ -37,57 +37,57 @@ for i in a_lines:
 
 
      counter=0
-     if i.split('\t')[11]=="D":
+     if i.split('\t')[12]=="D":
               counter+=1
               a=1
-     if i.split('\t')[13]=="D":
-              counter+=1
-              b=1
-     if i.split('\t')[13]=="P":
-              counter+=1
-              b=1
      if i.split('\t')[15]=="D":
               counter+=1
-              c=1
+              b=1
      if i.split('\t')[15]=="P":
               counter+=1
+              b=1
+     if i.split('\t')[18]=="D":
+              counter+=1
               c=1
-     if i.split('\t')[17]=="D":
+     if i.split('\t')[18]=="P":
+              counter+=1
+              c=1
+     if i.split('\t')[21]=="D":
               counter+=1
               d=1
-     if i.split('\t')[19]=="A":
+     if i.split('\t')[24]=="A":
               counter+=1
               e=1
-     if i.split('\t')[19]=="D":
+     if i.split('\t')[24]=="D":
               counter+=1
               e=1
-     if i.split('\t')[21]=="H":
+     if i.split('\t')[27]=="H":
               counter+=1
               f=1
-     if i.split('\t')[21]=="M":
+     if i.split('\t')[27]=="M":
               counter+=1
               f=1
-     if i.split('\t')[23]=="D":
+     if i.split('\t')[30]=="D":
               counter+=1
               g=1
-     if i.split('\t')[25]=="D":
-              counter+=1
-              h=1
-     if i.split('\t')[31]=="D":
-              counter+=1
-              j=1
      if i.split('\t')[33]=="D":
               counter+=1
+              h=1
+     if i.split('\t')[38]=="D":
+              counter+=1
+              j=1
+     if i.split('\t')[52]=="D":
+              counter+=1
               l=1
-     if i.split('\t')[28] != '.' and i.split('\t')[28] != '' :
+     if i.split('\t')[47] != '.' and i.split('\t')[47] != '' :
 
-     	if float(i.split('\t')[28])>=15:
+     	if float(i.split('\t')[47])>=15:
               counter+=1
               o=1
-     if i.split('\t')[58]=="Pathogenic":
+     if i.split('\t')[81]=="Pathogenic":
               counter+=1
               q=1
-     if i.split('\t')[58]=="Likely pathogenic":
+     if i.split('\t')[81]=="Likely pathogenic":
               counter+=1
               q=1
      w.write(i.split('\t')[0]+"\t"+i.split('\t')[1]+"\t"+i.split('\t')[2]+"\t"+i.split('\t')[3]+"\t"+i.split('\t')[4]+"\t"+i.split('\t')[5]+"\t"+i.split('\t')[6]+"\t"+i.split('\t')[7]+"\t"+i.split('\t')[8]+"\t"+str(counter)+'\t'+i.split('\t')[-18]+"\t"+i.split('\t')[-17]+"\t"+str(a)+"\t"+str(b)+"\t"+str(c)+"\t"+str(d)+"\t"+str(e)+"\t"+str(f)+"\t"+str(g)+"\t"+str(h)+"\t"+str(j)+"\t"+str(l)+"\t"+str(o)+"\t"+str(q)+"\n")
