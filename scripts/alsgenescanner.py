@@ -2,7 +2,7 @@
 
 ################################################################
 # Program: ALSgeneScanner variant score-DNAscan
-# Version 2.0
+# Version 0.1
 # Author: Heather Marriott (heather.marriott@kcl.ac.uk) and Alfredo Iacoangeli (alfredo.iacoangeli@kcl.ac.uk)
 #################################################################
 import sys
@@ -17,7 +17,7 @@ a=open('%s' %(variant_file))
 
 a_lines=a.readlines()
 
-w.write(a_lines[0].split('\t')[0]+"\t"+a_lines[0].split('\t')[1]+"\t"+a_lines[0].split('\t')[2]+"\t"+a_lines[0].split('\t')[3]+"\t"+a_lines[0].split('\t')[4]+"\t"+a_lines[0].split('\t')[5]+"\t"+a_lines[0].split('\t')[6]+"\t"+a_lines[0].split('\t')[7]+"\t"+a_lines[0].split('\t')[8]+"\tTotal_score\t"+a_lines[0].split('\t')[-6]+"\t"+a_lines[0].split('\t')[-5]+"\t"+"\t"+a_lines[0].split('\t')[11]+"\t"+a_lines[0].split('\t')[13]+"\t"+a_lines[0].split('\t')[15]+"\t"+a_lines[0].split('\t')[17]+"\t"+a_lines[0].split('\t')[19]+"\t"+a_lines[0].split('\t')[21]+"\t"+a_lines[0].split('\t')[23]+"\t"+a_lines[0].split('\t')[25]+"\t"+a_lines[0].split('\t')[31]+"\t"+a_lines[0].split('\t')[33]+"\t"+a_lines[0].split('\t')[28]+"\t"+a_lines[0].split('\t')[58]+"\n")
+w.write(a_lines[0].split('\t')[0]+"\t"+a_lines[0].split('\t')[1]+"\t"+a_lines[0].split('\t')[2]+"\t"+a_lines[0].split('\t')[3]+"\t"+a_lines[0].split('\t')[4]+"\t"+a_lines[0].split('\t')[5]+"\t"+a_lines[0].split('\t')[6]+"\t"+a_lines[0].split('\t')[7]+"\t"+a_lines[0].split('\t')[8]+"\tTotal_score\t"+a_lines[0].split('\t')[-6]+"\t"+a_lines[0].split('\t')[-5]+"\t"+"\t"+a_lines[0].split('\t')[12]+"\t"+a_lines[0].split('\t')[15]+"\t"+a_lines[0].split('\t')[18]+"\t"+a_lines[0].split('\t')[21]+"\t"+a_lines[0].split('\t')[24]+"\t"+a_lines[0].split('\t')[27]+"\t"+a_lines[0].split('\t')[30]+"\t"+a_lines[0].split('\t')[33]+"\t"+a_lines[0].split('\t')[38]+"\t"+a_lines[0].split('\t')[52]+"\t"+a_lines[0].split('\t')[47]+"\t"+a_lines[0].split('\t')[81]+"\n")
 
 a_lines.pop(0)
 
