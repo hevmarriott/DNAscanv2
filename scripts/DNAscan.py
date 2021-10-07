@@ -3,10 +3,10 @@
 ################################################################
 # Program: DNAscan
 # Version 2.0
-# Author: Heather Marriott (heather.marriott@kcl.ac.uk) and Alfredo Iacoangeli (alfredo.iacoangeli@kcl.ac.uk) 
+# Author: Heather Marriott (heather.marriott@kcl.ac.uk) and Alfredo Iacoangeli (alfredo.iacoangeli@kcl.ac.uk)
 #################################################################
 
-################################################################
+#################################################################
 # Script structure:
 # 1. Import python modules
 # 2. Define paths_configs variables
@@ -17,27 +17,22 @@
 # 7. Remove duplicates
 # 8. Alignment
 #   8.1 Aligns paired end reads
-#       8.1.1 Fast mode alignment
-#       8.1.2 Normal and intensive mode alignment
+#       8.1.1 Alignment for SNP/indel use only
+#       8.1.2 Alignment (general)
 #   8.2 Aligns single end reads
-#       8.2.1 Fast mode alignment
-#       8.2.2 Normal and intensive mode alignment
+#       8.2.1 Alignment for SNP/indel use only
+#       8.2.2 Alignment (general)
 # 9. If input file is a sam file, it converts it into bam
-# 10. Variant (snv and indel) calling
-#   10.1 Strelka snv and indel calling
-#   10.2 Strelka SNV and indel calling using indel sites (only performed in intensive mode)
-#       10.2.1 Identification of potential indel sites
-#       10.2.2 Indel calling on selected positions (from previous step 10.1.1)
-#       10.2.3 Merging of snv and indel files
+# 10. Variant (snv and indel) calling with Strelka2
 # 11. Perform variant hard filtering
 # 12. Perform known expansions search with ExpansionHunter
 # 13. Compute genome-wide short tandem repeat profiles with ExpansionHunter Denovo
 #   13.1 Convert the novel/non-reference loci identified with ExpansionHunter Denovo to variant catalog format
 #   13.2 Genotype the novel/non reference variant catalog with ExpansionHunter
-# 14. Structural Variant calling with Manta (normal and intensive mode)
-#   14.1 Manta only (fast mode)
-#   14.2 Delly additionally calls inversion and deletion variants (in normal mode) and general structural variant classes (intensive mode)
-#   14.3 SV calls are merged to create union callset (normal and intensive modes)
+# 14. Structural Variant calling
+#   14.1 Manta (all SV)
+#   14.2 Delly (general SV)
+#   14.3 SV calls are merged to create union callset
 # 15. Transposable element insertion detection with MELT
 # 16. Annotation with Annovar -  with optional missense variant prioritisation according to ACMG guidelines (intervar_20180118 database)
 #   16.1 AnnotSV for structural variant/transposable element annotation and prioritisation
@@ -109,7 +104,6 @@ requiredNamed.add_argument(
 # 4. Parse command line options
 
 args = parser.parse_args()
-mode = args.mode
 alsgenescanner = args.alsgenescanner
 exome = args.exome
 format = args.format
@@ -210,9 +204,7 @@ def is_variant_file_OK(file, t, s):
         sys.exit("WARNING: %s does not exist - DNAscan will now terminate.\n" % file)
 
 # 6. Bed splitting: splitting the analysis region into subsets of equal length.
-# To do this DNAscan uses a bed file.
-# If bed file is not provided, it generates one starting from the
-# reference genome index. The pipeline uses a bed file to identify the positions from which reads have at least one insertion or deletion detected from alignment for intensive mode.
+#
 
 if alsgenescanner:
 
@@ -339,7 +331,7 @@ if BED or path_gene_list:
 #        (path_bedtools, num_cpu, path_bed, out))
 else:
     # If bed file is not provided, it generates one starting from the
-    # reference genome index or the default exome bed. 
+    # reference genome index or the default exome bed.
     if exome == "True":
         os.system("zcat %sdb/exome_%s.bed.gz > %stmp/exome_%s.bed" %
                   (dnascan_dir, reference, out, reference))
@@ -411,192 +403,181 @@ if alignment:
         # 8.1 Aligns paired end reads
         if paired == "1":
 
-            # 8.1.1 Fast mode uses HISAT2 only to align all reads
-            if mode == "fast":
-                print(
-                    "\nPerforming paired read alignment with HISAT2 in fast mode...\n"
-                )
+            # 8.1.1 Alignment for SNP/indel use only
+            if variantcalling:
+                if not (SV or expansion or MEI or STR or genotypeSTR):
+                    print(
+                        "\nPerforming paired read alignment with HISAT2...\n"
+                        )
 
-                os.system(
-                    "%shisat2 %s --no-spliced-alignment -p %s -x %s -1 %s -2 %s | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s  --tmpdir=%s -o %ssorted.bam  /dev/stdin"
-                    % (path_hisat,hisat_custom_options, num_cpu, path_hisat_index, input_file,
-                       input_file2, samblaster_cmq, path_samtools, num_cpu,
-                       path_sambamba, num_cpu, tmp_dir, out))
-
-                bam_file = "%ssorted.bam" % (out)
-
-                is_variant_file_OK(bam_file, "bam", "alignment")
-
-                os.system("touch  %slogs/alignment.log" % (out))
-
-                print(
-                    "\nCompleted paired read alignment with HISAT2.\n"
-                )
-
-            # 8.1.2 Normal and intensive modes use HISAT2 to align all reads,
-            # then soft-clipped and unaligned reads are realigned with BWA mem
-            if mode == "normal" or mode == "intensive":
-                # Intensive mode uses GATK haplotype caller which does not
-                # support read group missing anymore. Default values for RG id,
-                # lb, pl, pu, and sm are defined in paths_configs.py. Please change
-                # them as needed. Also, whamg structural variant calling requires RG tags in the input bam file/s.
-                if mode == "intensive":
-                    RG = True
-                if RG:
-                    rg_option_hisat2 = " --rg-id %s --rg LB:%s --rg PL:%s  --rg PU:%s --rg SM:%s " % (
-                        RG_ID, RG_LB, RG_PL, RG_PU, RG_SM)
-                    rg_option_bwa = " -R '@RG\\tID:%s\\tLB:%s\\tPL:%s\\tPU:%s\\tSM:%s' " % (
-                        RG_ID, RG_LB, RG_PL, RG_PU, RG_SM)
-                else:
-                    rg_option_hisat2 = ""
-                    rg_option_bwa = ""
-
-                print(
-                    "\nPerforming paired read alignment with HISAT2 in normal/intensive mode...\n"
-                )
-                print(
-                    "%shisat2 %s %s  --no-softclip --no-spliced-alignment -p %s -x %s -1 %s -2 %s | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted.bam /dev/stdin; %ssamtools index -@ %s %ssorted.bam"
-                    % (path_hisat, hisat_custom_options, rg_option_hisat2, num_cpu, path_hisat_index,
-                       input_file, input_file2, samblaster_cmq, path_samtools,
-                       num_cpu, path_sambamba, num_cpu, tmp_dir, out, path_samtools,
-                       num_cpu, out))
-                os.system(
-                    "%shisat2 %s %s  --no-softclip --no-spliced-alignment -p %s -x %s -1 %s -2 %s | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted.bam /dev/stdin; %ssamtools index -@ %s %ssorted.bam"
-                    % (path_hisat, hisat_custom_options, rg_option_hisat2, num_cpu, path_hisat_index,
-                       input_file, input_file2, samblaster_cmq, path_samtools,
-                       num_cpu, path_sambamba, num_cpu, tmp_dir,out, path_samtools,
-                       num_cpu, out))
-                print(
-                    "%ssamtools view -@ %s -bhf 4 %ssorted.bam | samtools bam2fq - > %sunaligned_reads.fq"
-                    % (path_samtools, num_cpu, out, out))
-                os.system(
-                    "%ssamtools view -@ %s -bhf 4 %ssorted.bam | samtools bam2fq - > %sunaligned_reads.fq"
-                    % (path_samtools, num_cpu, out, out))
-                print(
-                    "\nPerforming paired read alignment of soft-clipped and unaligned HISAT2 reads with BWA-MEM in normal/intensive mode...\n"
-                )
-                print(
-                    "%sbwa mem %s %s -t %s %s %sunaligned_reads.fq | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted_bwa.bam  /dev/stdin ; %ssamtools index -@ %s %ssorted_bwa.bam "
-                    % (path_bwa, bwa_custom_options, rg_option_bwa, num_cpu, path_bwa_index, out,
-                       samblaster_bwa, path_samtools, num_cpu, path_sambamba,
-                       num_cpu,tmp_dir, out, path_samtools, num_cpu, out))
-                os.system(
-                    "%sbwa mem %s %s -t %s %s %sunaligned_reads.fq | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted_bwa.bam  /dev/stdin ; %ssamtools index -@ %s %ssorted_bwa.bam "
-                    % (path_bwa, bwa_custom_options, rg_option_bwa, num_cpu, path_bwa_index, out,
-                       samblaster_bwa, path_samtools, num_cpu, path_sambamba,
-                       num_cpu, tmp_dir, out, path_samtools, num_cpu, out))
-                os.system("%ssamtools view -H %ssorted.bam > %sheader.txt" %
-                          (path_samtools, out, out))
-                print("\nMerging HISAT2 and BWA-MEM aligned reads...\n")
-                os.system(
-                    "%ssamtools merge -c -@ %s -f -h %sheader.txt %ssorted_merged.bam %ssorted.bam  %ssorted_bwa.bam"
-                    % (path_samtools, num_cpu, out, out, out, out))
-
-                if not debug:
                     os.system(
-                        "rm %ssorted.bam*  %ssorted_bwa.bam* %sunaligned_reads.fq %sheader.txt"
-                        % (out, out, out, out))
+                        "%shisat2 %s --no-spliced-alignment -p %s -x %s -1 %s -2 %s | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s  --tmpdir=%s -o %ssorted.bam  /dev/stdin"
+                        % (path_hisat,hisat_custom_options, num_cpu, path_hisat_index, input_file,
+                           input_file2, samblaster_cmq, path_samtools, num_cpu,
+                           path_sambamba, num_cpu, tmp_dir, out))
 
-                os.system("%ssamtools index -@ %s %ssorted_merged.bam" %
-                          (path_samtools, num_cpu, out))
+                    bam_file = "%ssorted.bam" % (out)
 
-                bam_file = "%ssorted_merged.bam" % (out)
+                    is_variant_file_OK(bam_file, "bam", "alignment")
 
-                is_variant_file_OK(bam_file, "bam", "alignment")
+                    os.system("touch  %slogs/alignment.log" % (out))
 
-                os.system("touch  %slogs/alignment.log" % (out))
+                    print("\nCompleted paired read alignment with HISAT2.\n")
 
-                print(
-                    "\nCompleted paired read alignment with HISAT2 and BWA-MEM.\n"
-                )
+            # 8.1.2 Alignment (general)
+            # use HISAT2 to align all reads,
+            # then soft-clipped and unaligned reads are realigned with BWA mem
+                else:
+                    if (SV or expansion or MEI or STR or genotypeSTR):
+                        if RG:
+                            rg_option_hisat2 = " --rg-id %s --rg LB:%s --rg PL:%s  --rg PU:%s --rg SM:%s " % (
+                                RG_ID, RG_LB, RG_PL, RG_PU, RG_SM)
+                                rg_option_bwa = " -R '@RG\\tID:%s\\tLB:%s\\tPL:%s\\tPU:%s\\tSM:%s' " % (
+                                RG_ID, RG_LB, RG_PL, RG_PU, RG_SM)
+                        else:
+                                rg_option_hisat2 = ""
+                                rg_option_bwa = ""
+
+                        print(
+                            "\nPerforming paired read alignment with HISAT2...\n"
+                        )
+                        print(
+                            "%shisat2 %s %s  --no-softclip --no-spliced-alignment -p %s -x %s -1 %s -2 %s | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted.bam /dev/stdin; %ssamtools index -@ %s %ssorted.bam"
+                            % (path_hisat, hisat_custom_options, rg_option_hisat2, num_cpu, path_hisat_index,
+                               input_file, input_file2, samblaster_cmq, path_samtools,
+                               num_cpu, path_sambamba, num_cpu, tmp_dir, out, path_samtools,
+                               num_cpu, out))
+                        os.system(
+                            "%shisat2 %s %s  --no-softclip --no-spliced-alignment -p %s -x %s -1 %s -2 %s | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted.bam /dev/stdin; %ssamtools index -@ %s %ssorted.bam"
+                            % (path_hisat, hisat_custom_options, rg_option_hisat2, num_cpu, path_hisat_index,
+                               input_file, input_file2, samblaster_cmq, path_samtools,
+                               num_cpu, path_sambamba, num_cpu, tmp_dir,out, path_samtools,
+                               num_cpu, out))
+                        print(
+                            "%ssamtools view -@ %s -bhf 4 %ssorted.bam | samtools bam2fq - > %sunaligned_reads.fq"
+                            % (path_samtools, num_cpu, out, out))
+                        os.system(
+                            "%ssamtools view -@ %s -bhf 4 %ssorted.bam | samtools bam2fq - > %sunaligned_reads.fq"
+                            % (path_samtools, num_cpu, out, out))
+                        print(
+                            "\nPerforming paired read alignment of soft-clipped and unaligned HISAT2 reads with BWA-MEM...\n"
+                        )
+                        print(
+                            "%sbwa mem %s %s -t %s %s %sunaligned_reads.fq | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted_bwa.bam  /dev/stdin ; %ssamtools index -@ %s %ssorted_bwa.bam "
+                            % (path_bwa, bwa_custom_options, rg_option_bwa, num_cpu, path_bwa_index, out,
+                               samblaster_bwa, path_samtools, num_cpu, path_sambamba,
+                               num_cpu,tmp_dir, out, path_samtools, num_cpu, out))
+                        os.system(
+                            "%sbwa mem %s %s -t %s %s %sunaligned_reads.fq | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted_bwa.bam  /dev/stdin ; %ssamtools index -@ %s %ssorted_bwa.bam "
+                            % (path_bwa, bwa_custom_options, rg_option_bwa, num_cpu, path_bwa_index, out,
+                               samblaster_bwa, path_samtools, num_cpu, path_sambamba,
+                               num_cpu, tmp_dir, out, path_samtools, num_cpu, out))
+                        os.system("%ssamtools view -H %ssorted.bam > %sheader.txt" %
+                                  (path_samtools, out, out))
+                        print("\nMerging HISAT2 and BWA-MEM aligned reads...\n")
+                        os.system(
+                            "%ssamtools merge -c -@ %s -f -h %sheader.txt %ssorted_merged.bam %ssorted.bam  %ssorted_bwa.bam"
+                            % (path_samtools, num_cpu, out, out, out, out))
+
+                        if not debug:
+                            os.system(
+                                "rm %ssorted.bam*  %ssorted_bwa.bam* %sunaligned_reads.fq %sheader.txt"
+                                % (out, out, out, out))
+
+                        os.system("%ssamtools index -@ %s %ssorted_merged.bam" %
+                                  (path_samtools, num_cpu, out))
+
+                        bam_file = "%ssorted_merged.bam" % (out)
+
+                        is_variant_file_OK(bam_file, "bam", "alignment")
+
+                        os.system("touch  %slogs/alignment.log" % (out))
+
+                        print(
+                            "\nCompleted paired read alignment with HISAT2 and BWA-MEM.\n"
+                        )
 
         # 8.2 Aligns single end reads
         if paired == "0":
 
-            # 8.2.1 Fast mode uses HISAT2 only to align all reads
-            if mode == "fast":
-                print(
-                    "\nPerforming single-end read alignment with HISAT2 in fast mode...\n"
-                )
-                os.system(
-                    "%shisat2 %s --no-spliced-alignment -p %s -x %s -U %s | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted.bam /dev/stdin"
-                    % (path_hisat, hisat_custom_options, num_cpu, path_hisat_index, input_file,
-                       samblaster_cmq, path_samtools, num_cpu, tmp_dir, path_sambamba,
-                       num_cpu, out))
-
-                bam_file = "%ssorted.bam" % (out)
-
-                is_variant_file_OK(bam_file, "bam", "alignment")
-
-                os.system("touch  %salignment.log" % (out))
-
-                print(
-                    "\nCompleted single-end read alignment with HISAT2.\n"
-                )
-
-            # 8.2.2 Normal and intensive modes use HISAT2 to align all reads,
-            # then soft-clipped and unaligned reads are realigned with BWA mem
-            if mode == "normal" or mode == "intensive":
-                # Intensive mode uses GATK haplotype caller which does not
-                # support read group missing anymore. Default values for RG id,
-                # lb, pl, pu, and sm are defined in paths_configs.py. Please change
-                # them as needed.
-                if mode == "intensive":
-                    RG = True
-
-                if RG:
-                    rg_option_hisat2 = " --rg-id %s --rg LB:%s --rg PL:%s  --rg PU:%s --rg SM:%s " % (
-                        RG_ID, RG_LB, RG_PL, RG_PU, RG_SM)
-                    rg_option_bwa = " -R '@RG\\tID:%s\\tLB:%s\\tPL:%s\\tPU:%s\\tSM:%s' " % (
-                        RG_ID, RG_LB, RG_PL, RG_PU, RG_SM)
-                else:
-                    rg_option_hisat2 = ""
-                    rg_option_bwa = ""
-
-                print(
-                    "\nPerforming single-end read alignment with HISAT2 in normal/intensive mode...\n"
-                )
-
-                os.system(
-                    "%shisat2 %s --no-softclip --no-spliced-alignment -p %s -x %s -U %s | %s %ssamtools view -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted.bam /dev/stdin; %ssamtools index -@ %s %ssorted.bam"
-                    % (path_hisat, hisat_custom_options, rg_option_hisat2, num_cpu, path_hisat_index,
-                       input_file, samblaster_cmq, path_samtools,
-                       path_sambamba, num_cpu,tmp_dir, out, path_samtools, num_cpu,
-                       out))
-                os.system(
-                    "%ssamtools view -@ %s -bhf 4 %ssorted.bam | samtools bam2fq - > %sunaligned_reads.fq"
-                    % (path_samtools, num_cpu, out, out))
-                print(
-                    "\nPerforming single-end read alignment of soft-clipped and unaligned HISAT2 reads with BWA-MEM in normal/intensive mode...\n"
-                )
-                os.system(
-                    "%sbwa mem %s %s -t %s %s %sunaligned_reads.fq | %s %ssamtools view -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted_bwa.bam /dev/stdin; %ssamtools index -@ %s %ssorted_bwa.bam "
-                    % (path_bwa, bwa_custom_options, rg_option_bwa, num_cpu, path_bwa_index, out,
-                       samblaster_cmq, path_samtools, path_sambamba, num_cpu, tmp_dir,
-                       out, path_samtools, num_cpu, out))
-                os.system("%ssamtools view -H %ssorted.bam > %sheader.txt" %
-                          (path_samtools, out, out))
-                print("\nMerging HISAT2 and BWA-MEM aligned reads...\n")
-                os.system(
-                    "%ssamtools merge -c -@ %s -f -h %sheader.txt %ssorted_merged.bam %ssorted.bam  %ssorted_bwa.bam"
-                    % (path_samtools, num_cpu, out, out, out, out))
-                os.system("%ssamtools index -@ %s %ssorted_merged.bam " %
-                          (path_samtools, num_cpu, out))
-
-                if not debug:
+            # 8.2.1 Alignment for SNP/indel use only
+            if variantcalling:
+                if not (SV or expansion or MEI or STR or genotypeSTR):
+                    print(
+                        "\nPerforming single-end read alignment with HISAT2...\n"
+                        )
                     os.system(
-                        "rm %ssorted.bam*  %ssorted_bwa.bam* %sunaligned_reads.fq "
-                        % (out, out, out))
+                        "%shisat2 %s --no-spliced-alignment -p %s -x %s -U %s | %s %ssamtools view -@ %s -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted.bam /dev/stdin"
+                        % (path_hisat, hisat_custom_options, num_cpu, path_hisat_index, input_file,
+                           samblaster_cmq, path_samtools, num_cpu, tmp_dir, path_sambamba,
+                           num_cpu, out))
 
-                bam_file = "%ssorted_merged.bam" % (out)
+                    bam_file = "%ssorted.bam" % (out)
 
-                is_variant_file_OK(bam_file, "bam", "alignment")
+                    is_variant_file_OK(bam_file, "bam", "alignment")
 
-                os.system("touch  %slogs/alignment.log" % (out))
+                    os.system("touch  %salignment.log" % (out))
 
-                print(
-                    "\nCompleted single-end read alignment with HISAT2 and BWA-MEM.\n"
-                )
+                    print(
+                        "\nCompleted single-end read alignment with HISAT2.\n"
+                    )
+
+            # 8.1.2 Alignment (general)
+            # use HISAT2 to align all reads,
+            # then soft-clipped and unaligned reads are realigned with BWA mem
+                else:
+                    if (SV or expansion or MEI or STR or genotypeSTR):
+                        if RG:
+                            rg_option_hisat2 = " --rg-id %s --rg LB:%s --rg PL:%s  --rg PU:%s --rg SM:%s " % (
+                                RG_ID, RG_LB, RG_PL, RG_PU, RG_SM)
+                                rg_option_bwa = " -R '@RG\\tID:%s\\tLB:%s\\tPL:%s\\tPU:%s\\tSM:%s' " % (
+                                RG_ID, RG_LB, RG_PL, RG_PU, RG_SM)
+                        else:
+                                rg_option_hisat2 = ""
+                                rg_option_bwa = ""
+
+                        print(
+                            "\nPerforming single-end read alignment with HISAT2...\n"
+                        )
+
+                        os.system(
+                            "%shisat2 %s --no-softclip --no-spliced-alignment -p %s -x %s -U %s | %s %ssamtools view -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted.bam /dev/stdin; %ssamtools index -@ %s %ssorted.bam"
+                            % (path_hisat, hisat_custom_options, rg_option_hisat2, num_cpu, path_hisat_index,
+                               input_file, samblaster_cmq, path_samtools,
+                               path_sambamba, num_cpu,tmp_dir, out, path_samtools, num_cpu,
+                               out))
+                        os.system(
+                            "%ssamtools view -@ %s -bhf 4 %ssorted.bam | samtools bam2fq - > %sunaligned_reads.fq"
+                            % (path_samtools, num_cpu, out, out))
+                        print(
+                            "\nPerforming single-end read alignment of soft-clipped and unaligned HISAT2 reads with BWA-MEM...\n"
+                        )
+                        os.system(
+                            "%sbwa mem %s %s -t %s %s %sunaligned_reads.fq | %s %ssamtools view -Sb -  | %ssambamba sort -t %s --tmpdir=%s -o %ssorted_bwa.bam /dev/stdin; %ssamtools index -@ %s %ssorted_bwa.bam "
+                            % (path_bwa, bwa_custom_options, rg_option_bwa, num_cpu, path_bwa_index, out,
+                               samblaster_cmq, path_samtools, path_sambamba, num_cpu, tmp_dir,
+                               out, path_samtools, num_cpu, out))
+                        os.system("%ssamtools view -H %ssorted.bam > %sheader.txt" % (path_samtools, out, out))
+                        print("\nMerging HISAT2 and BWA-MEM aligned reads...\n")
+                        os.system(
+                            "%ssamtools merge -c -@ %s -f -h %sheader.txt %ssorted_merged.bam %ssorted.bam  %ssorted_bwa.bam"
+                            % (path_samtools, num_cpu, out, out, out, out))
+                        os.system("%ssamtools index -@ %s %ssorted_merged.bam " % (path_samtools, num_cpu, out))
+
+                        if not debug:
+                            os.system(
+                                "rm %ssorted.bam*  %ssorted_bwa.bam* %sunaligned_reads.fq "
+                                % (out, out, out))
+
+                        bam_file = "%ssorted_merged.bam" % (out)
+
+                        is_variant_file_OK(bam_file, "bam", "alignment")
+
+                        os.system("touch  %slogs/alignment.log" % (out))
+
+                        print(
+                            "\nCompleted single-end read alignment with HISAT2 and BWA-MEM.\n"
+                        )
 
     else:
         if format != "fastq":
@@ -609,11 +590,12 @@ if alignment:
                 "WARNING: The presence of alignment.log in logs is telling you that the alignment was already peformed, please remove alignment.log if you wish to perform this stage anyway\n"
             )
 
-            if mode == "normal" or mode == "intensive":
+            if (SV or expansion or MEI or STR or genotypeSTR):
                 bam_file = "%ssorted_merged.bam" % (out)
 
-            if mode == "fast":
-                bam_file = "%ssorted.bam" % (out)
+            if variantcalling:
+                if not (SV or expansion or MEI or STR or genotypeSTR):
+                    bam_file = "%ssorted.bam" % (out)
 
 # 9. Convert input sam file into bam
 
@@ -631,7 +613,7 @@ if format == "sam" and "sam2bam.log" not in os.listdir(out + "logs"):
 
 if format == "bam":
     bam_file = "%s" % (input_file)
-    
+
 if format == "cram":
     bam_file = "%s" % (input_file)
 
@@ -655,12 +637,12 @@ if variantcalling:
             variant_results_file = "%s%s_sorted.vcf.gz" % (out, sample_name)
 
         else:
-            #10.1 Strelka snv and indel calling (in fast and normal mode)
+            #10.1 Strelka snv and indel calling
             if "VC_strelka" not in os.listdir(out + "logs"):
 
                 if paired == "1":
                     print("\nSNVs and indels are being called with Strelka...\n")
-                    
+
                     if BED == "True":
                         os.system("bgzip -c %s  > %s/temp.bed.gz" % (path_bed, out))
                         os.system(
@@ -672,7 +654,7 @@ if variantcalling:
                         os.system(
                         "%sconfigureStrelkaGermlineWorkflow.py --bam %s --referenceFasta %s --runDir %sstrelka --callRegions %s/sorted.bed.gz"
                         % (path_strelka, bam_file, path_reference, out, out))
-                        
+
                         if not debug:
                             os.system("rm %s/temp.bed.gz %s/sorted.bed.gz" % (out, out))
 
@@ -680,7 +662,7 @@ if variantcalling:
                         os.system("mkdir %sstrelka" % (out))
                         os.system("%sconfigureStrelkaGermlineWorkflow.py --bam %s --referenceFasta %s --runDir %sstrelka --exome" %
                         (path_strelka, bam_file, path_reference, out))
-                        
+
                     else:
                         os.system("mkdir %sstrelka" % (out))
                         os.system(
@@ -695,119 +677,20 @@ if variantcalling:
                     "mv %s/strelka/results/variants/genome.S1.vcf.gz.tbi  %s/results/%s_strelka.vcf.gz.tbi"
                     % (out, out, sample_name))
 
-                    if mode != "intensive":
+                    os.system("mv %s/results/%s_strelka.vcf.gz %s%s_sorted.vcf.gz" % (out, sample_name, out, sample_name))
+                    os.system ("%stabix -p vcf %s%s_sorted.vcf.gz" % (path_tabix, out, sample_name))
 
-                        os.system("mv %s/results/%s_strelka.vcf.gz %s%s_sorted.vcf.gz" % (out, sample_name, out, sample_name))
-                        os.system ("%stabix -p vcf %s%s_sorted.vcf.gz" % (path_tabix, out, sample_name))
+                    variant_results_file = "%s%s_sorted.vcf.gz" % (out, sample_name)
 
-                        variant_results_file = "%s%s_sorted.vcf.gz" % (out, sample_name)
-
-                        is_variant_file_OK(variant_results_file, "Vcf", "variantcalling")
+                    is_variant_file_OK(variant_results_file, "Vcf", "variantcalling")
 
                     os.system("touch  %slogs/VC_strelka.log" % (out))
 
                     print('\nSNV and indel calling with Strelka is complete.\n')
 
-                    if mode == "intensive":
-                        # 10.3 Strelka indel calling (only performed in intensive mode)
-                        # In intensive mode, DNAscan calls snvs with Freebayes and indels
-                        # with Strelka. Strelka is used only on those positions of the
-                        # genome for which the alignment stage identifies one insertion or
-                        # deletion in at least on read.
-                        # 10.3.1 identification of potential indel sites
-                        # Samtools mpileup is used to identify those positions of the genome for which the alignment stage identifies one insertion or deletion in at least on read.
-                        # Strelka is used to call indels only on those positions
-                        print(
-                            "\nIdentifying potential indel sites with samtools mpileup...\n"
-                        )
-
-                        counter = 1
-                        ps = []
-
-                        while counter < int(num_cpu) + 1:
-                            command = "%ssamtools mpileup --max-depth 10000 -AQ 0 -l %stemp%s.bed %s | awk '$5 ~/[\+,\-]/ {print $1\"\t\"$2-1\"\t\"$2}' > %smpileup_positions%s.bed" % (
-                                path_samtools, out, str(counter), bam_file, out,
-                                str(counter))
-
-                            proc_mpileup = subprocess.Popen(command, shell=True)
-                            ps.append(proc_mpileup)
-                            counter += 1
-
-                        for proc_mpileup in ps:
-                            proc_mpileup.wait()
-
-                        # 10.3.2 Strelka indel calling on selected positions (from
-                        # previous step 10.3.1)
-                        counter = 1
-                        os.system("touch %smpileup_positions.bed" % (out))
-                        while counter < int(num_cpu) + 1:
-                            os.system(
-                                "cat %smpileup_positions%s.bed >> %smpileup_positions.bed"
-                                % (out, str(counter), out))
-
-                            counter += 1
-
-                        os.system(
-                            "%sbedtools sort -i %smpileup_positions.bed > %stemp_sorted.bed ; mv  %stemp_sorted.bed %smpileup_positions.bed"
-                            % (path_bedtools, out, out, out, out))
-
-                        print(
-                            "\nCalling indels with Strelka on indel positions identified by samtools mpileup...\n"
-                        )
-
-                        os.system(
-                            "%svcftools  --gzvcf %s/results/%s_strelka.vcf.gz --minGQ 30 --minDP 2 --bed %smpileup_positions.bed --recode --recode-INFO-all --out %sindels_only"
-                            % (path_vcftools, out, sample_name, out, out))
-                        os.system("touch  %slogs/indels_only.log" % (out))
-
-                        print(
-                            "\nCompleted indel calling with Strelka.\n"
-                        )
-
-
-                        # 10.3.3 If intensive mode variant calling was performed, DNAscan called snvs
-                        # with Freebayes and indels with Strelka, resulting in two vcf files.
-                        # For the annotation step these two files are merged together.
-
-                        os.system(
-                            "%svcftools  --gzvcf %s/results/%s_strelka.vcf.gz --minGQ 30 --minDP 2 --exclude-bed %smpileup_positions.bed  --recode --recode-INFO-all --out %sSNPs_only"
-                            % (path_vcftools, out, sample_name, out, out))
-                        os.system("touch %slogs/SNPs_only.log" % (out))
-
-                        print("\nCompleted SNV calling with Strelka.\n")
-
-                        print("\nMerging the SNV and indel VCFs to enable downstream annotation to take place...\n")
-                        os.system(
-                            "bgzip  %sSNPs_only.recode.vcf ; bgzip %sindels_only.recode.vcf "
-                            % (out, out))
-                        os.system(
-                            "%stabix -p vcf %sSNPs_only.recode.vcf.gz ; %stabix -p vcf %sindels_only.recode.vcf.gz "
-                            % (path_tabix, out, path_tabix, out))
-                        os.system(
-                            "%sbcftools merge --merge all --force-samples %sSNPs_only.recode.vcf.gz %sindels_only.recode.vcf.gz -O v -o %s%s.vcf "
-                            % (path_bcftools, out, out, out,
-                            sample_name))
-                        os.system(
-                            "perl %svcf-sort.pl  %s%s.vcf | bgzip -c > %s%s_sorted.vcf.gz"
-                            % (path_scripts, out, sample_name, out, sample_name))
-
-                        variant_results_file = "%s%s_sorted.vcf.gz" % (out,
-                                                                        sample_name)
-
-                        is_variant_file_OK(variant_results_file, "Vcf", "variantcalling")
-
-                        os.system("%stabix -p vcf %s%s_sorted.vcf.gz" % (path_tabix, out, sample_name))
-
-                        if not debug:
-                            os.system(
-                                "rm %s%s.vcf* %slogs/SNPs_only.log %smpileup_positions* %slogs/indels_only.log %s/results/%s_strelka.vcf.gz"
-                                % (out, sample_name, out, out, out, out, sample_name))
-                            
-                        print("\nSuccessfully merged SNV and indel calls.\n")
-                       
                     if not debug:
                         os.system("rm -r %sstrelka %s/results/%s_strelka.vcf.gz.tbi" % (out, out, sample_name))
-                        
+
                 else:
                     print('\nSmall variant calling with Strelka requires alignment from paired-end reads.\n')
 
@@ -860,12 +743,12 @@ if expansion:
         is_variant_file_OK(expansion_results_file, "Vcf", "expansion")
 
         print("\nRepeat expansion scanning is complete.\n")
-        
-        os.system("touch  %slogs/EH.log" % (out)) 
 
-        if not debug:  
-            os.system("rm %stemp_EH.json* %stemp_EH_realigned.bam" % (out, out)) 
-            
+        os.system("touch  %slogs/EH.log" % (out))
+
+        if not debug:
+            os.system("rm %stemp_EH.json* %stemp_EH_realigned.bam" % (out, out))
+
 # 13. Compute genome-wide short tandem repeat profiles with ExpansionHunter Denovo
 if STR:
     if "STR.log" in os.listdir(out):
@@ -874,57 +757,57 @@ if STR:
         )
     else:
         print("\nExpansionHunter Denovo is scanning the genome to construct a catalog-free short tandem repeat profile...\n")
-    
+
         os.system("%s/bin/ExpansionHunterDenovo profile --reads %s --reference %s --output-prefix %s/results/%s --min-anchor-mapq 50 --max-irr-mapq 40 --log-reads" % (
             path_expansionHunterDenovo_dir, bam_file, path_reference, out, sample_name))
-        
+
         STR_profile = "%s/results/%s.str_profile.json" % (out, sample_name)
-        
+
         if len(STR_profile) != 0:
             print("\nShort tandem repeat profiling is complete.\n")
 
             #13.1 Convert the novel/non-reference loci identified with ExpansionHunter Denovo to variant catalog format
             print("\nConverting loci identified with ExpansionHunter Denovo into ExpansionHunter variant catalog format...\n")
-        
+
             os.system("cat %s/results/%s.locus.tsv | sed 's/contig/chr/g' | cut -f1-4 > %s/results/%s_EHDNinput.txt" % (out, sample_name, out, sample_name))
-        
+
             EHDN_input = "%s/results/%s_EHDNinput.txt" % (out, sample_name)
-        
+
             EHDN_variant_catalog = "%s/results/%s_EHDN_variant_catalog.json" % (out, sample_name)
-        
+
             EHDN_excluded = "%s/results/%s_EHDN_excluded.csv" % (out, sample_name)
-        
+
             EHDN_unmatched = "%s/results/%s_EHDN_unmatched.csv" % (out, sample_name)
-        
+
             create_variant_catalog.transform_format_sarah(EHDN_input, path_reference, EHDN_variant_catalog, EHDN_unmatched, EHDN_excluded)
 
             #13.2 Genotype the novel/non reference variant catalog with ExpansionHunter
             if len(EHDN_variant_catalog) != 0 and genotypeSTR == "True":
                 print("\nGenotyping denovo loci with ExpansionHunter...\n")
-                        
+
                 os.system("%sExpansionHunter --reads %s --reference %s  --variant-catalog %s --output-prefix %s/temp_EHDN" % (
                 path_expansionHunter, bam_file, path_reference, EHDN_variant_catalog, out))
                 os.system("mv %s/temp_EHDN.vcf %s/results/%s_EHDNexpansions.vcf ; bgzip %s/results/%s_EHDNexpansions.vcf ; %stabix -p vcf %s/results/%s_EHDNexpansions.vcf.gz" % (
                 out, out, sample_name, out, sample_name, path_tabix, out, sample_name))
 
                 EHDNexpansion_results_file = "%s/results/%s_EHDNexpansions.vcf.gz" % (out, sample_name)
-                    
+
                 is_variant_file_OK(EHDNexpansion_results_file, "Vcf", "EHDNexpansion")
-                                
+
                 print("\nDenovo expansion loci genotyping is complete.\n")
 
                 if not debug:
                     os.system("rm %stemp_EHDN.json* %stemp_EHDN_realigned.bam, %s, %s, %s" % (out, out, EHDN_excluded, EHDN_unmatched, EHDN_input))
-                    
+
             else:
                 print("\nThe ExpansionHunter Denovo variant catalog is empty. Please run again and check everything is correct before running expansion again if you wish to perform this step.\n")
 
         else:
             print("\nWARNING: %s is empty, please run again and make sure all paths are correct if you want to perform genome-wide short tandem repeat profiling.\n" % STR_profile)
 
-            
-        os.system("touch  %slogs/STR.log" % (out)) 
-    
+
+        os.system("touch  %slogs/STR.log" % (out))
+
 # 14. Structural Variant calling
 if SV or MEI:
     if SV:
@@ -936,6 +819,7 @@ if SV or MEI:
             )
 
         else:
+            #14.1 Manta (all SV)
             if paired == "1":
                 if BED == "True":
                     print(
@@ -951,7 +835,7 @@ if SV or MEI:
                     os.system(
                         "%sconfigManta.py --bam %s --referenceFasta %s --runDir %smanta --callRegions %s/sorted.bed.gz"
                         % (path_manta, bam_file, path_reference, out, out))
-                
+
                     if not debug:
                         os.system("rm %s/temp.bed.gz %s/sorted.bed.gz" % (out,out))
 
@@ -970,108 +854,64 @@ if SV or MEI:
                 os.system("bgzip -c %s/results/%s_manta_SV.vcf > %s/results/%s_manta_SV.vcf.gz" % (out, sample_name, out, sample_name))
                 os.system("%stabix -p vcf %s/results/%s_manta_SV.vcf.gz" % (path_tabix, out, sample_name))
 
-                if mode == "fast":
-                    #14.1 Manta is used to call all SVs in fast mode
-                    SV_results_file = "%s/results/%s_manta_SV.vcf.gz" % (out, sample_name)
-                
-                    is_variant_file_OK(SV_results_file, "Vcf", "SV")
-                
-                    if not debug:
-                        os.system("rm %s/results/%s_manta_SV.vcf" % (out, sample_name))
-                else:
-                    manta_SV_results_file = "%s/results/%s_manta_SV.vcf" % (out, sample_name)
+                manta_SV_results_file = "%s/results/%s_manta_SV.vcf" % (out, sample_name)
 
                 if not debug:
                     os.system("rm -r %smanta" % (out))
 
                 print("\nStructural variant calling with Manta is complete.\n")
 
-                if mode == "normal" or mode == "intensive":
-                    # 14.2 In normal mode, Delly is used to call inversions and deletions and Manta calls all SV types.
-                    # In intensive mode, both Delly and Manta call all SV events
+                # 14.2 Delly (all SV)
 
-                    os.system("mkdir %sdelly" % (out))
-                    
+                os.system("mkdir %sdelly" % (out))
+
+                if format == "cram":
+                    print("\nConverting input cram file to bam format for structural variant detection with Delly...\n")
+                    os.system("samtools view -b -h -@ %s -T %s -o %s/%s.bam %s" % (num_cpu, path_reference, out, sample_name, bam_file))
+                    os.system("samtools index -@ %s %s/%s.bam" % (num_cpu, out, sample_name))
+                    delly_bam = "%s/%s.bam" % (out, sample_name)
+
+                if format == "fastq":
+                    delly_bam = "%ssorted_merged.bam" % (out)
+
+                if format == "bam":
+                    delly_bam = bam_file
+
+                print("\nStructural variants are being called with Delly...\n")
+
+                os.system("%sdelly call -g %s -o %sdelly/%s_delly.bcf -x %s %s" % (path_delly, path_reference, out, sample_name, path_delly_exclude_regions, delly_bam))
+                os.system("%sbcftools view %sdelly/%s_delly.bcf > %sdelly/%s_delly_SV.vcf" % (path_bcftools, out, sample_name, out, sample_name))
+
+                os.system("mv %sdelly/%s_delly_SV.vcf %s/results/" % (out, sample_name, out))
+                os.system("bgzip -c %s/results/%s_delly_SV.vcf > %s/results/%s_delly_SV.vcf.gz" % (out, sample_name, out, sample_name))
+                os.system("%stabix -p vcf %s/results/%s_delly_SV.vcf.gz" % (path_tabix, out, sample_name))
+
+                delly_SV_results_file = "%s/results/%s_delly_SV.vcf.gz" % (out, sample_name)
+
+                is_variant_file_OK(delly_SV_results_file, "Vcf", "SV")
+
+                print("\nStructural variant calling with Delly is complete.\n")
+
+                # 14.3 SV calls with Manta and Delly are merged together using SURVIVOR to create a union set of structural variants.
+
+                print("\nStructural variants called with Manta and Delly are being merged with SURVIVOR to create a union callset...\n")
+
+                os.system("ls %s/results/*SV.vcf > %s/results/survivor_sample_files" % (out, out))
+                os.system("%sSURVIVOR merge %s/results/survivor_sample_files 1000 1 1 1 0 30 %s/results/%s_SV_merged.vcf" % (path_SURVIVOR, out, out, sample_name))
+                os.system("perl %svcf-sort.pl %s/results/%s_SV_merged.vcf | bgzip -c > %s/results/%s_SV_merged.vcf.gz" % (path_scripts, out, sample_name, out, sample_name))
+                os.system("%stabix -p vcf %s/results/%s_SV_merged.vcf.gz" % (path_tabix, out, sample_name))
+
+                SV_results_file = "%s/results/%s_SV_merged.vcf.gz" % (out, sample_name)
+
+                is_variant_file_OK(SV_results_file, "Vcf", "SV")
+
+                print("\nMerging of structural variant calls is complete.\n")
+
+                if not debug:
+                    os.system("rm -r %sdelly %s/results/survivor_sample_files %s/results/*.vcf %s/results/*SV.vcf.gz*" % (out, out, out, out))
+
                     if format == "cram":
-                        print("\nConverting input cram file to bam format for structural variant detection with Delly...\n")
-                        os.system("samtools view -b -h -@ %s -T %s -o %s/%s.bam %s" % (num_cpu, path_reference, out, sample_name, bam_file))
-                        os.system("samtools index -@ %s %s/%s.bam" % (num_cpu, out, sample_name))
-                        delly_bam = "%s/%s.bam" % (out, sample_name)
-                        
-                    if format == "fastq":
-                        delly_bam = "%ssorted_merged.bam" % (out)
-                    
-                    if format == "bam":
-                        delly_bam = bam_file
-
-                    if mode == "normal":
-
-                        print("\nDelly will additionally call inversion and deletion structural variants...\n")
-
-                        os.system("%sdelly call -t DEL -g %s -o %sdelly/%s_delly_DEL.bcf -x %s %s" % (
-                        path_delly, path_reference, out, sample_name, path_delly_exclude_regions, delly_bam))
-                        os.system("%sdelly call -t INV -g %s -o %sdelly/%s_delly_INV.bcf -x %s %s" % (
-                        path_delly, path_reference, out, sample_name, path_delly_exclude_regions, delly_bam))
-                        os.system("%sbcftools view %sdelly/%s_delly_DEL.bcf > %sdelly/%s_delly_DEL_SV.vcf" % (
-                        path_bcftools, out, sample_name, out, sample_name))
-                        os.system("%sbcftools view %sdelly/%s_delly_INV.bcf > %sdelly/%s_delly_INV_SV.vcf" % (
-                        path_bcftools, out, sample_name, out, sample_name))
-                    
-                        os.system("mv %sdelly/%s_delly_DEL_SV.vcf %s/results/" % (out, sample_name, out))
-                        os.system("mv %sdelly/%s_delly_INV_SV.vcf %s/results/" % (out, sample_name, out))
-                        os.system("bgzip -c %s/results/%s_delly_DEL_SV.vcf > %s/results/%s_delly_DEL_SV.vcf.gz" % (out, sample_name, out, sample_name))
-                        os.system("bgzip -c %s/results/%s_delly_INV_SV.vcf > %s/results/%s_delly_INV_SV.vcf.gz" % (out, sample_name, out, sample_name))
-                        os.system("%stabix -p vcf %s/results/%s_delly_DEL_SV.vcf.gz" % (path_tabix, out, sample_name))
-                        os.system("%stabix -p vcf %s/results/%s_delly_INV_SV.vcf.gz" % (path_tabix, out, sample_name))
-                    
-                        delly_SV_DEL_results_file = "%s/results/%s_delly_DEL_SV.vcf.gz" % (out, sample_name)
-                        delly_SV_INV_results_file = "%s/results/%s_delly_INV_SV.vcf.gz" % (out, sample_name)
-                    
-                        is_variant_file_OK(delly_SV_DEL_results_file, "Vcf", "SV")
-                        is_variant_file_OK(delly_SV_INV_results_file, "Vcf", "SV")
-                        
-                        print("\nInversion and deletion structural variant calling with Delly is complete.\n")
-
-                    else:
-                        print("\nStructural variants are being called with Delly...\n")
-
-                        os.system("%sdelly call -g %s -o %sdelly/%s_delly.bcf -x %s %s" % (
-                        path_delly, path_reference, out, sample_name, path_delly_exclude_regions, delly_bam))
-                        os.system("%sbcftools view %sdelly/%s_delly.bcf > %sdelly/%s_delly_SV.vcf" % (
-                        path_bcftools, out, sample_name, out, sample_name))
-
-                        os.system("mv %sdelly/%s_delly_SV.vcf %s/results/" % (out, sample_name, out))
-                        os.system("bgzip -c %s/results/%s_delly_SV.vcf > %s/results/%s_delly_SV.vcf.gz" % (out, sample_name, out, sample_name))
-                        os.system("%stabix -p vcf %s/results/%s_delly_SV.vcf.gz" % (path_tabix, out, sample_name))
-                
-                        delly_SV_results_file = "%s/results/%s_delly_SV.vcf.gz" % (out, sample_name)
-
-                        is_variant_file_OK(delly_SV_results_file, "Vcf", "SV")
-
-                        print("\nStructural variant calling with Delly is complete.\n")
-
-                    # 14.3 In normal and intensive modes, SV calls with Manta and Delly are merged together using SURVIVOR to create a union set of structural variants.
-
-                    print("\nStructural variants called with Manta and Delly are being merged with SURVIVOR to create a union callset...\n")
-
-                    os.system("ls %s/results/*SV.vcf > %s/results/survivor_sample_files" % (out, out))
-                    os.system("%sSURVIVOR merge %s/results/survivor_sample_files 1000 1 1 1 0 30 %s/results/%s_SV_merged.vcf" % (
-                    path_SURVIVOR, out, out, sample_name))
-                    os.system("perl %svcf-sort.pl %s/results/%s_SV_merged.vcf | bgzip -c > %s/results/%s_SV_merged.vcf.gz" % (
-                    path_scripts, out, sample_name, out, sample_name))
-                    os.system("%stabix -p vcf %s/results/%s_SV_merged.vcf.gz" % (path_tabix, out, sample_name))
-
-                    SV_results_file = "%s/results/%s_SV_merged.vcf.gz" % (out, sample_name)
-
-                    is_variant_file_OK(SV_results_file, "Vcf", "SV")
-
-                    print("\nMerging of structural variant calls is complete.\n")
-
-                    if not debug:
-                        os.system("rm -r %sdelly %s/results/survivor_sample_files %s/results/*.vcf %s/results/*SV.vcf.gz*" % (out, out, out, out))
-                        
-                        if format == "cram":
-                            os.system("rm %s/%s.bam*" % (out, sample_name))
+                        os.system("rm %s/%s.bam*" % (out, sample_name))
 
                 os.system("touch %slogs/SV.log" % (out))
 
@@ -1106,7 +946,7 @@ if SV or MEI:
             if exome == "True":
                 os.system("%sjava -Xmx%sg -jar %sMELT.jar Single -bamfile %s -h %s -t %smelt/transposon.list -n %s -w %smelt -exome %s" % (
                     path_java, RAM_GB, path_melt, bam_file, path_reference, out, melt_bed, out, melt_custom_options))
-        
+
             os.system("%sjava -Xmx%sg -jar %sMELT.jar Single -bamfile %s -h %s -t %smelt/transposon.list -n %s -w %smelt %s" % (
                 path_java, RAM_GB, path_melt, bam_file, path_reference, out, melt_bed, out, melt_custom_options))
 
@@ -1123,23 +963,21 @@ if SV or MEI:
 
             if not debug:
                 os.system("rm -r %smelt" % (out))
-            
+
                 if variantcalling:
                     os.system("rm %s/*bam.disc %s/*bam.disc.bai %s/*bam.fq" % (out, out, out))
 
             os.system("touch  %slogs/mei.log" % (out))
 
             print("\nTransposable element insertion scanning with MELT is complete.\n")
-        
+
     if 'SV_results_file' in locals() and os.path.isfile("%s/results/%s_MEI.vcf.gz" % (out, sample_name)) == True:
         print("\nMerging SV and MEI callsets together with SURVIVOR to create a union callset...\n")
         os.system("bgzip -d %s" % (SV_results_file))
         os.system("bgzip -d %s" % (MEI_results_file))
         os.system("ls %s/results/*.vcf > %s/results/survivor_sample_files" % (out, out))
-        os.system("%sSURVIVOR merge %s/results/survivor_sample_files 1000 1 1 1 0 30 %s/results/%s_SV_MEI_merged.vcf" % (
-        path_SURVIVOR, out, out, sample_name))
-        os.system("perl %svcf-sort.pl %s/results/%s_SV_MEI_merged.vcf | bgzip -c > %s/results/%s_SV_MEI_merged.vcf.gz" % (
-        path_scripts, out, sample_name, out, sample_name))
+        os.system("%sSURVIVOR merge %s/results/survivor_sample_files 1000 1 1 1 0 30 %s/results/%s_SV_MEI_merged.vcf" % (path_SURVIVOR, out, out, sample_name))
+        os.system("perl %svcf-sort.pl %s/results/%s_SV_MEI_merged.vcf | bgzip -c > %s/results/%s_SV_MEI_merged.vcf.gz" % (path_scripts, out, sample_name, out, sample_name))
         os.system("%stabix -p vcf %s/results/%s_SV_MEI_merged.vcf.gz" % (path_tabix, out, sample_name))
 
         SV_MEI_results_file = "%s/results/%s_SV_MEI_merged.vcf.gz" % (out, sample_name)
@@ -1149,11 +987,7 @@ if SV or MEI:
         print("\nMerging of SV and MEI variant calls is complete.\n")
 
         if not debug:
-            os.system("rm %s/results/survivor_sample_files %s/results/*.vcf %s/results/%s_MEI.vcf.gz*" % (out, out, out, sample_name))
-            if mode == "fast":
-                os.system("rm %s/results/%s_manta_SV.vcf.gz*" % (out, sample_name))
-            else:
-                os.system("rm %s/results/%s_SV_merged.vcf.gz*" % (out, sample_name))
+            os.system("rm %s/results/survivor_sample_files %s/results/*.vcf" % (out, out, out, sample_name))
 
 # 16. Annotation with Annovar with optional missense variant prioritisation according to ACMG guidelines (intervar_20180118 database)
 
@@ -1165,9 +999,9 @@ if annotation:
         )
 
         variant_results_file = "%s/results/%s_SNPindel_annotated.vcf.gz" % (out, sample_name)
-        
+
         expansion_variant_results_file = "%sresults/%s_expansions_annotated.vcf.gz" % (out, sample_name)
-        
+
     else:
         if variantcalling:
             print("\nAnnotation of SNP and indels are being performed using ANNOVAR, with the databases and respective operations defined in paths_configs.py...\n")
@@ -1196,15 +1030,13 @@ if annotation:
 
             print("\nSNP and indel annotation is complete.\n")
 
-        if expansion: 
+        if expansion:
             if os.path.isfile(EHDNexpansion_results_file) == True:
                 print('Repeat expansions and short tandem repeats called with ExpansionHunter software are being merged with SURVIVOR to create a union callset...\n')
                 os.system("gzip -dk %s/results/*expansions.vcf.gz" % (out, sample_name))
                 os.system("ls %s/results/*expansions.vcf > %s/results/survivor_expansion_sample_files" % (out, out))
-                os.system("%sSURVIVOR merge %s/results/survivor_expansion_sample_files 1000 1 1 1 0 30 %s/results/%s_expansions_merged.vcf" % (
-                path_SURVIVOR, out, out, sample_name))
-                os.system("perl %svcf-sort.pl %s/results/%s_expansions_merged.vcf | bgzip -c > %s/results/%s_expansions_merged.vcf.gz" % (
-                path_scripts, out, sample_name, out, sample_name))
+                os.system("%sSURVIVOR merge %s/results/survivor_expansion_sample_files 1000 1 1 1 0 30 %s/results/%s_expansions_merged.vcf" % (path_SURVIVOR, out, out, sample_name))
+                os.system("perl %svcf-sort.pl %s/results/%s_expansions_merged.vcf | bgzip -c > %s/results/%s_expansions_merged.vcf.gz" % (path_scripts, out, sample_name, out, sample_name))
                 os.system("%stabix -p vcf %s/results/%s_expansions_merged.vcf.gz" % (path_tabix, out, sample_name))
 
                 expansion_variant_results_file = "%s/results/%s_expansions_merged.vcf.gz" % (out, sample_name)
@@ -1213,7 +1045,7 @@ if annotation:
 
                 if not debug:
                     os.system("rm %s/results/survivor_expansion_sample_files %s/results/%s_expansions_merged.vcf %s/results/*expansions.vcf" % (out, out, sample_name, out))
-                    
+
             else:
                 expansion_variant_results_file = "%s/results/%s_expansions.vcf.gz" % (out, sample_name)
 
@@ -1222,12 +1054,12 @@ if annotation:
                 "perl %stable_annovar.pl  --thread %s --vcfinput %s %s -buildver %s -remove -protocol %s -operation %s -nastring . --outfile %s/annovar_expansions.vcf"
                 % (path_annovar, num_cpu, expansion_variant_results_file, path_annovar_db,
                    reference, annovar_protocols, annovar_operations, out))
-            
+
             if not debug:
                 os.system(
                     "rm %sannovar_expansions.vcf.%s_multianno.txt %sannovar_expansions.vcf.avinput" %
                     (out, reference, out))
-                
+
             os.system(
                 "mv %s/annovar_expansions.vcf.%s_multianno.vcf %sresults/%s_expansions_annotated.vcf" % (out, reference, out, sample_name))
 
@@ -1238,7 +1070,7 @@ if annotation:
             os.system("mv %s.tbi %sresults/" % (expansion_variant_results_file, out))
 
             expansion_variant_results_file = "%sresults/%s_expansions_annotated.vcf.gz" % (out, sample_name)
-            
+
             is_variant_file_OK(expansion_variant_results_file, "Vcf", "expansion")
 
             print("\nRepeat expansion and/or short tandem repeat annotation is complete.\n")
@@ -1268,38 +1100,38 @@ if annotation:
 
                 else:
                     genome_build = "GRCh38"
-                    
+
                 if os.path.isfile("%s/results/%s_SV_MEI_merged.vcf.gz" % (out, sample_name)) == True:
                     print("\nStructural variant and transposable element annotation is being performed with AnnotSV...\n")
                     os.system("%s/bin/AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/results/%s_annotated_SV_MEI -SVminSize 30 %s" % (
                         path_annotsv, path_annotsv, path_bcftools, path_bedtools, SV_MEI_results_file, candidate_gene_cmd, genome_build, out, sample_name, annotsv_custom_options))
 
                     SV_MEI_annotation_file = "%s/results/%s_annotated_SV_MEI.tsv" % (out, sample_name)
-                
+
                     print("\nStructural variant and transposable element annotation is complete.\n")
-            
+
                 else:
                     if SV:
-                
+
                         print("\nStructural variant annotation is being performed with AnnotSV...\n")
                         os.system("%s/bin/AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/results/%s_annotated_SV -SVminSize 30 %s" % (
                             path_annotsv, path_annotsv, path_bcftools, path_bedtools, SV_results_file, candidate_gene_cmd, genome_build, out, sample_name, annotsv_custom_options))
 
                         SV_annotation_file = "%s/results/%s_annotated_SV.tsv" % (out, sample_name)
-               
+
                         print("\nStructural variant annotation is complete.\n")
-                
+
                     if MEI:
                         print("\nTransposable element annotation is being performed with AnnotSV...\n")
                         os.system("%s/bin/AnnotSV -annotationsDir %s/share/AnnotSV/ -bcftools %sbcftools -bedtools %sbedtools -SvinputFile %s %s -genomeBuild %s -outputFile %s/results/%s_annotated_MEI -SVminSize 30 %s" % (
                             path_annotsv, path_annotsv, path_bcftools, path_bedtools, MEI_results_file, candidate_gene_cmd, genome_build, out, sample_name, annotsv_custom_options))
 
                         MEI_annotation_file = "%s/results/%s_annotated_MEI.tsv" % (out, sample_name)
-                
+
                         print("\nTransposable element annotation is complete.\n")
-                    
+
                 os.system("touch  %slogs/annotsv.log" % (out))
-                
+
         print("\nAnnotation and prioritisation is complete.\n")
 
 else:
@@ -1590,7 +1422,7 @@ if results_report:
         print(
             "WARNING: Variant annotation was not peformed - please perform variant calling and annotation using the -variantcalling/-expansion and -annotation flags if you wish to generate an ANNOVAR results report.\n"
         )
-        
+
     else:
         if "results_report.log" in os.listdir(out + "logs"):
             print(
@@ -1656,10 +1488,10 @@ if results_report:
                                  j.split('\t')[-1].split(':')[0], replaced))
 
             out_file_all.close()
-            
+
             if not debug:
                 os.system("rm %stemp_SNPindel.vcf" % (out))
-                
+
             if expansion:
                 print("\nGenerating report of annotated expansion/short tandem repeat calls...\n")
 
@@ -1721,13 +1553,13 @@ if results_report:
                 out_file_all.close()
 
                 if not debug:
-                    os.system("rm %stemp_expansions.vcf" % (out)) 
+                    os.system("rm %stemp_expansions.vcf" % (out))
 
         #22.1 knotAnnotSV SV report generation
             if SV or MEI:
                     if "annotsv.log" not in os.listdir(out + "logs"):
                         print("WARNING: Structural variant and/or mobile element insertion annotation was not peformed - please perform structural variant calling and/or mobile element insertion calling and annotation using the -SV and/or -MEI and -annotation flags if you wish to generate an AnnotSV results report.\n")
-                     
+
                     else:
                         if os.path.isfile("%s/results/%s_SV_MEI_merged.vcf.gz" % (out, sample_name)) == True:
                             print("\nGenerating structural variant and transposable element annotation HTML report...\n")
@@ -1738,11 +1570,11 @@ if results_report:
                                 path_knotannotsv, path_knotannotsv, SV_MEI_annotation_file, out, sample_name, reference))
 
                             os.system("mv %s%s_SVMEIanno/%s_annotated_SV_MEI.html %s/reports/%s_SV_MEIannotatedvariants.html" % (
-                                out, sample_name, sample_name, out, sample_name)) 
-                            
+                                out, sample_name, sample_name, out, sample_name))
+
                             if not debug:
                                 os.system("rm -r %s%s_SVMEIanno" % (out, sample_name))
-                
+
                             print("\nStructural element and transposable element HTML report created.\n")
                         else:
                             if SV:
@@ -1760,7 +1592,7 @@ if results_report:
                                     os.system("rm -r %s%s_SVanno" % (out, sample_name))
 
                                 print("\nSV HTML report created.\n")
-                
+
                             if MEI:
                                 print("\nGenerating transposable element annotation HTML report...\n")
 
@@ -1770,57 +1602,57 @@ if results_report:
                                     path_knotannotsv, path_knotannotsv, MEI_annotation_file, out, sample_name, reference))
 
                                 os.system("mv %s%s_MEIanno/%s_annotated_MEI.html %s/reports/%s_MEIannotatedvariants.html" % (
-                                    out, sample_name, sample_name, out, sample_name)) 
-                                
+                                    out, sample_name, sample_name, out, sample_name))
+
                                 if not debug:
                                     os.system("rm -r %s%s_MEIanno" % (out, sample_name))
-                
+
                                 print("\nTransposable element HTML report created.\n")
-                    
+
             #22.2 Concise results report for all variants called (SV, MEI, expansion, SNVs and indels)
             if os.path.isfile("%s/reports/%s_annovar_variants.txt" % (out, sample_name)) == True:
-                if SV_results_file == "%s/results/%s_manta_SV.vcf.gz" % (out, sample_name) or not SV and os.path.isfile("%s/results/%s_MEI.vcf.gz" % (out, sample_name)) == True: 
-                    if mode == "fast" and os.path.isfile("%s/results/%s_annotated_SV.tsv" % (out, sample_name)) == True:
+                if SV_results_file == "%s/results/%s_manta_SV.vcf.gz" % (out, sample_name) or not SV and os.path.isfile("%s/results/%s_MEI.vcf.gz" % (out, sample_name)) == True:
+                    if os.path.isfile("%s/results/%s_annotated_SV.tsv" % (out, sample_name)) == True:
                         annotsv_file = SV_annotation_file
-                
+
                     if not SV and os.path.isfile("%s/results/%s_annotated_MEI.tsv" % (out, sample_name)) == True:
                         annotsv_file = MEI_annotation_file
-                    
+
                     print("\nGenerating a concise results report for all annotated variants (SNVs, indels, expansion, SV and/or MEI)...\n")
-                    
+
                     os.system("cat %s | cut -f 2,3,6,15,17,27,28,33,72,86,87 | awk -v OFS='\t' '{split($4,a,/:/);$4=a[1]}1' | awk -v OFS='\t' ' {NR==1?$11=\"Clinvar_ID\t\"$11:$11=\"\t\"$11 } 1 ' | awk  -v OFS='\t' ' {NR==1?$13=\"Clinvar_Phenotype\t\"$13:$13=\"\t\"$13 } 1 ' | awk  -v OFS='\t' ' {NR==1?$14=\"Variant_Frequency_ExAC\t\"$14:$14=\"\t\"$14 } 1 ' | awk  -v OFS='\t' ' {NR==1?$14=\"Variant_Frequency_1000g\t\"$14:$14=\"\t\"$14 } 1 ' | awk  -v OFS='\t' ' {NR==1?$14=\"Variant_Frequency_gnomAD\t\"$14:$14=\"\t\"$14 } 1 ' | awk -F '\t' 'NR>1 {print \"chr\"$0}' > %s/reports/temp_%s_SV_variants.tsv" % (
                         annotsv_file, out, sample_name))
-                
+
                 else:
-                    if not MEI and mode != "fast":
+                    if not MEI:
                         if SV:
                             annotsv_file = SV_annotation_file
-                        
+
                     if os.path.isfile("%s/results/%s_annotated_SV_MEI.tsv" % (out, sample_name)) == True:
                         annotsv_file = SV_MEI_annotation_file
-                        
+
                     print("\nGenerating a concise results report for all annotated variants (SNVs, indels, expansion, SV and/or MEI)...\n")
-      
+
                     os.system("cat %s | cut -f 2,3,6,15,18,28,29,34,73,87,88 | awk -v OFS='\t' '{split($4,a,/:/);$4=a[1]}1' | awk -v OFS='\t' ' {NR==1?$11=\"Clinvar_ID\t\"$11:$11=\"\t\"$11 } 1 ' | awk  -v OFS='\t' ' {NR==1?$12=\"Clinvar_Phenotype\t\"$13:$13=\"\t\"$13 } 1 ' | awk  -v OFS='\t' ' {NR==1?$14=\"Variant_Frequency_ExAC\t\"$14:$14=\"\t\"$14 } 1 ' | awk  -v OFS='\t' ' {NR==1?$14=\"Variant_Frequency_1000g\t\"$14:$14=\"\t\"$14 } 1 ' | awk  -v OFS='\t' ' {NR==1?$14=\"Variant_Frequency_gnomAD\t\"$14:$14=\"\t\"$14 } 1 ' | awk -F '\t' 'NR>1 {print \"chr\"$0}' > %s/reports/temp_%s_SV_variants.tsv" % (
                         annotsv_file, out, sample_name))
-                              
+
                 os.system("cat %s/reports/%s_annovar_variants.txt | awk '{print $1 \"\t\" $2 \"\t\" $9 \"\t\" $5 \"\t\" $7 \"\t\" $6 \"\t\" $10 \"\t\" $91 \"\t\" $79 \"\t\" $77 \"\t\" $78 \"\t\" $83 \"\t\" $120 \"\t\" $121}' | awk -v OFS='\t' '{$3=\"small_variant\" ; print ;}' | awk -v OFS='\t' '{split($9,a,/:/);$9=a[5]}1' | awk -v OFS='\t' ' {NR==1?$8=\"Overlapping_Genes\t\"$8:$8=\"\t\"$8 } 1 ' | awk -v OFS='\t' ' {NR==1?$11=\"OMIM_Phenotype\t\"$11:$11=\"\t\"$11 } 1 ' > %s/reports/temp_%s_snvindel_variants.tsv" % (
                     out, sample_name, out, sample_name))
-                              
+
                 os.system("cp %sall_variants_report_header.txt %s/reports/%s_all_variants.tsv" % (path_scripts, out, sample_name))
-                os.system("tail -n +2 %s/reports/temp_%s_snvindel_variants.tsv >> %s/reports/%s_all_variants.tsv" % (out, sample_name, out, sample_name))      
+                os.system("tail -n +2 %s/reports/temp_%s_snvindel_variants.tsv >> %s/reports/%s_all_variants.tsv" % (out, sample_name, out, sample_name))
                 os.system("tail -n +2 %s/reports/temp_%s_SV_variants.tsv >> %s/reports/%s_all_variants.tsv" % (out, sample_name, out, sample_name))
-                
+
                 if os.path.isfile("%s/reports/%s_annovar_expansionvariants.txt" % (out, sample_name)) == True:
                     os.system("cat %s/reports/%s_annovar_expansionvariants.txt | awk '{print $1 \"\t\" $2 \"\t\" $9 \"\t\" $5 \"\t\" $7 \"\t\" $6 \"\t\" $10 \"\t\" $91 \"\t\" $79 \"\t\" $77 \"\t\" $78 \"\t\" $83 \"\t\" $120 \"\t\" $121}' | awk -v OFS='\t' '{$3=\"STR\" ; print ;}' | awk -v OFS='\t' '{split($9,a,/:/);$9=a[5]}1' | awk -v OFS='\t' ' {NR==1?$8=\"Overlapping_Genes\t\"$8:$8=\"\t\"$8 } 1 ' | awk -v OFS='\t' ' {NR==1?$11=\"OMIM_Phenotype\t\"$11:$11=\"\t\"$11 } 1 ' > %s/reports/temp_%s_expansion_variants.tsv" % (out, sample_name, out, sample_name))
 
                     os.system("tail -n +2 %s/reports/temp_%s_expansion_variants.tsv >> %s/reports/%s_all_variants.tsv" % (out, sample_name, out, sample_name))
-                              
+
                 if not debug:
-                    os.system("rm %s/reports/temp*" % (out))  
-                          
+                    os.system("rm %s/reports/temp*" % (out))
+
                 print("\nConcise results report for all annotated variants (SNVs, indels, expansion, SV and or MEI) is now available.\n")
-                    
+
             os.system("touch %slogs/results_report.log" % (out))
 
             print("\nResults report for annotated variants is now available.\n")
@@ -1869,7 +1701,7 @@ if iobio:
         else:
             print("https://gene.iobio.io")
 
-if alsgenescanner: 
+if alsgenescanner:
     print("\n\nALSGeneScanner is running...\n\n")
     os.system(
         "python3 %s/alsgenescanner.py %s/annovar.vcf.%s_multianno.txt %s/results/%s_alsgenescanner_all.txt"
