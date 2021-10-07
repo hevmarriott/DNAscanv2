@@ -39,13 +39,6 @@ def create_parser():
   )
 
   parser.add_argument(
-      '-mode',
-      action="store",
-      dest="mode",
-      default="fast",
-      help='options are fast, normal, intensive [string] (default = "fast")')
-
-  parser.add_argument(
       '-filter_string',
       action="store",
       dest="filter_string",
