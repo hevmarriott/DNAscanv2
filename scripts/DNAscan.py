@@ -432,11 +432,11 @@ if alignment:
                         if RG:
                             rg_option_hisat2 = " --rg-id %s --rg LB:%s --rg PL:%s  --rg PU:%s --rg SM:%s " % (
                                 RG_ID, RG_LB, RG_PL, RG_PU, RG_SM)
-                                rg_option_bwa = " -R '@RG\\tID:%s\\tLB:%s\\tPL:%s\\tPU:%s\\tSM:%s' " % (
+                            rg_option_bwa = " -R '@RG\\tID:%s\\tLB:%s\\tPL:%s\\tPU:%s\\tSM:%s' " % (
                                 RG_ID, RG_LB, RG_PL, RG_PU, RG_SM)
                         else:
-                                rg_option_hisat2 = ""
-                                rg_option_bwa = ""
+                            rg_option_hisat2 = ""
+                            rg_option_bwa = ""
 
                         print(
                             "\nPerforming paired read alignment with HISAT2...\n"
@@ -530,11 +530,11 @@ if alignment:
                         if RG:
                             rg_option_hisat2 = " --rg-id %s --rg LB:%s --rg PL:%s  --rg PU:%s --rg SM:%s " % (
                                 RG_ID, RG_LB, RG_PL, RG_PU, RG_SM)
-                                rg_option_bwa = " -R '@RG\\tID:%s\\tLB:%s\\tPL:%s\\tPU:%s\\tSM:%s' " % (
+                            rg_option_bwa = " -R '@RG\\tID:%s\\tLB:%s\\tPL:%s\\tPU:%s\\tSM:%s' " % (
                                 RG_ID, RG_LB, RG_PL, RG_PU, RG_SM)
                         else:
-                                rg_option_hisat2 = ""
-                                rg_option_bwa = ""
+                            rg_option_hisat2 = ""
+                            rg_option_bwa = ""
 
                         print(
                             "\nPerforming single-end read alignment with HISAT2...\n"
