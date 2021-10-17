@@ -1620,7 +1620,7 @@ if results_report:
 
                     print("\nGenerating a concise results report for all annotated variants (SNVs, indels, expansion, SV and/or MEI)...\n")
 
-                    os.system("cat %s | cut -f 2,3,6,15,17,27,28,33,72,86,87 | awk -v OFS='\t' '{split($4,a,/:/);$4=a[1]}1' | awk -v OFS='\t' ' {NR==1?$11=\"Clinvar_ID\t\"$11:$11=\"\t\"$11 } 1 ' | awk  -v OFS='\t' ' {NR==1?$13=\"Clinvar_Phenotype\t\"$13:$13=\"\t\"$13 } 1 ' | awk  -v OFS='\t' ' {NR==1?$14=\"Variant_Frequency_ExAC\t\"$14:$14=\"\t\"$14 } 1 ' | awk  -v OFS='\t' ' {NR==1?$14=\"Variant_Frequency_1000g\t\"$14:$14=\"\t\"$14 } 1 ' | awk  -v OFS='\t' ' {NR==1?$14=\"Variant_Frequency_gnomAD\t\"$14:$14=\"\t\"$14 } 1 ' | awk -F '\t' 'NR>1 {print \"chr\"$0}' > %s/reports/temp_%s_SV_variants.tsv" % (
+                    os.system("cat %s | cut -f 2,3,6,15,18,28,29,34,73,87,88 | awk -v OFS='\t' '{split($4,a,/:/);$4=a[1]}1' | awk -v OFS='\t' ' {NR==1?$11=\"Clinvar_ID\t\"$11:$11=\"\t\"$11 } 1 ' | awk  -v OFS='\t' ' {NR==1?$13=\"Clinvar_Phenotype\t\"$13:$13=\"\t\"$13 } 1 ' | awk  -v OFS='\t' ' {NR==1?$14=\"Variant_Frequency_ExAC\t\"$14:$14=\"\t\"$14 } 1 ' | awk  -v OFS='\t' ' {NR==1?$14=\"Variant_Frequency_1000g\t\"$14:$14=\"\t\"$14 } 1 ' | awk  -v OFS='\t' ' {NR==1?$14=\"Variant_Frequency_gnomAD\t\"$14:$14=\"\t\"$14 } 1 ' | awk -F '\t' 'NR>1 {print \"chr\"$0}' > %s/reports/temp_%s_SV_variants.tsv" % (
                         annotsv_file, out, sample_name))
 
                 else:
