@@ -517,7 +517,8 @@ Figure 2. Overview of the DNAscan2 graphical user interface (GUI). A: Main windo
 
 * Samtools >= 1.9
 * HISAT2 = 2.2.1
-* BWA 0.7.17
+* BWA = 0.7.17
+* Strelka = 2.9.10
 * Python >= 3 (if using Expansion Hunter 3.2.2, only versions 3.5.x, 3.6.x, >=3.7.0, >= 3.8.0 are supported - tested with 3.8.0)
 * Pysam = 0.16.0.1
 * Perl (tested with 5.16.3 x86_64-Linux)
