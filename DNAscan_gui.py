@@ -47,7 +47,7 @@ tab2_layout = [[sg.Text('Input Format', size=(16,1)), sg.Combo(['fastq', 'sam', 
 [sg.Text('Output Directory', size=(16,1), tooltip='Path to output directory i.e. results/'), sg.InputText('results/', size=(40,1), key='-out'), sg.FolderBrowse()],
 [sg.Text('VCF File', size=(16,1), tooltip='OPTIONAL: Path to complementary VCF file with variant calls ready for SNP/indel annotation'), sg.InputText('', size=(40,1), key='-vcf'), sg.FileBrowse()],
 [sg.Text('Sample Name', size=(16,1)), sg.InputText('sample', size=(40,1), key='-sample_name')],
-[sg.Text('Filter String', size=(16,1), tooltip='Bcftools hard variant filter string for Strelka small variants'), sg.InputText('\'FORMAT/FT == "PASS"\'', key='-filter_string', size=(40,1))]]
+[sg.Text('Filter String', size=(16,1), tooltip='Bcftools hard variant filter string for Strelka small variants'), sg.InputText('\'FORMAT/FT == "PASS" && FORMAT/DP > 10 && MQ > 40 && GQ > 20 && ID/SB < 2 && ADF > 0 && ADR > 0\'', key='-filter_string', size=(40,1))]]
 
 #need to do padding on alignment report, exome, annotation report
 tab3_layout = [[sg.Text('Analysis:', size=(10,1), font="Helvetica 10 bold")],
