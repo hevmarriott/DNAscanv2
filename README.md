@@ -163,7 +163,7 @@ Its basic use requires the following options:
  The desired pipeline stages are performed according to the optional arguments selected:
  
  ```bash
-  -filter_string FILTER_STRING  bcftools filter string for strelka, eg GQ>20 & DP>10 (Default = ""FORMAT/FT == "PASS"")
+  -filter_string FILTER_STRING  bcftools filter string for strelka, eg GQ>20 & DP>10 (Default = ""FORMAT/FT == "PASS" && FORMAT/DP > 10 && MQ > 40 && GQ > 20 && ID/SB < 2 && ADF > 0 && ADR > 0")
   -iobio                if this flag is set the iobio service links will be provided at the end of the analysis (Default = "False")
   -alignment            if this flag is set the alignment stage will be performed (Default = "False")
   -expansion            if this flag is set DNAscan2 will look for the expansions described in the json folder described in paths_configs.py with ExpansionHunter and non-reference/novel tandem repeats with ExpansionHunter Denovo (Default = "False"). 
