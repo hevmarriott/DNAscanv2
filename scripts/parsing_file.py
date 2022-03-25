@@ -42,8 +42,8 @@ def create_parser():
       '-filter_string',
       action="store",
       dest="filter_string",
-      default='FORMAT/FT == "PASS"',
-      help='bcftools filter string for strelka, eg "GQ>20 & DP>10" (Default = \'FORMAT/FT == "PASS"\')')
+      default='FORMAT/FT == "PASS" && FORMAT/DP > 10 && MQ > 40 && GQ > 20 && ID/SB < 2 && ADF > 0 && ADR > 0',
+      help='bcftools filter string for strelka, eg "GQ>20 & DP>10" (Default = \'FORMAT/FT == "PASS" && FORMAT/DP > 10 && MQ > 40 && GQ > 20 && ID/SB < 2 && ADF > 0 && ADR > 0\')')
 
   parser.add_argument(
       '-paired',
