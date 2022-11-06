@@ -938,7 +938,7 @@ if SV or MEI:
 
                 melt_bed = "%sadd_bed_files/1KGP_Hg19/hg19.genes.bed" % (path_melt)
 
-            if reference == "hg38:
+            if reference == "hg38":
                 os.system("ls %sme_refs/Hg38/*zip | sed 's/\*//g' > %smelt/transposon.list" % (path_melt, out))
 
                 melt_bed = "%sadd_bed_files/Hg38/Hg38.genes.bed" % (path_melt)
