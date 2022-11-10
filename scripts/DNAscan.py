@@ -138,6 +138,7 @@ RG = args.RG
 tmp = args.tmp
 ref_file = args.ref_file
 dnascan_main_dir = args.dnascan_main_dir
+fast_mode = args.fast_mode
 
 if ref_file:
     path_reference = ref_file
@@ -756,57 +757,61 @@ if STR:
             "WARNING: The presence of EH.log in logs is telling you that the expansion scan was already peformed, please remove SV.log if you wish to perform this stage anyway\n"
         )
     else:
-        print("\nExpansionHunter Denovo is scanning the genome to construct a catalog-free short tandem repeat profile...\n")
+        if not fast_mode:
+            print("\nExpansionHunter Denovo is scanning the genome to construct a catalog-free short tandem repeat profile...\n")
 
-        os.system("%s/bin/ExpansionHunterDenovo profile --reads %s --reference %s --output-prefix %s/results/%s --min-anchor-mapq 50 --max-irr-mapq 40 --log-reads" % (
-            path_expansionHunterDenovo_dir, bam_file, path_reference, out, sample_name))
+            os.system("%s/bin/ExpansionHunterDenovo profile --reads %s --reference %s --output-prefix %s/results/%s --min-anchor-mapq 50 --max-irr-mapq 40 --log-reads" % (
+                path_expansionHunterDenovo_dir, bam_file, path_reference, out, sample_name))
 
-        STR_profile = "%s/results/%s.str_profile.json" % (out, sample_name)
+            STR_profile = "%s/results/%s.str_profile.json" % (out, sample_name)
 
-        if len(STR_profile) != 0:
-            print("\nShort tandem repeat profiling is complete.\n")
+            if len(STR_profile) != 0:
+                print("\nShort tandem repeat profiling is complete.\n")
 
-            #13.1 Convert the novel/non-reference loci identified with ExpansionHunter Denovo to variant catalog format
-            print("\nConverting loci identified with ExpansionHunter Denovo into ExpansionHunter variant catalog format...\n")
+                #13.1 Convert the novel/non-reference loci identified with ExpansionHunter Denovo to variant catalog format
+                print("\nConverting loci identified with ExpansionHunter Denovo into ExpansionHunter variant catalog format...\n")
 
-            os.system("cat %s/results/%s.locus.tsv | sed 's/contig/chr/g' | cut -f1-4 > %s/results/%s_EHDNinput.txt" % (out, sample_name, out, sample_name))
+                os.system("cat %s/results/%s.locus.tsv | sed 's/contig/chr/g' | cut -f1-4 > %s/results/%s_EHDNinput.txt" % (out, sample_name, out, sample_name))
 
-            EHDN_input = "%s/results/%s_EHDNinput.txt" % (out, sample_name)
+                EHDN_input = "%s/results/%s_EHDNinput.txt" % (out, sample_name)
 
-            EHDN_variant_catalog = "%s/results/%s_EHDN_variant_catalog.json" % (out, sample_name)
+                EHDN_variant_catalog = "%s/results/%s_EHDN_variant_catalog.json" % (out, sample_name)
 
-            EHDN_excluded = "%s/results/%s_EHDN_excluded.csv" % (out, sample_name)
+                EHDN_excluded = "%s/results/%s_EHDN_excluded.csv" % (out, sample_name)
 
-            EHDN_unmatched = "%s/results/%s_EHDN_unmatched.csv" % (out, sample_name)
+                EHDN_unmatched = "%s/results/%s_EHDN_unmatched.csv" % (out, sample_name)
 
-            create_variant_catalog.transform_format_sarah(EHDN_input, path_reference, EHDN_variant_catalog, EHDN_unmatched, EHDN_excluded)
+                create_variant_catalog.transform_format_sarah(EHDN_input, path_reference, EHDN_variant_catalog, EHDN_unmatched, EHDN_excluded)
 
             #13.2 Genotype the novel/non reference variant catalog with ExpansionHunter
-            if len(EHDN_variant_catalog) != 0 and genotypeSTR == "True":
-                print("\nGenotyping denovo loci with ExpansionHunter...\n")
+                if len(EHDN_variant_catalog) != 0 and genotypeSTR == "True":
+                    print("\nGenotyping denovo loci with ExpansionHunter...\n")
 
-                os.system("%sExpansionHunter --reads %s --reference %s  --variant-catalog %s --output-prefix %s/temp_EHDN" % (
-                path_expansionHunter, bam_file, path_reference, EHDN_variant_catalog, out))
-                os.system("mv %s/temp_EHDN.vcf %s/results/%s_EHDNexpansions.vcf ; bgzip %s/results/%s_EHDNexpansions.vcf ; %stabix -p vcf %s/results/%s_EHDNexpansions.vcf.gz" % (
-                out, out, sample_name, out, sample_name, path_tabix, out, sample_name))
+                    os.system("%sExpansionHunter --reads %s --reference %s  --variant-catalog %s --output-prefix %s/temp_EHDN" % (
+                    path_expansionHunter, bam_file, path_reference, EHDN_variant_catalog, out))
+                    os.system("mv %s/temp_EHDN.vcf %s/results/%s_EHDNexpansions.vcf ; bgzip %s/results/%s_EHDNexpansions.vcf ; %stabix -p vcf %s/results/%s_EHDNexpansions.vcf.gz" % (
+                    out, out, sample_name, out, sample_name, path_tabix, out, sample_name))
 
-                EHDNexpansion_results_file = "%s/results/%s_EHDNexpansions.vcf.gz" % (out, sample_name)
+                    EHDNexpansion_results_file = "%s/results/%s_EHDNexpansions.vcf.gz" % (out, sample_name)
 
-                is_variant_file_OK(EHDNexpansion_results_file, "Vcf", "EHDNexpansion")
+                    is_variant_file_OK(EHDNexpansion_results_file, "Vcf", "EHDNexpansion")
 
-                print("\nDenovo expansion loci genotyping is complete.\n")
+                    print("\nDenovo expansion loci genotyping is complete.\n")
 
-                if not debug:
-                    os.system("rm %stemp_EHDN.json* %stemp_EHDN_realigned.bam, %s, %s, %s" % (out, out, EHDN_excluded, EHDN_unmatched, EHDN_input))
+                    if not debug:
+                        os.system("rm %stemp_EHDN.json* %stemp_EHDN_realigned.bam, %s, %s, %s" % (out, out, EHDN_excluded, EHDN_unmatched, EHDN_input))
+
+                else:
+                    print("\nThe ExpansionHunter Denovo variant catalog is empty. Please run again and check everything is correct before running expansion again if you wish to perform this step.\n")
 
             else:
-                print("\nThe ExpansionHunter Denovo variant catalog is empty. Please run again and check everything is correct before running expansion again if you wish to perform this step.\n")
+                print("\nWARNING: %s is empty, please run again and make sure all paths are correct if you want to perform genome-wide short tandem repeat profiling.\n" % STR_profile)
+
+
+            os.system("touch  %slogs/STR.log" % (out))
 
         else:
-            print("\nWARNING: %s is empty, please run again and make sure all paths are correct if you want to perform genome-wide short tandem repeat profiling.\n" % STR_profile)
-
-
-        os.system("touch  %slogs/STR.log" % (out))
+            print("\nWARNING: You have indicated that you want to run DNAscan2 in fast mode, which does not include STR analysis. If you want to run STR analysis, please remove the fast mode flag.\n")
 
 # 14. Structural Variant calling
 if SV or MEI:
@@ -862,58 +867,65 @@ if SV or MEI:
                 print("\nStructural variant calling with Manta is complete.\n")
 
                 # 14.2 Delly (all SV)
+                if not fast_mode:
+                    os.system("mkdir %sdelly" % (out))
 
-                os.system("mkdir %sdelly" % (out))
+                    if format == "cram":
+                        print("\nConverting input cram file to bam format for structural variant detection with Delly...\n")
+                        os.system("samtools view -b -h -@ %s -T %s -o %s/%s.bam %s" % (num_cpu, path_reference, out, sample_name, bam_file))
+                        os.system("samtools index -@ %s %s/%s.bam" % (num_cpu, out, sample_name))
+                        delly_bam = "%s/%s.bam" % (out, sample_name)
 
-                if format == "cram":
-                    print("\nConverting input cram file to bam format for structural variant detection with Delly...\n")
-                    os.system("samtools view -b -h -@ %s -T %s -o %s/%s.bam %s" % (num_cpu, path_reference, out, sample_name, bam_file))
-                    os.system("samtools index -@ %s %s/%s.bam" % (num_cpu, out, sample_name))
-                    delly_bam = "%s/%s.bam" % (out, sample_name)
+                    if format == "fastq":
+                        delly_bam = "%ssorted_merged.bam" % (out)
 
-                if format == "fastq":
-                    delly_bam = "%ssorted_merged.bam" % (out)
+                    if format == "bam":
+                        delly_bam = bam_file
 
-                if format == "bam":
-                    delly_bam = bam_file
+                    print("\nStructural variants are being called with Delly...\n")
 
-                print("\nStructural variants are being called with Delly...\n")
+                    os.system("%sdelly call -g %s -o %sdelly/%s_delly.bcf -x %s %s" % (path_delly, path_reference, out, sample_name, path_delly_exclude_regions, delly_bam))
+                    os.system("%sbcftools view %sdelly/%s_delly.bcf > %sdelly/%s_delly_SV.vcf" % (path_bcftools, out, sample_name, out, sample_name))
 
-                os.system("%sdelly call -g %s -o %sdelly/%s_delly.bcf -x %s %s" % (path_delly, path_reference, out, sample_name, path_delly_exclude_regions, delly_bam))
-                os.system("%sbcftools view %sdelly/%s_delly.bcf > %sdelly/%s_delly_SV.vcf" % (path_bcftools, out, sample_name, out, sample_name))
+                    os.system("mv %sdelly/%s_delly_SV.vcf %s/results/" % (out, sample_name, out))
+                    os.system("bgzip -c %s/results/%s_delly_SV.vcf > %s/results/%s_delly_SV.vcf.gz" % (out, sample_name, out, sample_name))
+                    os.system("%stabix -p vcf %s/results/%s_delly_SV.vcf.gz" % (path_tabix, out, sample_name))
 
-                os.system("mv %sdelly/%s_delly_SV.vcf %s/results/" % (out, sample_name, out))
-                os.system("bgzip -c %s/results/%s_delly_SV.vcf > %s/results/%s_delly_SV.vcf.gz" % (out, sample_name, out, sample_name))
-                os.system("%stabix -p vcf %s/results/%s_delly_SV.vcf.gz" % (path_tabix, out, sample_name))
+                    delly_SV_results_file = "%s/results/%s_delly_SV.vcf.gz" % (out, sample_name)
 
-                delly_SV_results_file = "%s/results/%s_delly_SV.vcf.gz" % (out, sample_name)
+                    is_variant_file_OK(delly_SV_results_file, "Vcf", "SV")
 
-                is_variant_file_OK(delly_SV_results_file, "Vcf", "SV")
-
-                print("\nStructural variant calling with Delly is complete.\n")
+                    print("\nStructural variant calling with Delly is complete.\n")
 
                 # 14.3 SV calls with Manta and Delly are merged together using SURVIVOR to create a union set of structural variants.
 
-                print("\nStructural variants called with Manta and Delly are being merged with SURVIVOR to create a union callset...\n")
+                    print("\nStructural variants called with Manta and Delly are being merged with SURVIVOR to create a union callset...\n")
 
-                os.system("ls %s/results/*SV.vcf > %s/results/survivor_sample_files" % (out, out))
-                os.system("%sSURVIVOR merge %s/results/survivor_sample_files 1000 1 1 1 0 30 %s/results/%s_SV_merged.vcf" % (path_SURVIVOR, out, out, sample_name))
-                os.system("perl %svcf-sort.pl %s/results/%s_SV_merged.vcf | bgzip -c > %s/results/%s_SV_merged.vcf.gz" % (path_scripts, out, sample_name, out, sample_name))
-                os.system("%stabix -p vcf %s/results/%s_SV_merged.vcf.gz" % (path_tabix, out, sample_name))
+                    os.system("ls %s/results/*SV.vcf > %s/results/survivor_sample_files" % (out, out))
+                    os.system("%sSURVIVOR merge %s/results/survivor_sample_files 1000 1 1 1 0 30 %s/results/%s_SV_merged.vcf" % (path_SURVIVOR, out, out, sample_name))
+                    os.system("perl %svcf-sort.pl %s/results/%s_SV_merged.vcf | bgzip -c > %s/results/%s_SV_merged.vcf.gz" % (path_scripts, out, sample_name, out, sample_name))
+                    os.system("%stabix -p vcf %s/results/%s_SV_merged.vcf.gz" % (path_tabix, out, sample_name))
 
-                SV_results_file = "%s/results/%s_SV_merged.vcf.gz" % (out, sample_name)
+                    SV_results_file = "%s/results/%s_SV_merged.vcf.gz" % (out, sample_name)
 
-                is_variant_file_OK(SV_results_file, "Vcf", "SV")
+                    is_variant_file_OK(SV_results_file, "Vcf", "SV")
 
-                print("\nMerging of structural variant calls is complete.\n")
+                    print("\nMerging of structural variant calls is complete.\n")
 
-                if not debug:
-                    os.system("rm -r %sdelly %s/results/survivor_sample_files %s/results/*.vcf %s/results/*SV.vcf.gz*" % (out, out, out, out))
+                    if not debug:
+                        os.system("rm -r %sdelly %s/results/survivor_sample_files %s/results/*.vcf %s/results/*SV.vcf.gz*" % (out, out, out, out))
 
-                    if format == "cram":
-                        os.system("rm %s/%s.bam*" % (out, sample_name))
+                        if format == "cram":
+                            os.system("rm %s/%s.bam*" % (out, sample_name))
 
-                os.system("touch %slogs/SV.log" % (out))
+                    os.system("touch %slogs/SV.log" % (out))
+
+                else:
+                    SV_results_file = "%s/results/%s_manta_SV.vcf.gz" % (out, sample_name)
+
+                    is_variant_file_OK(SV_results_file, "Vcf", "SV")
+
+                    os.system("touch %slogs/SV.log" % (out))
 
             else:
                 print(

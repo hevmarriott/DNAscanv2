@@ -72,6 +72,14 @@ def create_parser():
       default=False)
 
   parser.add_argument(
+      '-fast_mode',
+      action="store_true",
+      dest="fast_mode",
+      help=
+      'if this flag is set DNAscan2 will run without SV calling with Delly and genome-wide novel/non-reference tandem repeats with ExpansionHunter Denovo (Default = "False")',
+      default=False)
+
+  parser.add_argument(
       '-alignment',
       action="store_true",
       dest="alignment",
@@ -94,7 +102,7 @@ def create_parser():
       help=
       'if this flag is set DNAscan will look for genome-wide novel/non-reference tandem repeats with ExpansionHunter Denovo  (Default = "False") ',
       default=False)
-  
+
   parser.add_argument(
       '-genotypeSTR',
       action="store_true",
@@ -102,7 +110,7 @@ def create_parser():
       help=
       'if this flag is set in addition to STR, DNAscan will genotype the identified STR loci with ExpansionHunter (Default = "False") ',
       default=False)
-  
+
   parser.add_argument(
       '-SV',
       action="store_true",
@@ -110,7 +118,7 @@ def create_parser():
       help=
       'if this flag is set the structural variant calling stage will be performed with Manta (in all modes) and Delly (normal mode for inversions and deletions; all variants in intensive mode) (Default = "False") ',
       default=False)
-  
+
   parser.add_argument(
       '-MEI',
       action="store_true",
