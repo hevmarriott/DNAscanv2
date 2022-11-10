@@ -757,17 +757,17 @@ if STR:
             "WARNING: The presence of EH.log in logs is telling you that the expansion scan was already peformed, please remove SV.log if you wish to perform this stage anyway\n"
         )
     else:
-        if not fast_mode:
-            print("\nExpansionHunter Denovo is scanning the genome to construct a catalog-free short tandem repeat profile...\n")
+        print("\nExpansionHunter Denovo is scanning the genome to construct a catalog-free short tandem repeat profile...\n")
 
-            os.system("%s/bin/ExpansionHunterDenovo profile --reads %s --reference %s --output-prefix %s/results/%s --min-anchor-mapq 50 --max-irr-mapq 40 --log-reads" % (
-                path_expansionHunterDenovo_dir, bam_file, path_reference, out, sample_name))
+        os.system("%s/bin/ExpansionHunterDenovo profile --reads %s --reference %s --output-prefix %s/results/%s --min-anchor-mapq 50 --max-irr-mapq 40 --log-reads" % (
+            path_expansionHunterDenovo_dir, bam_file, path_reference, out, sample_name))
 
-            STR_profile = "%s/results/%s.str_profile.json" % (out, sample_name)
+        STR_profile = "%s/results/%s.str_profile.json" % (out, sample_name)
 
-            if len(STR_profile) != 0:
-                print("\nShort tandem repeat profiling is complete.\n")
+        if len(STR_profile) != 0:
+            print("\nShort tandem repeat profiling is complete.\n")
 
+            if not fast_mode and genotypeSTR == "True":
                 #13.1 Convert the novel/non-reference loci identified with ExpansionHunter Denovo to variant catalog format
                 print("\nConverting loci identified with ExpansionHunter Denovo into ExpansionHunter variant catalog format...\n")
 
@@ -783,8 +783,8 @@ if STR:
 
                 create_variant_catalog.transform_format_sarah(EHDN_input, path_reference, EHDN_variant_catalog, EHDN_unmatched, EHDN_excluded)
 
-            #13.2 Genotype the novel/non reference variant catalog with ExpansionHunter
-                if len(EHDN_variant_catalog) != 0 and genotypeSTR == "True":
+                #13.2 Genotype the novel/non reference variant catalog with ExpansionHunter
+                if len(EHDN_variant_catalog) != 0:
                     print("\nGenotyping denovo loci with ExpansionHunter...\n")
 
                     os.system("%sExpansionHunter --reads %s --reference %s  --variant-catalog %s --output-prefix %s/temp_EHDN" % (
@@ -801,17 +801,13 @@ if STR:
                     if not debug:
                         os.system("rm %stemp_EHDN.json* %stemp_EHDN_realigned.bam, %s, %s, %s" % (out, out, EHDN_excluded, EHDN_unmatched, EHDN_input))
 
-                else:
-                    print("\nThe ExpansionHunter Denovo variant catalog is empty. Please run again and check everything is correct before running expansion again if you wish to perform this step.\n")
-
             else:
-                print("\nWARNING: %s is empty, please run again and make sure all paths are correct if you want to perform genome-wide short tandem repeat profiling.\n" % STR_profile)
-
-
-            os.system("touch  %slogs/STR.log" % (out))
+                print("\nWARNING: You have indicated that you want to run DNAscan2 in fast mode, which does not include the genotyping of STR loci (--genotypeSTR). If you want to run STR genotyping, please remove the fast mode flag.\n")
 
         else:
-            print("\nWARNING: You have indicated that you want to run DNAscan2 in fast mode, which does not include STR analysis. If you want to run STR analysis, please remove the fast mode flag.\n")
+            print("\nWARNING: %s is empty, please run again and make sure all paths are correct if you want to perform genome-wide short tandem repeat profiling.\n" % STR_profile)
+
+        os.system("touch  %slogs/STR.log" % (out))
 
 # 14. Structural Variant calling
 if SV or MEI:
