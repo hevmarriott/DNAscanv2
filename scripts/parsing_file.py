@@ -76,7 +76,7 @@ def create_parser():
       action="store_true",
       dest="fast_mode",
       help=
-      'if this flag is set DNAscan2 will run without SV calling with Delly and genome-wide novel/non-reference tandem repeats with ExpansionHunter Denovo (Default = "False")',
+      'if this flag is set DNAscan2 will run without SV calling with Delly and the genotyping of STR loci identified with ExpansionHunter Denovo (Default = "False")',
       default=False)
 
   parser.add_argument(
