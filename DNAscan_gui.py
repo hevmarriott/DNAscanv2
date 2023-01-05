@@ -108,7 +108,6 @@ while True:
         sg.popup('Program Name: DNAscan\nVersion: 2.0\n\nDevelopers:\nDr Alfredo Iacoangeli, Senior Research Fellow in Bioinformatics, Department of Biostatistics and Health Informatics, KCL\nHeather Marriott, PhD Candidate, Department of Basic and Clinical Neuroscience, KCL\n\nFunding Sources:\nMotor Neurone Disease Association\nNIHR Maudsley Biomedical Research Centre (BRC), KCL\nDRIVE-Health CDT Programme, KCL\nGlaxoSmithKline', title='About')
 
 # basic options tab
-## this one works for the fastq
     if values["-format"] == "fastq":
         window['-paired_text'].update(visible=True)
         window['-paired'].update(visible=True)
