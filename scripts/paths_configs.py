@@ -4,7 +4,7 @@
 
 import os.path
 
-#Configs 
+#Configs
 
 RG_ID = ""
 
@@ -52,8 +52,8 @@ path_annotsv = ""
 path_knotannotsv = ""
 
 #annovar_protocols and annovar_operations can be modified according to the wanted annovar databases. For instructions about
-#how to download the annovar databases and to modify annovar_protocols and annovar_operations please visit 
-#http://annovar.openbioinformatics.org/en/latest/ . 
+#how to download the annovar databases and to modify annovar_protocols and annovar_operations please visit
+#http://annovar.openbioinformatics.org/en/latest/ .
 
 annovar_protocols = "refGene,dbnsfp33a,clinvar_20210501,intervar_20180118,avsnp147,exac03,ALL.sites.2015_08,gnomad211_genome"
 
@@ -123,10 +123,10 @@ path_bwa_index = ""
 
 #custom tool options
 
-hisat_custom_options = ""
+hisat_custom_options = ""
 
 bwa_custom_options = ""
 
-melt_custom_options = ""
+melt_custom_options = ""
 
-annotsv_custom_options = ""
+annotsv_custom_options = ""
