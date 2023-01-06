@@ -72,7 +72,7 @@ col_1 = [[sg.Image(r'DNAscan_logo.001.png', size=(500,100))],
 sg.Tab('Basic Options', tab2_layout), sg.Tab('Customisation', tab3_layout), sg.Tab('Advanced Options', tab4_layout)]], size=(575,490))]]
 
 col = [[sg.Frame(layout=[
-[sg.MLine(size=(100,35), key='-ML-',autoscroll=True, write_only=False, reroute_stdout=True, reroute_stderr=True, reroute_cprint=True)],[sg.Button('Run DNAscan', pad = (5,5)), sg.Button('Reset', pad = (5,5)), sg.Button('Add Read Group Info', key = "RG_button", visible = False)]], title="Output Window")],]
+[sg.MLine(size=(100,35), key='-ML-',autoscroll=True, write_only=False, reroute_stdout=True, reroute_stderr=True, reroute_cprint=True)],[sg.Button('Run DNAscan', pad = (5,5)), sg.Button('Reset', pad = (5,5)), sg.Button('Add Read Group Info')]], title="Output Window")],]
 
 col2 = sg.Column(col, element_justification='center')
 
@@ -167,14 +167,13 @@ while True:
             window['-RG_PL'].update(disabled = False)
             window['-RG_PU'].update(disabled = False)
             window['-RG_SM'].update(disabled = False)
-            window["RG_button"].update(visible = True)
+
         else:
             window['-RG_ID'].update(disabled = True)
             window['-RG_LB'].update(disabled = True)
             window['-RG_PL'].update(disabled = True)
             window['-RG_PU'].update(disabled = True)
             window['-RG_SM'].update(disabled = True)
-            window["RG_button"].update(visible = False)
 
     elif values['-alignment'] == False:
         window['-RG'].update(disabled = True)
@@ -186,7 +185,7 @@ while True:
         window['-RG_PL'].update(disabled = True)
         window['-RG_PU'].update(disabled = True)
         window['-RG_SM'].update(disabled = True)
-        window["RG_button"].update(visible = False)
+
         window['-hisat_custom_options_text'].update(visible = False)
         window['-bwa_custom_options_text'].update(visible = False)
         window['-hisat_custom_options'].update(visible = False)
