@@ -545,6 +545,9 @@ Tools needed for a container based deployment
 * Docker >= 1.7.1
 * Singularity >= 2.2 
 
+Tools needed to run the graphical user interface
+* PySimpleGUI = 4.60.4
+
 An environment YAML file (DNAscan2.yaml) is provided for dependencies which can be installed via Conda (all dependencies apart from Strelka, Manta, MELT, ExpansionHunterDenovo, Annovar, AnnotSV, knotAnnotSV) to prevent software version clashes. It is recommended to create a new conda environment to store these dependencies:
 
 ```bash
