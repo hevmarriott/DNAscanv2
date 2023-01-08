@@ -163,7 +163,7 @@ Its basic use requires the following options:
  The desired pipeline stages are performed according to the optional arguments selected:
  
  ```bash
-  -filter_string FILTER_STRING  bcftools filter string for strelka, eg GQ>20 & DP>10 (Default = ""FORMAT/FT == "PASS" && FORMAT/DP > 10 && MQ > 40 && GQ > 20 && ID/SB < 2 && ADF > 0 && ADR > 0")
+  -filter_string	bcftools filter string for strelka, eg GQ>20 & DP>10 (Default = ""FORMAT/FT == "PASS" && FORMAT/DP > 10 && MQ > 40 && GQ > 20 && ID/SB < 2 && ADF > 0 && ADR > 0")
   -iobio                if this flag is set the iobio service links will be provided at the end of the analysis (Default = "False")
   -alignment            if this flag is set the alignment stage will be performed (Default = "False")
   -expansion            if this flag is set DNAscan2 will look for the expansions described in the json folder described in paths_configs.py with ExpansionHunter and non-reference/novel tandem repeats with ExpansionHunter Denovo (Default = "False"). 
@@ -181,23 +181,22 @@ Its basic use requires the following options:
   -sequencing_report    if this flag is set DNAscan2 will generate a report describing the input sequencing data (Default = "False") 
   -calls_report         if this flag is set DNAscan2 will generate a report describing the found snvs and indels (Default = "False")
   -rm_dup               if this flag is set DNAscan2 will remove duplicates from the sample bam file (Default = "False")
-
+  -fast_mode            if this flag is set DNAscan2 will run without SV calling with Delly and the genotyping of STR loci identified with ExpansionHunter Denovo if those flags are set (Default = "False")
 ```
 
-If only the --variantcalling flag is selected, Hisat2 and Strelka is used to quickly align and call variants, as it is ideal for detection of single nucleotide variants. If your analysis is focused on structural variants and transposable elements, BWA is addiitonally utilised to refine Hisat2 alignment on selected reads. This step improves the alignment of soft-clipped reads and reads containing small insertion and deletion variants. Structural variant calling with Delly and mobile element inserion with MELT can now be performed. Additionally, ExpansionHunter Denovo can be used to identify non-catalogue genome-wide short tandem repeat loci, with the added option to genotype these loci using ExpansionHunter (recommended only for higher spec computers/high performance computing systems if analysing whole genome sequencing data).
+If only the --variantcalling flag is selected, Hisat2 and Strelka is used to quickly align and call variants, as it is ideal for detection of single nucleotide variants. If your analysis is focused on structural variants and transposable elements, BWA is addiitonally utilised to refine Hisat2 alignment on selected reads. This step improves the alignment of soft-clipped reads and reads containing small insertion and deletion variants. Structural variant calling with Delly and mobile element inserion with MELT can now be performed. Additionally, ExpansionHunter Denovo can be used to identify non-catalogue genome-wide short tandem repeat loci, with the added option to genotype these loci using ExpansionHunter (recommended only for higher spec computers/high performance computing systems if analysing whole genome sequencing data). For users with limited RAM and/or time constraints, we have introduced fast mode to allow structural variant and genome-wide short tandem repeat loci detection to still take place, without Delly (which is very time intensive (~24h per genome)) and genotyping of ExpansionHunter Denovo identified loci (requires a lot of RAM if performed on a genome-wide basis).
 
 Finally, a set of optional arguments can be used to customise the analysis:
 
  ```bash
--RG RG                if this flag is set the alignment stage will add the provided in paths_configs.py read group (Default = "False")
--paired PAIRED        options are 1 for paired end reads and 0 for single end reads (Default = "1")
--vcf VCF              complementary vcf file
--in2 INPUT_FILE2      input file 2, for paired end reads only (usually fastq file)
+-RG                   if this flag is set the alignment stage will add the provided in paths_configs.py read group (Default = "False")
+-paired               options are 1 for paired end reads and 0 for single end reads (Default = "1")
+-vcf	              complementary vcf file
+-in2	    input file 2, for paired end reads only (usually fastq file)
 -BED                  restrict the analysis to the regions in the bed file (Default = "False") 
--sample_name SAMPLE_NAME  specify sample name [string] (default = "sample")
--debug                if this flag is set DNAscan2 will not delete intermediate and temporary files (Default = "False")
+-sample_name	      specify sample name [string] (default = "sample")
+-debug		      if this flag is set DNAscan2 will not delete intermediate and temporary files (Default = "False")
 ```
-
 
 #### How to make the read mappers and variant callers/annotators use custom options
 
@@ -259,7 +258,6 @@ Filtering calls for which genotype quality is > then 30 and depth >5:
 ```bash
 python3 /path/to/DNAscanv2/scripts/DNAscan.py -format fastq -in data1.fq.gz -in2 data2.fq.gz -reference hg19 -alignment -variantcalling -annotation -iobio -out /path/to/outdir/  -filter "GQ>30 && DP>5"
 ```
-
 
 #### Looking for repeat expansions
 
