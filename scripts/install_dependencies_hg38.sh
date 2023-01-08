@@ -101,7 +101,7 @@ conda install -y samblaster=0.1.26
 
 conda install -y delly=0.8.3
 
-conda install -y pysimplegui=4.40.0
+conda install -y pysimplegui=4.60.4
 
 conda install -y survivor=1.0.7
 
