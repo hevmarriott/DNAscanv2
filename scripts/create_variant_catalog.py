@@ -5,9 +5,9 @@ import write as w
 from shared_datatypes import RefGenome
 
 
-# Version for EHdn output in format for Sarah
-def transform_format_sarah(ehdn_file: str, refgen_file: str, varcat_out_file: str, unmatched_out_file: str, excluded_out_file: str):
-    ehdn_variants = r.read_ehdn_variants_sarah(ehdn_file)
+# Version for EHdn output in format
+def transform_format(ehdn_file: str, refgen_file: str, varcat_out_file: str, unmatched_out_file: str, excluded_out_file: str):
+    ehdn_variants = r.read_ehdn_variants(ehdn_file)
     ref_genome = RefGenome(pysam.FastaFile(refgen_file))
 
     # If a variant has no basis in the reference genome, it gets excluded.
@@ -23,9 +23,9 @@ def transform_format_sarah(ehdn_file: str, refgen_file: str, varcat_out_file: st
     # Output the actual variant catalog to file
     w.write_variant_catalog(varcat_out_file, retained_variants)
     # Output the excluded regions that have no basis in the ref to file
-    w.write_variants_to_csv_format_sarah(unmatched_out_file, unmatched_variants)
+    w.write_variants_to_csv_format(unmatched_out_file, unmatched_variants)
     # Output the regions excluded due to too many Ns to file
-    w.write_variants_to_csv_format_sarah(excluded_out_file, excluded_variants)
+    w.write_variants_to_csv_format(excluded_out_file, excluded_variants)
 
     print("Successfully created a variant catalog with {} entries from {} inputted regions.".format(len(retained_variants), len(ehdn_variants)))
     return retained_variants
@@ -83,10 +83,10 @@ def retain_unique_entries(varcat_file: str, filter_out_file: str, filtered_varca
     print("Filtered out {} entries from the original varcat with {} entries".format(len(duplicates), len(varcat)))
 
 
-refgenfile = r'example/input/GRCh38_full_analysis_set_plus_decoy_hla.fa'
-ehdnfile = r'example/input/Example_InputFile_EH4.txt'
-varcat_output = r'example/output/variant_catalog.json'
-unmatched_output = r'example/output/unmatched_regions.csv'
-excluded_output = r'example/output/automagically_excluded.csv'
+# refgenfile = r'example/input/GRCh38_full_analysis_set_plus_decoy_hla.fa'
+# ehdnfile = r'example/input/Example_InputFile_EH4.txt'
+# varcat_output = r'example/output/variant_catalog.json'
+# unmatched_output = r'example/output/unmatched_regions.csv'
+# excluded_output = r'example/output/automagically_excluded.csv'
 
-transform_format_sarah(ehdnfile, refgenfile, varcat_output, unmatched_output, excluded_output)
+# transform_format(ehdnfile, refgenfile, varcat_output, unmatched_output, excluded_output)

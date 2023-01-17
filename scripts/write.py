@@ -31,7 +31,7 @@ def _format_region(variant: Variant) -> str:
     return variant['contig'].lstrip('chr') + ":" + str(variant['start']) + "-" + str(variant['end'])
 
 
-def write_variants_to_csv_format_sarah(filename: str, data: List[Variant]):
+def write_variants_to_csv_format(filename: str, data: List[Variant]):
     with open(filename, 'w+') as f:
         fields = ['contig', 'start', 'end', 'motif']
         writer = csv.DictWriter(f, fieldnames=fields, dialect="excel", lineterminator='\r')

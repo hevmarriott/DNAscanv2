@@ -4,7 +4,7 @@ import json
 from shared_datatypes import Variant
 
 
-def read_ehdn_variants_sarah(filename: str) -> List[Variant]:
+def read_ehdn_variants(filename: str) -> List[Variant]:
     variant_list = []
     with open(filename) as f:
         data = csv.reader(f, delimiter="\t")

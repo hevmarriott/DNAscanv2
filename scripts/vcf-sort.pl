@@ -51,7 +51,7 @@ sub parse_params
 sub sort_vcf
 {
     my ($opts) = @_;
-    
+
     my $fh;
     if ( exists($$opts{file}) )
     {
@@ -68,10 +68,10 @@ sub sort_vcf
 
     my $sort_opts = check_sort_options($opts);
     my $cmd;
-    
+
     if ( exists($$opts{temp_dir}) )
     {
-		$cmd = "sort $sort_opts -T $$opts{temp_dir} -k2,2n";    
+		$cmd = "sort $sort_opts -T $$opts{temp_dir} -k2,2n";
     }
     else
     {
@@ -80,8 +80,8 @@ sub sort_vcf
     print STDERR "$cmd\n";
     open(my $sort_fh,"| $cmd") or error("$cmd: $!");
 
-    my $unflushed = select(STDOUT); 
-    $| = 1; 
+    my $unflushed = select(STDOUT);
+    $| = 1;
     while (my $line=<$fh>)
     {
         if ( $line=~/^#/ ) { print $line; next; }
@@ -103,16 +103,16 @@ sub check_sort_options
     my $has_version_sort = ( $sort_opts=~/\s+--version-sort\s+/ ) ? 1 : 0;
     my $has_parallel_sort = ( $sort_opts=~/\s+--parallel=/ ) ? 1 : 0;
 
-    if ( $$opts{chromosomal_order} && !$has_version_sort ) 
+    if ( $$opts{chromosomal_order} && !$has_version_sort )
     {
         error("Old version of sort command installed, please run without the -c option.\n");
     }
-    if ( $$opts{parallel_sort} && !$has_version_sort ) 
+    if ( $$opts{parallel_sort} && !$has_version_sort )
     {
         error("Old version of sort command installed, please run without the -p option.\n");
     }
     $sort_opts  = ( $$opts{chromosomal_order} && $has_version_sort ) ? '-k1,1V' : '-k1,1d';
     if ( $$opts{parallel_sort} && $has_parallel_sort ) { $sort_opts .= " --parallel $$opts{parallel_sort}"; }
-    
+
     return $sort_opts;
 }

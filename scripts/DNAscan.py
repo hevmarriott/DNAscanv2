@@ -781,7 +781,7 @@ if STR:
 
                 EHDN_unmatched = "%s/results/%s_EHDN_unmatched.csv" % (out, sample_name)
 
-                create_variant_catalog.transform_format_sarah(EHDN_input, path_reference, EHDN_variant_catalog, EHDN_unmatched, EHDN_excluded)
+                create_variant_catalog.transform_format(EHDN_input, path_reference, EHDN_variant_catalog, EHDN_unmatched, EHDN_excluded)
 
                 #13.2 Genotype the novel/non reference variant catalog with ExpansionHunter
                 if len(EHDN_variant_catalog) != 0:
