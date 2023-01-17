@@ -123,7 +123,8 @@ path_bwa_index = ""
 
 #custom tool options
 
-hisat_custom_options = ""
+
+hisat_custom_options = ""
 
 bwa_custom_options = ""
 
