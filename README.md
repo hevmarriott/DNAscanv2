@@ -503,7 +503,7 @@ We made a graphical user interface (GUI) for DNAscan2 to enable a wider audience
 python3 DNAscan_gui.py
 ```
 
-![alt text](https://github.com/hevmarriott/DNAscanv2/raw/master/DNAscanv2_GUI.png)
+![alt text](https://github.com/hevmarriott/DNAscanv2/raw/master/DNAscan2_GUI.png)
 
 Figure 2. Overview of the DNAscan2 graphical user interface (GUI). A: Main window which first appears when running the GUI. The 'Dependency Installation' tab is displayed first to allow first time users to obtain all necessary resources. The dropdown menu, on the top left of the interface, provides the user with usage documentation, access to the DNAscan and ALSgeneScanner publications, and key information about the developers of DNAscan2. B: The 'Basic Options' tab of DNAscan2, populated with default settings. C: The 'Customisation' tab of DNAscan2 - the 'Alignment', 'Variant Calling', 'Reports' and 'Regions' sections allow the user to tailor DNAscan2 to their specifications. Depending on these options, the number of advanced options that show up in the respective tab will differ. Before the 'Run DNAscan' button is pressed, if there are any advanced options or read group information (used with alignment + add read group options), these need to be added first with the 'Add Advanced Options' and 'Add Read Group Info' buttons.
 
