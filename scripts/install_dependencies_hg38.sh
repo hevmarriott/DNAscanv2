@@ -1,4 +1,4 @@
-#Usage: bash install_dependencies_hg38.sh $path_to_setup_dir $path_to_DNASCAN_dir $path_to_ANNOVAR $path_to_MELT $num_cpu 
+#Usage: bash install_dependencies_hg38.sh $path_to_setup_dir $path_to_DNASCAN_dir $path_to_ANNOVAR $path_to_MELT $num_cpu
 #Example: bash install_dependencies_hg38.sh /home/local/ /home/DNAscan /home/annovar.tar.gz /home/MELTv2.2.2.tar.gz 4
 
 INSTALL_DIR=$1
@@ -129,7 +129,7 @@ samtools faidx hg38.fa
 
 nohup bwa index hg38.fa &
 
-nohup hisat2-build -p $NUM_CPUS hg38.fa hg38 &
+nohup hisat2-build hg38.fa hg38 &
 
 sudo apt-get update -qq
 

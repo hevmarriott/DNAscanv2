@@ -65,14 +65,14 @@ tab4_layout = [[sg.pin(sg.Text('BED File', size=(15,1), key = '-path_bed_file_te
 [sg.pin(sg.Text('HISAT Options', size=(15,1), key = '-hisat_custom_options_text', visible = False)), sg.pin(sg.InputText('""', size=(40,1), key='-hisat_custom_options', visible = False))],
 [sg.pin(sg.Text('BWA Options', size=(15,1), key = '-bwa_custom_options_text', visible = False)), sg.pin(sg.InputText('""', size=(40,1), key='-bwa_custom_options',  visible = False))],
 [sg.pin(sg.Text('AnnotSV Options', size=(15,1), key = '-annotsv_custom_options_text', visible = False)), sg.pin(sg.InputText('""', size=(40,1), key='-annotsv_custom_options',  visible = False))],
-[sg.pin(sg.Text('MELT Options', size=(15,1), key = '-melt_custom_options_text', visible = False)), sg.pin(sg.InputText('""', size=(40,1), key='-melt_custom_options', visible = False))], [sg.pin(sg.Button('Add Advanced Options', pad=(5,10), key = '-advanced_options_button'))]]
+[sg.pin(sg.Text('MELT Options', size=(15,1), key = '-melt_custom_options_text', visible = False)), sg.pin(sg.InputText('""', size=(40,1), key='-melt_custom_options', visible = False))]]
 
 col_1 = [[sg.Image(r'DNAscan_logo.001.png', size=(500,100))],
 [sg.TabGroup([[sg.Tab('Dependency Installation', tab1_layout, element_justification='left'),
 sg.Tab('Basic Options', tab2_layout), sg.Tab('Customisation', tab3_layout), sg.Tab('Advanced Options', tab4_layout)]], size=(575,490))]]
 
 col = [[sg.Frame(layout=[
-[sg.MLine(size=(100,35), key='-ML-',autoscroll=True, write_only=False, reroute_stdout=True, reroute_stderr=True, reroute_cprint=True)],[sg.Button('Run DNAscan', pad = (5,5)), sg.Button('Reset', pad = (5,5)), sg.Button('Add Read Group Info')]], title="Output Window")],]
+[sg.MLine(size=(100,35), key='-ML-',autoscroll=True, write_only=False, reroute_stdout=True, reroute_stderr=True, reroute_cprint=True)],[sg.Button('Run DNAscan', pad = (5,5)), sg.Button('Reset', pad = (5,5)), sg.Button('Add Read Group Info'), sg.Button('Add Advanced Options')]], title="Output Window")],]
 
 col2 = sg.Column(col, element_justification='center')
 
@@ -263,9 +263,8 @@ while True:
 
     if event == 'Install Dependencies':
         params_install = ''
-        for key in values:
-            if key in install_keys:
-                params_install += f" {values[key]} "
+        for key in install_keys:
+            params_install += f" {values[key]} "
         if values['-reference_version'] == 'hg19':
             command_install = install_dep_hg19_command + params_install
         if values['-reference_version'] == 'hg38':
@@ -276,9 +275,8 @@ while True:
 
     if event == 'Add Advanced Options':
         params_advanced = ''
-        for key in values:
-            if key in advanced_keys:
-                params_advanced += f" {values[key]} "
+        for key in advanced_keys:
+            params_advanced += f" {values[key]} "
         command_advanced = advanced_options + params_advanced
         window['-ML-'].update(command_advanced)
         runCommand(cmd=command_advanced, window=window)
@@ -286,9 +284,8 @@ while True:
 
     if event == 'Add Read Group Info':
         params_RG = ''
-        for key in values:
-            if key in read_group_keys:
-                params_RG += f" {values[key]} "
+        for key in read_group_keys:
+            params_RG += f" {values[key]} "
         command_RG = read_group_options + params_RG
         window['-ML-'].update(command_RG)
         runCommand(cmd=command_RG, window=window)

@@ -75,19 +75,17 @@ path_vcftools = ""
 
 path_scripts = "scripts/"
 
+#path_bed with test data ="data/test_data.bed"
 path_bed = ""
 
+#path_gene_list with test data="data/list_of_genes.txt"
 path_gene_list = ""
 
-#path_bed (for test data)="data/test_data.bed"
-
-#path_gene_list (for test data)="data/list_of_genes.txt"
-
-#hg19 can be downloaded from http://hgdownload.cse.ucsc.edu/goldenPath/hg19/
+#e.g. hg19 can be downloaded from http://hgdownload.cse.ucsc.edu/goldenPath/hg19/
 path_reference = ""
 
-#hg19 index can be downloaded from ftp://ftp.ccb.jhu.edu/pub/data/hisat_indexes/hg19_hisat.tar.gz
-#the index can be created running "./$path_hisat/hisat-build $path_reference index_base"
+#e.g. hg19 index can be downloaded from ftp://ftp.ccb.jhu.edu/pub/data/hisat_indexes/hg19_hisat.tar.gz
+#e.g. the index can be created running "./$path_hisat/hisat-build $path_reference index_base"
 path_hisat_index = ""
 
 path_manta = ""

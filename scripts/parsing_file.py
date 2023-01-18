@@ -76,8 +76,8 @@ def create_parser():
       action="store_true",
       dest="fast_mode",
       help=
-      'if this flag is set DNAscan2 will run without SV calling with Delly and the genotyping of STR loci identified with ExpansionHunter Denovo if those flags are set (Default = "False")',
-      default=False)
+      'if this flag is set DNAscan2 will run without SV calling with Delly and the genotyping of STR loci identified with ExpansionHunter Denovo if those flags are set (Default = "True")',
+      default=True)
 
   parser.add_argument(
       '-alignment',

@@ -135,7 +135,7 @@ samtools faidx hg19.fa
 
 nohup bwa index hg19.fa &
 
-nohup hisat2-build -p $NUM_CPUS hg19.fa hg19 &
+nohup hisat2-build hg19.fa hg19 &
 
 sudo apt-get update -qq
 
@@ -218,7 +218,7 @@ sed "s|path_delly_exclude_regions = \"\"|path_delly_exclude_regions = \"$DNASCAN
 sed "s|path_expansionHunterDenovo_dir = \"\"|path_expansionHunterDenovo_dir = \"$INSTALL_DIR\/ExpansionHunterDenovo-v0.9.0-linux_x86_64\/\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
 sed "s|path_melt = \"\"|path_melt = \"$INSTALL_DIR\/MELTv2.2.2\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
-                                                      
+
 mv scripts/paths_configs.py_temp scripts/paths_configs.py
 
 chmod +x scripts/*

@@ -132,4 +132,3 @@ echo "###########################################IMPORTANT######################
 echo "Hisat2-build and bwa-index are still creating their indexes. Please wait untill they complete their task."
 echo "You can check whether or not they are still running using the 'top' command"
 echo "##########################################################################################################"
-
