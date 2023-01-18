@@ -16,7 +16,7 @@
 	* [How to download the reference genome](#how-to-download-the-reference-genome)
 	* [How to download the NCBI microbe DBs](#how-to-download-the-ncbi-microbe-dbs)
 	* [How to index the reference genome or a microbe DB](#how-to-index-the-reference-genome-or-a-microbe-db)
-	* [Graphic user interface](#Graphic-user-interface)
+	* [Graphical user interface](#Graphical-user-interface)
 	* [Dependencies](#dependencies)
 	* [Docker and Singularity](#docker-and-singularity)	
 4. [Core Contributors](#core-contributors)
@@ -495,15 +495,15 @@ E.g. If the reference genome is the file hg19.fa, located in /home/dataset/ and 
 /home/bin/bwa index /home/dataset/hg19.fa
 ```
 
-### Graphic user interface
+### Graphical user interface
 
-We made a graphic user interface (GUI) for DNAscan2 to enable a wider audience to use it (e.g. non-bioinformaticians, users unfamiliar with the command line) using PySimpleGUI. You can install dependencies, enter all required and customisation options, and view the constructed command line input before running DNAscan2. If you are happy with the options chosen, DNAscan2 will run in the window, and all the output files will be on your system when complete.After downloading the repository on your system, execute the following command: 
+We made a graphical user interface (GUI) for DNAscan2 to enable a wider audience to use it (e.g. non-bioinformaticians, users unfamiliar with the command line) using PySimpleGUI.You can install dependencies, enter all required and customisation options, and view the constructed command line input before running DNAscan2. If you are happy with the options chosen, DNAscan2 will run in the window, and all the output files will be on your system when complete. There is a dedicated pdf manual for the DNAscan2 GUI which you can access from the DNAscanv2 directory if you want to run DNAscanv2 from scratch using this method.  After downloading the repository on your system, execute the following command: 
 
 ```bash
 python3 DNAscan_gui.py
 ```
 
-![alt text](https://github.com/hevmarriott/DNAscanv2/raw/master/DNAscan2_GUI.png)
+![alt text](https://github.com/hevmarriott/DNAscanv2/raw/master/DNAscanv2_GUI.png)
 
 Figure 2. Overview of the DNAscan2 graphical user interface (GUI). A: Main window which first appears when running the GUI. The 'Dependency Installation' tab is displayed first to allow first time users to obtain all necessary resources. The dropdown menu, on the top left of the interface, provides the user with usage documentation, access to the DNAscan and ALSgeneScanner publications, and key information about the developers of DNAscan2. B: The 'Basic Options' tab of DNAscan2, populated with default settings. C: The 'Customisation' tab of DNAscan2 - the 'Alignment', 'Variant Calling', 'Reports' and 'Regions' sections allow the user to tailor DNAscan2 to their specifications. Depending on these options, the number of advanced options that show up in the respective tab will differ. Before the 'Run DNAscan' button is pressed, if there are any advanced options or read group information (used with alignment + add read group options), these need to be added first with the 'Add Advanced Options' and 'Add Read Group Info' buttons.
 
