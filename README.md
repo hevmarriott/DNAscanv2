@@ -181,10 +181,10 @@ Its basic use requires the following options:
   -sequencing_report    if this flag is set DNAscan2 will generate a report describing the input sequencing data (Default = "False") 
   -calls_report         if this flag is set DNAscan2 will generate a report describing the found snvs and indels (Default = "False")
   -rm_dup               if this flag is set DNAscan2 will remove duplicates from the sample bam file (Default = "False")
-  -fast_mode            if this flag is set DNAscan2 will run without SV calling with Delly and the genotyping of STR loci identified with ExpansionHunter Denovo if those flags are set (Default = "False")
+  -fast_mode            if this flag is set DNAscan2 will run without SV calling with Delly and the genotyping of STR loci identified with ExpansionHunter Denovo if those flags are set (Default = "True")
 ```
 
-If only the --variantcalling flag is selected, Hisat2 and Strelka is used to quickly align and call variants, as it is ideal for detection of single nucleotide variants. If your analysis is focused on structural variants and transposable elements, BWA is addiitonally utilised to refine Hisat2 alignment on selected reads. This step improves the alignment of soft-clipped reads and reads containing small insertion and deletion variants. Structural variant calling with Delly and mobile element inserion with MELT can now be performed. Additionally, ExpansionHunter Denovo can be used to identify non-catalogue genome-wide short tandem repeat loci, with the added option to genotype these loci using ExpansionHunter (recommended only for higher spec computers/high performance computing systems if analysing whole genome sequencing data). For users with limited RAM and/or time constraints, we have introduced fast mode to allow structural variant and genome-wide short tandem repeat loci detection to still take place, without Delly (which is very time intensive (~24h per genome)) and genotyping of ExpansionHunter Denovo identified loci (requires a lot of RAM if performed on a genome-wide basis).
+If only the --variantcalling flag is selected, Hisat2 and Strelka is used to quickly align and call variants, as it is ideal for detection of single nucleotide variants. If your analysis is focused on structural variants and transposable elements, BWA is addiitonally utilised to refine Hisat2 alignment on selected reads. This step improves the alignment of soft-clipped reads and reads containing small insertion and deletion variants. Structural variant calling with Delly and mobile element inserion with MELT can now be performed. Additionally, ExpansionHunter Denovo can be used to identify non-catalogue genome-wide short tandem repeat loci, with the added option to genotype these loci using ExpansionHunter (recommended only for higher spec computers/high performance computing systems if analysing whole genome sequencing data). For users with limited RAM and/or time constraints, we have introduced fast mode to allow structural variant and genome-wide short tandem repeat loci detection to still take place, without Delly (which is very time intensive (~24h per genome)) and genotyping of ExpansionHunter Denovo identified loci (requires a lot of RAM if performed on a genome-wide basis). This option is set to true by default.
 
 Finally, a set of optional arguments can be used to customise the analysis:
 
@@ -235,12 +235,10 @@ Let's assume we have human paired end whole exome sequencing data in two fastq f
  ```bash
 python3 /path/to/DNAscanv2/scripts/DNAscan.py -format fastq -in data1.fq.gz -in2 data2.fq.gz -reference hg19 -alignment -variantcalling -annotation -iobio -out /path/to/outdir/ 
 ```
-Using the sequencing data provided in the data folder:
+If we perform the same analysis but on custom regions of the genome using the bed file provided in the data folder (after adding "data/test_data.bed") to the paths_configs file:
 
  ```bash
-cd /path/to/DNAscanv2_main_dir
- 
-python3 scripts/DNAscan.py -format fastq -in data/test_data.1.fq.gz -in2 data/test_data.2.fq.gz -reference hg19 -alignment -variantcalling -annotation -iobio -out outdir/  -BED
+python3 /path/to/DNAscanv2/scripts/DNAscan.py -format fastq -in data/test_data.1.fq.gz -in2 data/test_data.2.fq.gz -reference hg19 -alignment -variantcalling -annotation -iobio -out outdir/ -BED
 ```
 IMPORTANT: All paths in DNAscan end with "/"
 
@@ -251,12 +249,12 @@ DNAscan uses bcftools to filter the variants. It only selects variants for which
 Filtering calls for which genotype quality is > then 30:
 
 ```bash
-python3 /path/to/DNAscanv2/scripts/DNAscan.py -format fastq -in data1.fq.gz -in2 data2.fq.gz -reference hg19 -alignment -variantcalling -annotation -iobio -out /path/to/outdir/  -filter "GQ>30"
+python3 /path/to/DNAscanv2/scripts/DNAscan.py -format fastq -in data1.fq.gz -in2 data2.fq.gz -reference hg19 -alignment -variantcalling -annotation -iobio -out /path/to/outdir/  -filter_string "GQ>30"
 ```
 Filtering calls for which genotype quality is > then 30 and depth >5:
 
 ```bash
-python3 /path/to/DNAscanv2/scripts/DNAscan.py -format fastq -in data1.fq.gz -in2 data2.fq.gz -reference hg19 -alignment -variantcalling -annotation -iobio -out /path/to/outdir/  -filter "GQ>30 && DP>5"
+python3 /path/to/DNAscanv2/scripts/DNAscan.py -format fastq -in data1.fq.gz -in2 data2.fq.gz -reference hg19 -alignment -variantcalling -annotation -iobio -out /path/to/outdir/  -filter_string "GQ>30 && DP>5"
 ```
 
 #### Looking for repeat expansions
