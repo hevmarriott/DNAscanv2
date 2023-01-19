@@ -260,6 +260,8 @@ while True:
         runCommand(cmd=command, window=window)
         sg.cprint('*'*20+'DNAscan has finished running'+'*'*20)
         sg.cprint('*'*20+f"Your results are avaiable to view from the {values['-out']} directory"+'*'*20)
+        window['Add Read Group Info'].update(disabled=True)
+        window['Add Advanced Options'].update(disabled=True)
 
     if event == 'Install Dependencies':
         params_install = ''
@@ -293,6 +295,8 @@ while True:
 
     if event == 'Reset':
         window['-ML-'].update('')
+        window['Add Read Group Info'].update(disabled = False)
+        window['Add Advanced Options'].update(disabled = False)
 
     if event == sg.WINDOW_CLOSE_ATTEMPTED_EVENT and sg.popup_yes_no('Do you really want to exit?') == 'Yes':
         break
