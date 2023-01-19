@@ -16,7 +16,7 @@
 	* [How to download the reference genome](#how-to-download-the-reference-genome)
 	* [How to download the NCBI microbe DBs](#how-to-download-the-ncbi-microbe-dbs)
 	* [How to index the reference genome or a microbe DB](#how-to-index-the-reference-genome-or-a-microbe-db)
-	* [Graphic user interface](#Graphic-user-interface)
+	* [Graphical user interface](#Graphical-user-interface)
 	* [Dependencies](#dependencies)
 	* [Docker and Singularity](#docker-and-singularity)	
 4. [Core Contributors](#core-contributors)
@@ -495,9 +495,9 @@ E.g. If the reference genome is the file hg19.fa, located in /home/dataset/ and 
 /home/bin/bwa index /home/dataset/hg19.fa
 ```
 
-### Graphic user interface
+### Graphical user interface
 
-We made a graphic user interface (GUI) for DNAscan2 to enable a wider audience to use it (e.g. non-bioinformaticians, users unfamiliar with the command line) using PySimpleGUI. You can install dependencies, enter all required and customisation options, and view the constructed command line input before running DNAscan2. If you are happy with the options chosen, DNAscan2 will run in the window, and all the output files will be on your system when complete.After downloading the repository on your system, execute the following command: 
+We made a graphical user interface (GUI) for DNAscan2 to enable a wider audience to use it (e.g. non-bioinformaticians, users unfamiliar with the command line) using PySimpleGUI.You can install dependencies, enter all required and customisation options, and view the constructed command line input before running DNAscan2. If you are happy with the options chosen, DNAscan2 will run in the window, and all the output files will be on your system when complete. There is a dedicated pdf manual for the DNAscan2 GUI which you can access from the DNAscanv2 directory if you want to run DNAscanv2 from scratch using this method.  After downloading the repository on your system, execute the following command: 
 
 ```bash
 python3 DNAscan_gui.py
