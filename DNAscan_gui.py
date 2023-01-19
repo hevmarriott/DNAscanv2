@@ -72,7 +72,7 @@ col_1 = [[sg.Image(r'DNAscan_logo.001.png', size=(500,100))],
 sg.Tab('Basic Options', tab2_layout), sg.Tab('Customisation', tab3_layout), sg.Tab('Advanced Options', tab4_layout)]], size=(575,490))]]
 
 col = [[sg.Frame(layout=[
-[sg.MLine(size=(100,35), key='-ML-',autoscroll=True, write_only=False, reroute_stdout=True, reroute_stderr=True, reroute_cprint=True)],[sg.Button('Run DNAscan', pad = (5,5)), sg.Button('Reset', pad = (5,5)), sg.Button('Add Read Group Info'), sg.Button('Add Advanced Options')]], title="Output Window")],]
+[sg.MLine(size=(100,35), key='-ML-',autoscroll=True, write_only=False, reroute_stdout=True, reroute_stderr=True, reroute_cprint=True)],[sg.Button('Run DNAscan', pad = (5,5)), sg.Button('Reset', pad = (5,5)), sg.Button('Add Read Group Info'), sg.Button('Add Advanced Options'), sg.Button('Open Results')]], title="Output Window")],]
 
 col2 = sg.Column(col, element_justification='center')
 
@@ -262,6 +262,9 @@ while True:
         sg.cprint('*'*20+f"Your results are avaiable to view from the {values['-out']} directory"+'*'*20)
         window['Add Read Group Info'].update(disabled=True)
         window['Add Advanced Options'].update(disabled=True)
+
+    if event == 'Open Results':
+        os.system(f"nautilus {values['-out']}")
 
     if event == 'Install Dependencies':
         params_install = ''
