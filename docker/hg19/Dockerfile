@@ -11,7 +11,7 @@ RUN apt-get install -y git
 RUN cd $PWD
 RUN git clone https://github.com/hevmarriott/DNAscanv2.git
 RUN cd DNAscanv2
-RUN bash DNAscanv2/scripts/install_dependencies_hg19_docker.sh $PWD/DNAscanv2/local/ $PWD/DNAscanv2/ 
+RUN bash DNAscanv2/scripts/install_dependencies_hg19.sh $PWD/DNAscanv2/local/ $PWD/DNAscanv2/ 
 RUN source ~/.bashrc
 
 WORKDIR $PWD/DNAscanv2/
