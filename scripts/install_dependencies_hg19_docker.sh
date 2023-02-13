@@ -63,7 +63,7 @@ conda install -y vcftools=0.1.16
 
 conda install -y bcftools=1.9
 
-conda install -y hisat2=2.1.1
+conda install -y hisat2=2.2.1
 
 conda install -y bwa=0.7.17
 
