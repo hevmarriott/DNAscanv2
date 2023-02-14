@@ -87,10 +87,6 @@ conda install -y biopython=1.78
 
 conda install -y perl-app-cpanminus
 
-cpan YAML::XS
-
-cpan Sort::Key::Natural
-
 cd $DNASCAN_DIR
 
 mkdir hg19
@@ -154,14 +150,6 @@ export ANNOTSV=$INSTALL_DIR/AnnotSV/
 cd $ANNOTSV/share/AnnotSV/Annotations_Human/Genes/GRCh37
 
 wget https://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/refGene.txt.gz
-
-cd $INSTALL_DIR
-
-git clone https://github.com/mobidic/knotAnnotSV
-
-export PATH=$INSTALL_DIR/knotAnnotSV/:$PATH
-
-echo export PATH=$INSTALL_DIR/knotAnnotSV/:$PATH >> ~/.bashrc
 
 cd $DNASCAN_DIR
 
