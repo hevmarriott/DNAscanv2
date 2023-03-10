@@ -161,9 +161,9 @@ samtools faidx hg19.fa
 
 nohup bwa index hg19.fa &
 
-nohup hisat2-build hg19.fa hg19 &
+nohup hisat2-build hg19.fa hg19
 
-sudo apt-get update -qq
+#sudo apt-get update -qq
 
 cd $INSTALL_DIR
 
