@@ -653,24 +653,24 @@ if variantcalling:
                         os.system("%stabix -p bed %s/sorted.bed.gz" % (path_tabix, out))
                         os.system("mkdir %sstrelka" % (out))
                         os.system(
-                        "%sconfigureStrelkaGermlineWorkflow.py --bam %s --referenceFasta %s --runDir %sstrelka --callRegions %s/sorted.bed.gz"
-                        % (path_strelka, bam_file, path_reference, out, out))
+                        "%s %sconfigureStrelkaGermlineWorkflow.py --bam %s --referenceFasta %s --runDir %sstrelka --callRegions %s/sorted.bed.gz"
+                        % (path_python2, path_strelka, bam_file, path_reference, out, out))
 
                         if not debug:
                             os.system("rm %s/temp.bed.gz %s/sorted.bed.gz" % (out, out))
 
                     if exome:
                         os.system("mkdir %sstrelka" % (out))
-                        os.system("%sconfigureStrelkaGermlineWorkflow.py --bam %s --referenceFasta %s --runDir %sstrelka --exome" %
-                        (path_strelka, bam_file, path_reference, out))
+                        os.system("%s %sconfigureStrelkaGermlineWorkflow.py --bam %s --referenceFasta %s --runDir %sstrelka --exome" %
+                        (path_python2, path_strelka, bam_file, path_reference, out))
 
                     else:
                         os.system("mkdir %sstrelka" % (out))
                         os.system(
-                        "%sconfigureStrelkaGermlineWorkflow.py --bam %s --referenceFasta %s --runDir %sstrelka"
-                        % (path_strelka, bam_file, path_reference, out))
+                        "%s %sconfigureStrelkaGermlineWorkflow.py --bam %s --referenceFasta %s --runDir %sstrelka"
+                        % (path_python2, path_strelka, bam_file, path_reference, out))
 
-                    os.system("%sstrelka/runWorkflow.py -j %s -m local" % (out, num_cpu))
+                    os.system("%s %sstrelka/runWorkflow.py -j %s -m local" % (path_python2, out, num_cpu))
                     os.system(
                     "mv %s/strelka/results/variants/genome.S1.vcf.gz  %s/results/%s_strelka.vcf.gz"
                     % (out, out, sample_name))
@@ -834,8 +834,8 @@ if SV or MEI:
                     os.system("%stabix -p bed %s/sorted.bed.gz" % (path_tabix, out))
                     os.system("mkdir %smanta" % (out))
                     os.system(
-                        "%sconfigManta.py --bam %s --referenceFasta %s --runDir %smanta --callRegions %s/sorted.bed.gz"
-                        % (path_manta, bam_file, path_reference, out, out))
+                        "%s %sconfigManta.py --bam %s --referenceFasta %s --runDir %smanta --callRegions %s/sorted.bed.gz"
+                        % (path_python2, path_manta, bam_file, path_reference, out, out))
 
                     if not debug:
                         os.system("rm %s/temp.bed.gz %s/sorted.bed.gz" % (out,out))
@@ -846,12 +846,12 @@ if SV or MEI:
 
                     os.system("mkdir %smanta" % (out))
                     os.system(
-                        "%sconfigManta.py --bam %s --referenceFasta %s --runDir %smanta"
-                        % (path_manta, bam_file, path_reference, out))
+                        "%s %sconfigManta.py --bam %s --referenceFasta %s --runDir %smanta"
+                        % (path_python2, path_manta, bam_file, path_reference, out))
 
-                os.system("%smanta/runWorkflow.py -j %s -m local" % (out, num_cpu))
-                os.system("%s/convertInversion.py %ssamtools %s %s/manta/results/variants/diploidSV.vcf.gz > %s/results/%s_manta_SV.vcf" % (
-                path_scripts, path_samtools, path_reference, out, out, sample_name))
+                os.system("%s %smanta/runWorkflow.py -j %s -m local" % (path_python2, out, num_cpu))
+                os.system("%s %s/convertInversion.py %ssamtools %s %s/manta/results/variants/diploidSV.vcf.gz > %s/results/%s_manta_SV.vcf" % (
+                path_python2, path_scripts, path_samtools, path_reference, out, out, sample_name))
                 os.system("bgzip -c %s/results/%s_manta_SV.vcf > %s/results/%s_manta_SV.vcf.gz" % (out, sample_name, out, sample_name))
                 os.system("%stabix -p vcf %s/results/%s_manta_SV.vcf.gz" % (path_tabix, out, sample_name))
 
