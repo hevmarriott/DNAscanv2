@@ -13,47 +13,21 @@ MELT_EXEC=$4
 
 NUM_CPUS=$5
 
-sudo apt-get update
+#sudo apt-get update
 
-sudo apt-get install -y vim
+#sudo apt-get install -y vim
 
-sudo apt-get install -y python2
+#sudo apt-get install -y python2
 
-sudo apt-get install -y perl
+#sudo apt-get install -y perl
 
-sudo apt-get install -y ttf-dejavu
+#sudo apt-get install -y ttf-dejavu
 
-sudo apt-get install -y wget bzip2 gzip make git tcl tcllib tar gcc g++
+#sudo apt-get install -y wget bzip2 gzip make git tcl tcllib tar gcc g++
 
 mkdir $INSTALL_DIR
 
-mkdir $INSTALL_DIR/humandb
-
-tar -zxf $ANNOVAR_EXEC --directory $INSTALL_DIR
-
-chmod +x $INSTALL_DIR/annovar*
-
-#nohup $INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar cadd $INSTALL_DIR/humandb/ &
-
-$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar refGene $INSTALL_DIR/humandb/
-
-$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar exac03 $INSTALL_DIR/humandb/
-
-$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar dbnsfp33a $INSTALL_DIR/humandb/
-
-$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar clinvar_20210501 $INSTALL_DIR/humandb/
-
-$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar avsnp147 $INSTALL_DIR/humandb/
-
-$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar intervar_20180118 $INSTALL_DIR/humandb/
-
-$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar 1000g2015aug $INSTALL_DIR/humandb/
-
-$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar gnomad211_genome $INSTALL_DIR/humandb/
-
 cd $INSTALL_DIR
-
-tar -zxf $MELT_EXEC --directory $INSTALL_DIR
 
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 
@@ -72,6 +46,30 @@ conda config --add channels defaults
 conda config --add channels r
 
 conda config --add channels bioconda
+
+conda config --add channels intel
+
+conda config --add channels hcc
+
+conda install -y font-ttf-dejavu-sans-mono
+
+conda install -y bzip2
+
+conda install -y gzip
+
+conda install -y make
+
+conda install -y git
+
+conda install -y tcl
+
+conda install -y tcllib
+
+conda install -y tar
+
+conda install -y gcc
+
+conda install -y gxx
 
 conda install -y python=3.8.0
 
@@ -113,9 +111,37 @@ conda install -y biopython=1.78
 
 conda install -y perl-app-cpanminus
 
+conda create -y --name py2 python=2.7 
+
 cpan YAML::XS
 
 cpan Sort::Key::Natural
+
+mkdir $INSTALL_DIR/humandb
+
+tar -zxf $ANNOVAR_EXEC --directory $INSTALL_DIR
+
+chmod +x $INSTALL_DIR/annovar*
+
+#nohup $INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar cadd $INSTALL_DIR/humandb/ &
+
+$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar refGene $INSTALL_DIR/humandb/
+
+$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar exac03 $INSTALL_DIR/humandb/
+
+$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar dbnsfp33a $INSTALL_DIR/humandb/
+
+$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar clinvar_20210501 $INSTALL_DIR/humandb/
+
+$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar avsnp147 $INSTALL_DIR/humandb/
+
+$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar intervar_20180118 $INSTALL_DIR/humandb/
+
+$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar 1000g2015aug $INSTALL_DIR/humandb/
+
+$INSTALL_DIR/annovar/annotate_variation.pl -buildver hg19 -downdb -webfrom annovar gnomad211_genome $INSTALL_DIR/humandb/
+
+tar -zxf $MELT_EXEC --directory $INSTALL_DIR
 
 cd $DNASCAN_DIR
 
@@ -219,7 +245,7 @@ sed "s|path_expansionHunterDenovo_dir = \"\"|path_expansionHunterDenovo_dir = \"
 
 sed "s|path_melt = \"\"|path_melt = \"$INSTALL_DIR\/MELTv2.2.2\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
 
-mv scripts/paths_configs.py_temp scripts/paths_configs.py
+sed "s|path_python2 = \"\"|path_python2 = \"$INSTALL_DIR\/Miniconda3\/envs\/py2\/bin\/python2.7\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
 chmod +x scripts/*
 
