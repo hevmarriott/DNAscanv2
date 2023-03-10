@@ -29,6 +29,8 @@ path_to_db = ""
 
 dnascan_dir = ""
 
+path_python2 = ""
+
 path_hisat = ""
 
 path_samtools = ""
