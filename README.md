@@ -78,9 +78,9 @@ source ~/.bashrc
 NOTE: If you want to perform annotation with Annovar, the CADD database takes up ~50GB of storage - please comment this line out before running the install script if it is not required. 
 
 #### Obtain with Docker
+The easiest way to get started with DNAscan2 is to use its Docker image, which has all dependencies and the reference genome build and BWA/Hisat2 indexes installed, except for Annovar and MELTv2.2.2. These are available from [Docker Hub](https://hub.docker.com) (hevmarriott/dnascan2_hg19 and hevmarriott/dnascan2_hg38). 
 
 IMPORTANT: if you want to use the mobile element insertion or annotation step of DNAscan2 you need to register and download both Annovar and MELTv2.2.2. Remember to mirror into the container the folder where you have deployed these using the -v flag or copy them inside the container using the docker cp command as described below.
-The easiest way to get started with DNAscan2 is to use its Docker image, which has all dependencies and the reference genome build and BWA/Hisat2 indexes installed, except for Annovar and MELTv2.2.2:
 
 ```bash
 sudo docker run  -v /path/to/your/data_folder:/container/path/where/you/want/your/data --storage-opt size=50G  -it hevmarriott/dnascan2_hg19 OR hevmarriott/dnascan2_hg38 /bin/bash
