@@ -13,18 +13,6 @@ MELT_EXEC=$4
 
 NUM_CPUS=$5
 
-#sudo apt-get update
-
-#sudo apt-get install -y vim
-
-#sudo apt-get install -y python2
-
-#sudo apt-get install -y perl
-
-#sudo apt-get install -y ttf-dejavu
-
-#sudo apt-get install -y wget bzip2 gzip make git tcl tcllib tar gcc g++
-
 mkdir $INSTALL_DIR
 
 cd $INSTALL_DIR
@@ -47,10 +35,6 @@ conda config --add channels r
 
 conda config --add channels bioconda
 
-conda config --add channels intel
-
-conda config --add channels hcc
-
 conda install -y font-ttf-dejavu-sans-mono
 
 conda install -y bzip2
@@ -61,7 +45,7 @@ conda install -y make
 
 conda install -y git
 
-conda install -y tcl
+conda install -y -c intel tcl
 
 conda install -y tcllib
 
@@ -245,7 +229,7 @@ sed "s|path_expansionHunterDenovo_dir = \"\"|path_expansionHunterDenovo_dir = \"
 
 sed "s|path_melt = \"\"|path_melt = \"$INSTALL_DIR\/MELTv2.2.2\/\"|" scripts/paths_configs.py > scripts/paths_configs.py_temp
 
-sed "s|path_python2 = \"\"|path_python2 = \"$INSTALL_DIR\/Miniconda3\/envs\/py2\/bin\/python2.7\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
+sed "s|path_python2 = \"\"|path_python2 = \"$INSTALL_DIR\/Miniconda3\/envs\/py2\/bin\/python\"|" scripts/paths_configs.py_temp > scripts/paths_configs.py
 
 chmod +x scripts/*
 
